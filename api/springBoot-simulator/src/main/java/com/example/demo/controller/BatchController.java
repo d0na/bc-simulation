@@ -17,7 +17,7 @@ public class BatchController {
     private final JobLauncher jobLauncher;
     private final Job job;
 
-    @PostMapping("/start")
+    @PostMapping("/start-import-user")
     public ResponseEntity<String> startBatch() throws Exception {
         JobParameters jobParameters = new JobParametersBuilder()
                 .addLong("time", System.currentTimeMillis())

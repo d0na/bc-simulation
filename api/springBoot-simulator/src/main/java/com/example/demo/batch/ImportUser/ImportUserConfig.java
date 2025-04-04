@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.demo.batch.ImportUser;
 
 import com.example.demo.listner.JobCompletionNotificationListener;
 import com.example.demo.model.User;
@@ -23,7 +23,7 @@ import javax.sql.DataSource;
 
 @Configuration
 @RequiredArgsConstructor
-public class BatchConfig {
+public class ImportUserConfig {
 
     private final DataSource dataSource;
 
@@ -49,7 +49,7 @@ public class BatchConfig {
                 .build();
     }
 
-    @Bean
+    @Bean("importUserJob")
     public Job importUserJob(JobRepository jobRepository, Step step1, JobCompletionNotificationListener listener) {
         return new JobBuilder("importUserJob", jobRepository)
                 .incrementer(new RunIdIncrementer())
@@ -59,7 +59,7 @@ public class BatchConfig {
     }
 
     @Bean
-    public Step step1(JobRepository jobRepository, PlatformTransactionManager transactionManager, UserProcessor processor) {
+    public Step step1(JobRepository jobRepository, PlatformTransactionManager transactionManager, ImportUserProcessor processor) {
         return new StepBuilder("step1", jobRepository)
                 .<User, User>chunk(10, transactionManager)
                 .reader(reader())

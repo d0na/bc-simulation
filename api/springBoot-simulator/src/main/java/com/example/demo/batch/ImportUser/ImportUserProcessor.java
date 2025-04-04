@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.demo.batch.ImportUser;
 
 import com.example.demo.model.User;
 import lombok.extern.slf4j.Slf4j;
@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
-public class UserProcessor implements ItemProcessor<User, User> {
+public class ImportUserProcessor implements ItemProcessor<User, User> {
     @Override
     public User process(User user) throws InterruptedException {
         user.setEmail(user.getEmail().toLowerCase());
