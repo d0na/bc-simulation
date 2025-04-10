@@ -1,4 +1,4 @@
-package com.example.demo.batch.ImportUser;
+package com.example.demo.batch.importUser;
 
 import com.example.demo.listner.JobCompletionNotificationListener;
 import com.example.demo.model.User;
@@ -21,7 +21,7 @@ import org.springframework.batch.core.Step;
 
 import javax.sql.DataSource;
 
-@Configuration
+@Configuration("importUserConfig")
 @RequiredArgsConstructor
 public class ImportUserConfig {
 

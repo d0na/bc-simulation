@@ -1,4 +1,4 @@
-package com.example.demo.batch.ImportUser;
+package com.example.demo.batch.importUser;
 
 import com.example.demo.model.User;
 import lombok.extern.slf4j.Slf4j;
