@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package nmtsimulation;
+package com.example.demo.nmtsimulation;
 
 /**
  * Best fits are 0.1 and 0.01

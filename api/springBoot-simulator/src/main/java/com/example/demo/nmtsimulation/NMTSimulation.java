@@ -1,4 +1,4 @@
-package nmtsimulation;
+package com.example.demo.nmtsimulation;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
