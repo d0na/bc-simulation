@@ -14,4 +14,5 @@ import lombok.NoArgsConstructor;
 public class StepStatusDTO {
     private String stepName;
     private String stepStatus;
+    private double progress;
 }

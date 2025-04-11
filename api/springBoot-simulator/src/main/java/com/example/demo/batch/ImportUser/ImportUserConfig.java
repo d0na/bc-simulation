@@ -90,7 +90,7 @@ public class ImportUserConfig {
     }
 
     @Bean
-    public Step stepSimulation(JobRepository jobRepository, PlatformTransactionManager transactionManager, SimTasklet simTasklet) {
+    public Step stepSimulation(JobRepository jobRepository, PlatformTransactionManager transactionManager, SimRevTasklet simTasklet) {
         log.info("step simultaion call");
         return new StepBuilder("stepSimulation", jobRepository)
 //                .<User, User>chunk(10, transactionManager)

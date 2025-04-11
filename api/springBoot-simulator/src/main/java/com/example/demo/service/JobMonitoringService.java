@@ -3,6 +3,7 @@ package com.example.demo.service;
 import com.example.demo.dto.JobStatusDTO;
 import com.example.demo.dto.StepStatusDTO;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.*;
 import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class JobMonitoringService {
 
     private final JobExplorer jobExplorer;
@@ -53,9 +55,37 @@ public class JobMonitoringService {
             for (JobInstance instance : instances) {
                 List<JobExecution> executions = jobExplorer.getJobExecutions(instance);
                 for (JobExecution execution : executions) {
-                    List<StepStatusDTO> stepStatuses = execution.getStepExecutions().stream()
-                            .map(step -> new StepStatusDTO(step.getStepName(), step.getStatus().toString()))
-                            .collect(Collectors.toList());
+
+                    List<StepStatusDTO> stepStatuses = new ArrayList<>();
+                    double jobProgress = 0;
+
+                    for (StepExecution step : execution.getStepExecutions()) {
+                        // Prova a leggere il progress dal contesto di esecuzione dello step
+                        Object progressObj = step.getExecutionContext().get("progress");
+
+                        double stepProgress = 0;
+                        if (progressObj instanceof Double) {
+                            stepProgress = (Double) progressObj;
+                        } else if (progressObj instanceof String) {
+                            try {
+                                stepProgress = Double.parseDouble((String) progressObj);
+                            } catch (NumberFormatException e) {
+                                stepProgress = 0;
+                            }
+                        }
+
+                        // Prendiamo il massimo valore di progress tra gli step
+                        if (stepProgress > jobProgress) {
+                            jobProgress = stepProgress;
+                        }
+
+                        // Aggiungiamo comunque gli step, anche se il progress non è usato direttamente
+                        stepStatuses.add(new StepStatusDTO(
+                                step.getStepName(),
+                                step.getStatus().toString(),
+                                stepProgress
+                        ));
+                    }
 
                     JobStatusDTO dto = new JobStatusDTO(
                             jobName,
@@ -65,7 +95,8 @@ public class JobMonitoringService {
                             execution.getEndTime(),
                             execution.getStatus().toString(),
                             execution.getExitStatus().getExitCode(),
-                            stepStatuses
+                            stepStatuses,
+                            jobProgress // <-- qui il vero avanzamento da mostrare
                     );
 
                     jobStatusList.add(dto);
@@ -75,5 +106,4 @@ public class JobMonitoringService {
 
         return jobStatusList;
     }
-
-}
+    }

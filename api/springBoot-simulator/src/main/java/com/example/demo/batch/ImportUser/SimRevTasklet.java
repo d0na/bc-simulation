@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
+import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.stereotype.Component;
 
@@ -25,14 +26,11 @@ public class SimRevTasklet implements Tasklet {
     public static final int POLYGONPOSCHAINMAXGASPERSEC = 30000000/2;//=15000000
 
 
+    int NUMAGGR =  AggregationGranularity.MINUTES.getSeconds();
+    int MAXTIME = SimulationDuration.TWO_WEEKS.getSeconds();
+
     int NUMRUNS = 10;//100;
-    int MAXTIME = 1209600;//86400; one day//2592000; one month//864000; ten days//604800 seven days  //  1209600 two weeks
-    //int AGGR = 60;
-    int NUMAGGR = 60;//1 seconds granularity / 60 minutes granularity / 3600 hours granularity
-    //String outFile = "/home/brodo/Universita/TrustSense2024/simResults/simResultsTest1.tsv";
-    //String dir = "/home/brodo/Universita/TrustSense2024/simResults/";
     String dir = "./";
-    //String outFileAggr = "/home/brodo/Universita/TrustSense2024/simResults/simResultsTest1Aggr.tsv";
     String outFile = dir+"simResultsTest5Scaledt"+MAXTIME+"a"+NUMAGGR+".tsv";
     SimParams simToRun = new SimParams5Scaled();
 
@@ -40,15 +38,83 @@ public class SimRevTasklet implements Tasklet {
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
         log.info("Processing Simulation batch ");
-        runSimSpaceOptimisedAggregated(simToRun, NUMRUNS, MAXTIME, outFile, NUMAGGR);
-        //runSimAggregated(simToRun, NUMRUNS, MAXTIME, outFileAggr, AGGR);
+//        runSimSpaceOptimisedAggregated(simToRun, NUMRUNS, MAXTIME, outFile, NUMAGGR);
+        //Master is implicit at time 0
+        SimRoundResultsAggregated sRounds = new SimRoundResultsAggregated(NUMRUNS, simToRun, NUMAGGR);
+        double resultMean, resultStd;
+
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(outFile))) {
+
+            bw.write("time\tgasTotalMean\tgasTotalStd");
+            bw.write("\tgasNewCreatorMean\tgasNewCreatorStd");
+            bw.write("\tgasNewAssetMean\tgasNewAssetStd");
+            bw.write("\tgasHolderPolicyUpdateMean\tgasHolderPolicyUpdateStd");
+            bw.write("\tgasCharacteristicUpdateMean\tgasCharacteristicUpdateStd");
+            bw.write("\tgasTransferMean\tgasTransferStd");
+            bw.write("\tTotalNumCreators\tmaxCreators\tminCreators\tavgCreators\tstdCreators\tTotalNumAssets\tmaxAssets\tminAssets\tavgAssets\tstdAssets");
+            bw.newLine();
+
+            long time = System.currentTimeMillis();
+
+            for(int i=0;i<MAXTIME;i = i+NUMAGGR){
+                if(i%(NUMAGGR*2000)==0){
+                    System.out.println("Sim run at time "+i+"/"+MAXTIME+" in time "+ (System.currentTimeMillis()-time)+" ms.");
+                    time = System.currentTimeMillis();
+                }
+                sRounds.computeSimStepNoMasterFixedRandomAggregated(i);
+
+                bw.write(""+i);
+
+                //total gas stats
+                resultMean = SimRoundResults.computeAvg(sRounds.gasTotal);
+                resultStd = SimRoundResults.computeStd(sRounds.gasTotal, resultMean);
+                bw.write("\t"+resultMean+"\t"+resultStd);
+
+                //individual operation gas stats
+                resultMean = SimRoundResults.computeAvg(sRounds.gasNewCreator);
+                resultStd = SimRoundResults.computeStd(sRounds.gasNewCreator, resultMean);
+                bw.write("\t"+resultMean+"\t"+resultStd);
+                resultMean = SimRoundResults.computeAvg(sRounds.gasNewAsset);
+                resultStd = SimRoundResults.computeStd(sRounds.gasNewAsset, resultMean);
+                bw.write("\t"+resultMean+"\t"+resultStd);
+                resultMean = SimRoundResults.computeAvg(sRounds.gasHolderPolicyUpdate);
+                resultStd = SimRoundResults.computeStd(sRounds.gasHolderPolicyUpdate, resultMean);
+                bw.write("\t"+resultMean+"\t"+resultStd);
+                resultMean = SimRoundResults.computeAvg(sRounds.gasCharacteristicUpdate);
+                resultStd = SimRoundResults.computeStd(sRounds.gasCharacteristicUpdate, resultMean);
+                bw.write("\t"+resultMean+"\t"+resultStd);
+                resultMean = SimRoundResults.computeAvg(sRounds.gasTransfer);
+                resultStd = SimRoundResults.computeStd(sRounds.gasTransfer, resultMean);
+                bw.write("\t"+resultMean+"\t"+resultStd);
+
+                bw.write(sRounds.getTSVInfoCreatorsAssetsStats());
+
+                bw.newLine();
+
+                // Calcola il progresso basato sull'indice di step corrente
+                double progress = ((i / (double) MAXTIME) * 100);
+                System.out.printf("Avanzamento: %.2f%% (%d/%d)%n", progress, i, MAXTIME);
+                // Salva nel contesto per un listener o log
+                chunkContext.getStepContext().getStepExecution()
+                        .getExecutionContext()
+                        .put("progress",progress);
+
+                ExecutionContext context = chunkContext.getStepContext().getStepExecution().getExecutionContext();
+                context.put("progress", progress);
+                chunkContext.getStepContext().getStepExecution().setExecutionContext(context);
+            }
+        } catch (IOException ex) {
+            System.err.println("ERROR WHILE WRITING TO FILE.");
+            ex.printStackTrace();
+        }
+        System.out.println("Ending sim of "+NUMRUNS+" runs.");
         System.out.println("*** DONE SIM5Scaled AGGR ("+NUMAGGR+" seconds) "+(MAXTIME/86400)+" days ***");
 
         outFile = dir+"simResultsTest6Scaledt"+MAXTIME+"a"+NUMAGGR+".tsv";
-        simToRun = new SimParams6Scaled();
+        /*simToRun = new SimParams6Scaled();
         runSimSpaceOptimisedAggregated(simToRun, NUMRUNS, MAXTIME, outFile, NUMAGGR);
         System.out.println("*** DONE SIM6Scaled AGGR ("+NUMAGGR+" seconds) "+(MAXTIME/86400)+" days ***");
-        Thread.sleep(30000);
+        Thread.sleep(30000);*/
         return RepeatStatus.FINISHED;
     }
 
@@ -285,3 +351,7 @@ public class SimRevTasklet implements Tasklet {
 
 
 }
+
+
+
+

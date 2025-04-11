@@ -12,8 +12,8 @@ import java.util.List;
  * @project springBoot-simulator
  */
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class JobStatusDTO {
     private String jobName;
     private Long jobInstanceId;
@@ -23,4 +23,5 @@ public class JobStatusDTO {
     private String status;
     private String exitStatus;
     private List<StepStatusDTO> steps;
+    private double progress;
 }

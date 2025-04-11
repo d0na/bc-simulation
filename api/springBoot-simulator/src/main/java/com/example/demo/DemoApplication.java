@@ -9,23 +9,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class DemoApplication implements CommandLineRunner {
-
-    @Autowired
-    private JobLauncher jobLauncher;
-
-    @Autowired
-    private Job importUserJob;
-
+public class DemoApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(DemoApplication.class, args);
-    }
-
-    @Override
-    public void run(String... args) throws Exception {
-        jobLauncher.run(importUserJob, new JobParametersBuilder()
-                .addLong("time", System.currentTimeMillis())
-                .toJobParameters());
     }
 }
