@@ -1,7 +1,20 @@
-import  { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
-import {useNavigate} from "react-router-dom";
-import {Button, CircularProgress, Stack, Typography} from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import {
+    Button,
+    CircularProgress,
+    Stack,
+    Typography,
+    LinearProgress,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Paper
+} from "@mui/material";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import bcLogo from "../assets/blockchain-10000.svg";
@@ -20,6 +33,7 @@ interface Job {
     status: string;
     exitStatus: string;
     steps: JobStep[];
+    progress: number;
 }
 
 function JobsPage() {
@@ -41,26 +55,21 @@ function JobsPage() {
         }
     };
 
-    // Effetto per caricare i jobs ogni 15 secondi
     useEffect(() => {
-        fetchJobs();  // Carica i jobs al primo caricamento
-        const interval = setInterval(fetchJobs, 5000);  // Ricarica ogni 15 secondi
-
-        return () => clearInterval(interval);  // Pulisce l'intervallo al dismontaggio del componente
+        fetchJobs();
+        const interval = setInterval(fetchJobs, 5000);
+        return () => clearInterval(interval);
     }, []);
 
     return (
         <div>
             <div>
-            <div>
                 <a href="https://" target="_blank">
-                    <img src={bcLogo} className="logo" alt="Blockchain logo"/>
+                    <img src={bcLogo} className="logo" alt="Blockchain logo" />
                 </a>
             </div>
-            {/*<h1>Blockchain Simulation (BC Simulation)</h1>*/}
-            </div>
             <h1>Jobs Status</h1>
-            {/* Pulsanti */}
+
             <Stack direction="row" spacing={2} justifyContent="center" marginBottom={2}>
                 <Button
                     variant="contained"
@@ -82,63 +91,74 @@ function JobsPage() {
                 </Button>
             </Stack>
 
-            {/* Indicazione data refresh */}
             {lastUpdated && (
                 <Typography variant="body2" >
                     Ultimo aggiornamento: {lastUpdated}
                 </Typography>
             )}
 
-            {/* Loader */}
             {loading && (
                 <Stack alignItems="center" marginY={2}>
                     <CircularProgress size={32} />
                 </Stack>
             )}
 
-            <table>
-                <thead>
-                <tr>
-                    <th>Job Name</th>
-                    <th>Instance ID</th>
-                    <th>Execution ID</th>
-                    <th>Start Time</th>
-                    <th>End Time</th>
-                    <th>Status</th>
-                    <th>Exit Status</th>
-                    <th>Steps</th>
-                </tr>
-                </thead>
-                <tbody>
-                {jobs.map((job) => (
-                    <tr key={job.jobExecutionId}>
-                        <td>{job.jobName}</td>
-                        <td>{job.jobInstanceId}</td>
-                        <td>{job.jobExecutionId}</td>
-                        <td>{new Date(job.startTime).toLocaleString()}</td>
-                        <td>{new Date(job.endTime).toLocaleString()}</td>
-                        <td>{job.status}</td>
-                        <td>{job.exitStatus}</td>
-                        <td>
-                            <ul>
-                                {job.steps.map((step, index) => (
-                                    <li key={index}>
-                                        {step.stepName}: {step.stepStatus}
-                                    </li>
-                                ))}
-                            </ul>
-                        </td>
-                    </tr>
-                ))}
-                </tbody>
-            </table>
-            {/* Pulsante per tornare alla home */}
+            <TableContainer component={Paper} sx={{ marginTop: 2 }}>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>Job Name</TableCell>
+                            <TableCell>Instance ID</TableCell>
+                            <TableCell>Execution ID</TableCell>
+                            <TableCell>Start Time</TableCell>
+                            <TableCell>End Time</TableCell>
+                            <TableCell>Status</TableCell>
+                            <TableCell>Exit Status</TableCell>
+                            <TableCell>Steps</TableCell>
+                            <TableCell>Progress</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {jobs.map((job) => (
+                            <TableRow key={job.jobExecutionId}>
+                                <TableCell>{job.jobName}</TableCell>
+                                <TableCell>{job.jobInstanceId}</TableCell>
+                                <TableCell>{job.jobExecutionId}</TableCell>
+                                <TableCell>{new Date(job.startTime).toLocaleString()}</TableCell>
+                                <TableCell>{new Date(job.endTime).toLocaleString()}</TableCell>
+                                <TableCell>{job.status}</TableCell>
+                                <TableCell>{job.exitStatus}</TableCell>
+                                <TableCell>
+                                    <ul>
+                                        {job.steps.map((step, index) => (
+                                            <li key={index}>
+                                                {step.stepName}: {step.stepStatus}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </TableCell>
+                                <TableCell style={{ width: 200 }}>
+                                    <Typography variant="body2" color="textSecondary">
+                                        {job.progress.toFixed(2)}%
+                                    </Typography>
+                                    <LinearProgress
+                                        variant="determinate"
+                                        value={job.progress}
+                                        sx={{ height: 8, borderRadius: 4 }}
+                                    />
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+
             <Button
                 variant="contained"
                 color="primary"
                 startIcon={<ArrowBackIcon />}
                 onClick={() => navigate('/')}
-                style={{ marginBottom: '20px' }}
+                sx={{ marginTop: 3 }}
             >
                 Home
             </Button>
