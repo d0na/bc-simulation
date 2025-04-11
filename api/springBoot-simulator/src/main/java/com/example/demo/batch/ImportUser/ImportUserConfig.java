@@ -1,8 +1,9 @@
-package com.example.demo.batch.importUser;
+package com.example.demo.batch.ImportUser;
 
 import com.example.demo.listner.JobCompletionNotificationListener;
 import com.example.demo.model.User;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
@@ -17,7 +18,6 @@ import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.context.annotation.*;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.jdbc.support.JdbcTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.batch.core.Step;
 
@@ -25,6 +25,7 @@ import javax.sql.DataSource;
 
 @Configuration("importUserConfig")
 @RequiredArgsConstructor
+@Slf4j
 public class ImportUserConfig {
 
     private final DataSource dataSource;
@@ -81,6 +82,20 @@ public class ImportUserConfig {
     @Bean
     public Job jobHallo(JobRepository jobRepository, Step stepHallo) {
         return new JobBuilder("jobHallo", jobRepository).start(stepHallo).build();
+    }
+
+    @Bean
+    public Job jobSimulation(JobRepository jobRepository, Step stepSimulation) {
+        return new JobBuilder("jobSimulation", jobRepository).start(stepSimulation).build();
+    }
+
+    @Bean
+    public Step stepSimulation(JobRepository jobRepository, PlatformTransactionManager transactionManager, SimTasklet simTasklet) {
+        log.info("step simultaion call");
+        return new StepBuilder("stepSimulation", jobRepository)
+//                .<User, User>chunk(10, transactionManager)
+                .tasklet(simTasklet, transactionManager)
+                .build();
     }
 }
 

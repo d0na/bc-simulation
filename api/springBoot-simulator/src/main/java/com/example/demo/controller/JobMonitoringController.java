@@ -31,6 +31,10 @@ public class JobMonitoringController {
     @Qualifier("jobHallo")
     private Job jobHallo;
 
+    @Autowired
+    @Qualifier("jobSimulation")
+    private Job jobSimulation;
+
     @GetMapping("/jobs/status")
     public String getJobStatuses() {
         jobMonitoringService.printJobStatuses();
@@ -47,6 +51,13 @@ public class JobMonitoringController {
     @GetMapping("/jobs/import-user")
     public String getImportUser() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
         jobLauncher.run(importUserJob, new JobParametersBuilder()
+                .toJobParameters());
+        return "Lanciato il job Import User!";
+    }
+
+    @GetMapping("/jobs/simulation")
+    public String getSimulation() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
+        jobLauncher.run(jobSimulation, new JobParametersBuilder()
                 .toJobParameters());
         return "Lanciato il job Import User!";
     }
