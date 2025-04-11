@@ -1,11 +1,18 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.JobStatusDTO;
+import com.example.demo.dto.StepStatusDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.*;
 import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -37,4 +44,36 @@ public class JobMonitoringService {
             }
         }
     }
+
+    public List<JobStatusDTO> getJobStatuses() {
+        List<JobStatusDTO> jobStatusList = new ArrayList<>();
+
+        for (String jobName : jobExplorer.getJobNames()) {
+            List<JobInstance> instances = jobExplorer.getJobInstances(jobName, 0, 10);
+            for (JobInstance instance : instances) {
+                List<JobExecution> executions = jobExplorer.getJobExecutions(instance);
+                for (JobExecution execution : executions) {
+                    List<StepStatusDTO> stepStatuses = execution.getStepExecutions().stream()
+                            .map(step -> new StepStatusDTO(step.getStepName(), step.getStatus().toString()))
+                            .collect(Collectors.toList());
+
+                    JobStatusDTO dto = new JobStatusDTO(
+                            jobName,
+                            instance.getInstanceId(),
+                            execution.getId(),
+                            execution.getStartTime(),
+                            execution.getEndTime(),
+                            execution.getStatus().toString(),
+                            execution.getExitStatus().getExitCode(),
+                            stepStatuses
+                    );
+
+                    jobStatusList.add(dto);
+                }
+            }
+        }
+
+        return jobStatusList;
+    }
+
 }
