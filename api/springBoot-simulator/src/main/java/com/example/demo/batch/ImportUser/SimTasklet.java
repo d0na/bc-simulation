@@ -27,7 +27,7 @@ public class SimTasklet implements Tasklet {
     public static final int POLYGONPOSCHAINMAXGASPERSEC = 30000000/2;//=15000000
 
 
-    int NUMRUNS = 1;//100;
+    int NUMRUNS = 10;//100;
     int MAXTIME = 1209600;//86400; one day//2592000; one month//864000; ten days//604800 seven days  //  1209600 two weeks
     //int AGGR = 60;
     int NUMAGGR = 60;//1 seconds granularity / 60 minutes granularity / 3600 hours granularity
@@ -39,7 +39,6 @@ public class SimTasklet implements Tasklet {
     SimParams simToRun = new SimParams5Scaled();
 
 
-
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
         log.info("Processing Simulation batch ");
@@ -49,7 +48,7 @@ public class SimTasklet implements Tasklet {
 
         outFile = dir+"simResultsTest6Scaledt"+MAXTIME+"a"+NUMAGGR+".tsv";
         simToRun = new SimParams6Scaled();
-        //runSimSpaceOptimisedAggregated(simToRun, NUMRUNS, MAXTIME, outFile, NUMAGGR);
+        runSimSpaceOptimisedAggregated(simToRun, NUMRUNS, MAXTIME, outFile, NUMAGGR);
         System.out.println("*** DONE SIM6Scaled AGGR ("+NUMAGGR+" seconds) "+(MAXTIME/86400)+" days ***");
         Thread.sleep(30000);
         return RepeatStatus.FINISHED;
