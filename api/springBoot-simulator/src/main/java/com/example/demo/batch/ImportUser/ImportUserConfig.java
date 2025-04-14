@@ -26,11 +26,13 @@ import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.context.annotation.*;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.batch.core.Step;
 
 import javax.sql.DataSource;
 
+@EnableAsync
 @Configuration("importUserConfig")
 @RequiredArgsConstructor
 @Slf4j

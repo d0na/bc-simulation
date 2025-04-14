@@ -1,23 +1,23 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.JobStatusDTO;
+import com.example.demo.dto.SimTaskletJobRequestDTO;
 import com.example.demo.service.JobMonitoringService;
+import com.example.demo.service.SimulationJobService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobParametersBuilder;
-import org.springframework.batch.core.JobParametersInvalidException;
+import org.springframework.batch.core.*;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -39,6 +39,9 @@ public class JobMonitoringController {
     @Autowired
     @Qualifier("jobSimulation")
     private Job jobSimulation;
+
+    @Autowired
+    private SimulationJobService simulationJobService;
 
     @GetMapping("/jobs/status")
     public ResponseEntity<List<JobStatusDTO>> getJobStatuses() {
@@ -65,5 +68,43 @@ public class JobMonitoringController {
         jobLauncher.run(jobSimulation, new JobParametersBuilder()
                 .toJobParameters());
         return "Lanciato il job Import User!";
+    }
+
+    @PostMapping("/simulate-rev")
+    public ResponseEntity<?> runSimulation(@RequestBody SimTaskletJobRequestDTO request)
+            throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException,
+            JobParametersInvalidException, JobRestartException {
+
+        try {
+            Map<String, Object> response = simulationJobService.runSimulation(request);
+            return ResponseEntity.accepted().body(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred during simulation");
+        }
+    }
+
+
+
+    @PostMapping("jobs/stop/{executionId}")
+    public ResponseEntity<String> stopJob(@PathVariable Long executionId) {
+        try {
+            boolean stopResult = simulationJobService.stopJob(executionId); // Metodo built-in
+            if( stopResult) {
+                return ResponseEntity.ok("Job STOP richiesto per executionId: " + executionId);
+            }else {
+                return ResponseEntity.badRequest().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Errore durante lo stop del job: " + e.getMessage());
+        }
+    }
+
+
+    @GetMapping("jobs/completed")
+    public ResponseEntity<List<JobExecution>> getCompletedJobs() {
+        List<JobExecution> completedJobs = simulationJobService.getAllJobExecutions();
+        return ResponseEntity.ok(completedJobs);
     }
 }

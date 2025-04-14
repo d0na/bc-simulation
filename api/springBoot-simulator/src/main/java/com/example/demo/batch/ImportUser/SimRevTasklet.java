@@ -4,6 +4,7 @@ import com.example.demo.nmtsimulation.*;
 import com.example.demo.service.ProgressTracker;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
@@ -40,20 +41,51 @@ public class SimRevTasklet implements Tasklet {
     String outFile = dir+"simResultsTest5Scaledt"+MAXTIME+"a"+NUMAGGR+".tsv";
     SimParams simToRun = new SimParams5Scaled();
 
+    private SimParams getSimParams(String simType) {
+        return switch (simType) {
+            case "SimParams5Scaled" -> new SimParams5Scaled();
+            case "SimParams6Scaled" -> new SimParams6Scaled();
+            // Aggiungi altri tipi qui se necessario
+            default -> throw new IllegalArgumentException("Tipo di simulazione non valido: " + simType);
+        };
+    }
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 
         JobExecution jobExecution = chunkContext.getStepContext().getStepExecution().getJobExecution();
         Long jobExecutionId = jobExecution.getId(); // è sempre presente
+        JobParameters params = chunkContext.getStepContext().getStepExecution().getJobParameters();
+
+        int _numAggr = params.getLong("numAggr").intValue();
+        int _maxTime = params.getLong("maxTime").intValue();
+        int _numRuns = params.getLong("numRuns").intValue();
+        String _dir = params.getString("dir");
+        String _simType = params.getString("simType");
+        String _outFile = _dir + _simType + _maxTime + "a" + _numAggr + ".tsv";
+        // Tipo di simulazione dinamico
+        SimParams _simToRun = switch (_simType) {
+            case "SimParams5Scaled" -> new SimParams5Scaled();
+            case "SimParams6Scaled" -> new SimParams6Scaled();
+            // aggiungi altro tipo se necessario
+            default -> new SimParams5Scaled(); // fallback
+        };
+
+        log.info("Launching simulation:");
+        log.info("numAggr: {}", _numAggr);
+        log.info("maxTime: {}", _maxTime);
+        log.info("numRuns: {}", _numRuns);
+        log.info("outFile: {}", _outFile);
+        log.info("simParams: {}", _simToRun.getClass().getSimpleName());
 
         log.info("Processing Simulation batch ");
 //        runSimSpaceOptimisedAggregated(simToRun, NUMRUNS, MAXTIME, outFile, NUMAGGR);
         //Master is implicit at time 0
-        SimRoundResultsAggregated sRounds = new SimRoundResultsAggregated(NUMRUNS, simToRun, NUMAGGR);
+//        SimRoundResultsAggregated sRounds = new SimRoundResultsAggregated(NUMRUNS, simToRun, NUMAGGR);
+        SimRoundResultsAggregated sRounds = new SimRoundResultsAggregated(_numRuns, _simToRun, _numAggr);
         double resultMean, resultStd;
 
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(outFile))) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(_outFile))) {
 
             bw.write("time\tgasTotalMean\tgasTotalStd");
             bw.write("\tgasNewCreatorMean\tgasNewCreatorStd");
@@ -66,9 +98,9 @@ public class SimRevTasklet implements Tasklet {
 
             long time = System.currentTimeMillis();
 
-            for(int i=0;i<MAXTIME;i = i+NUMAGGR){
-                if(i%(NUMAGGR*2000)==0){
-                    System.out.println("Sim run at time "+i+"/"+MAXTIME+" in time "+ (System.currentTimeMillis()-time)+" ms.");
+            for(int i=0;i<_maxTime;i = i+_numAggr){
+                if(i%(_numAggr*2000)==0){
+                    System.out.println("Sim run at time "+i+"/"+_maxTime+" in time "+ (System.currentTimeMillis()-time)+" ms.");
                     time = System.currentTimeMillis();
                 }
                 sRounds.computeSimStepNoMasterFixedRandomAggregated(i);
@@ -102,8 +134,8 @@ public class SimRevTasklet implements Tasklet {
                 bw.newLine();
 
                 // Calcola il progresso basato sull'indice di step corrente
-                double progress = ((i / (double) MAXTIME) * 100);
-                System.out.printf("Avanzamento: %.2f%% (%d/%d)%n %d%n", progress, i, MAXTIME, jobExecutionId);
+                double progress = ((i / (double) _maxTime) * 100);
+//                System.out.printf("Avanzamento: %.2f%% (%d/%d)%n Job id:%n", progress, i, _maxTime, jobExecutionId);
                 // Salva nel contesto per un listener o log
                 chunkContext.getStepContext().getStepExecution()
                         .getExecutionContext()
@@ -118,13 +150,13 @@ public class SimRevTasklet implements Tasklet {
             System.err.println("ERROR WHILE WRITING TO FILE.");
             ex.printStackTrace();
         }
-        System.out.println("Ending sim of "+NUMRUNS+" runs.");
-        System.out.println("*** DONE SIM5Scaled AGGR ("+NUMAGGR+" seconds) "+(MAXTIME/86400)+" days ***");
+        System.out.println("Ending sim of "+_numRuns+" runs.");
+        System.out.println("*** DONE SIM5Scaled AGGR ("+_numAggr+" seconds) "+(_maxTime/86400)+" days ***");
 
-        outFile = dir+"simResultsTest6Scaledt"+MAXTIME+"a"+NUMAGGR+".tsv";
+        _outFile = dir+"simResultsTest6Scaledt"+_maxTime+"a"+_numAggr+".tsv";
         /*simToRun = new SimParams6Scaled();
-        runSimSpaceOptimisedAggregated(simToRun, NUMRUNS, MAXTIME, outFile, NUMAGGR);
-        System.out.println("*** DONE SIM6Scaled AGGR ("+NUMAGGR+" seconds) "+(MAXTIME/86400)+" days ***");
+        runSimSpaceOptimisedAggregated(simToRun, _numRuns, _maxTime, outFile, NUMAGGR);
+        System.out.println("*** DONE SIM6Scaled AGGR ("+NUMAGGR+" seconds) "+(_maxTime/86400)+" days ***");
         Thread.sleep(30000);*/
         return RepeatStatus.FINISHED;
     }
