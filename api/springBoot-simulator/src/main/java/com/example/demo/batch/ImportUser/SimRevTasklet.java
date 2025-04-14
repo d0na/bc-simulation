@@ -1,12 +1,15 @@
 package com.example.demo.batch.ImportUser;
 
 import com.example.demo.nmtsimulation.*;
+import com.example.demo.service.ProgressTracker;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.repeat.RepeatStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedWriter;
@@ -19,6 +22,9 @@ import java.util.concurrent.ThreadLocalRandom;
 @Component
 @Slf4j
 public class SimRevTasklet implements Tasklet {
+
+    @Autowired
+    private ProgressTracker tracker;
 
     public static final int ETHMAXGASPERSEC = 2500000;//blockGasLimit/avgBlockGnerationTime
     public static final int BINANCESMARTCHAINMAXGASPERSEC = 140000000/3;//=46666667
@@ -37,6 +43,10 @@ public class SimRevTasklet implements Tasklet {
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
+
+        JobExecution jobExecution = chunkContext.getStepContext().getStepExecution().getJobExecution();
+        Long jobExecutionId = jobExecution.getId(); // è sempre presente
+
         log.info("Processing Simulation batch ");
 //        runSimSpaceOptimisedAggregated(simToRun, NUMRUNS, MAXTIME, outFile, NUMAGGR);
         //Master is implicit at time 0
@@ -93,11 +103,12 @@ public class SimRevTasklet implements Tasklet {
 
                 // Calcola il progresso basato sull'indice di step corrente
                 double progress = ((i / (double) MAXTIME) * 100);
-                System.out.printf("Avanzamento: %.2f%% (%d/%d)%n", progress, i, MAXTIME);
+                System.out.printf("Avanzamento: %.2f%% (%d/%d)%n %d%n", progress, i, MAXTIME, jobExecutionId);
                 // Salva nel contesto per un listener o log
                 chunkContext.getStepContext().getStepExecution()
                         .getExecutionContext()
                         .put("progress",progress);
+                tracker.update(jobExecutionId, progress);
 
                 ExecutionContext context = chunkContext.getStepContext().getStepExecution().getExecutionContext();
                 context.put("progress", progress);

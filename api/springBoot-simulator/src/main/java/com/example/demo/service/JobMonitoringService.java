@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.*;
 import org.springframework.batch.core.explore.JobExplorer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -21,7 +22,8 @@ import java.util.stream.Collectors;
 public class JobMonitoringService {
 
     private final JobExplorer jobExplorer;
-
+    @Autowired
+    private ProgressTracker tracker;
     public void printJobStatuses() {
         List<String> jobNames = jobExplorer.getJobNames();
 
@@ -55,9 +57,11 @@ public class JobMonitoringService {
             for (JobInstance instance : instances) {
                 List<JobExecution> executions = jobExplorer.getJobExecutions(instance);
                 for (JobExecution execution : executions) {
-
+                    String jobIdParam = execution.getJobParameters().getString("jobId");
+                    log.info("getJobId " + tracker.getProgress(execution.getJobId()));
+                    log.info("getId" + tracker.getProgress(execution.getId()));
                     List<StepStatusDTO> stepStatuses = new ArrayList<>();
-                    double jobProgress = 0;
+                    double jobProgress = tracker.getProgress(execution.getJobId());
 
                     for (StepExecution step : execution.getStepExecutions()) {
                         // Prova a leggere il progress dal contesto di esecuzione dello step

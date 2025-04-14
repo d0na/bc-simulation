@@ -38,6 +38,8 @@ public class ImportUserConfig {
 
     private final DataSource dataSource;
 
+    //*** Import USER **/
+
     @Bean
     public FlatFileItemReader<User> reader() {
         return new FlatFileItemReaderBuilder<User>()
@@ -79,6 +81,10 @@ public class ImportUserConfig {
                 .build();
     }
 
+
+    //*** Batch for HALLO **/
+
+
     @Bean
     public Step stepHallo(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
         return new StepBuilder("stepHallo", jobRepository).tasklet((contribution, chunkContext) -> {
@@ -91,6 +97,8 @@ public class ImportUserConfig {
     public Job jobHallo(JobRepository jobRepository, Step stepHallo) {
         return new JobBuilder("jobHallo", jobRepository).start(stepHallo).build();
     }
+
+    //*** Batch for SImulation with Tasklet **/
 
     @Bean
     public Job jobSimulation(JobRepository jobRepository, Step stepSimulation) {
@@ -106,53 +114,55 @@ public class ImportUserConfig {
                 .build();
     }
 
+    //*** Batch for SImulation with Proccesor **/
 
-    @Bean
-    public FlatFileItemReader<User> simReader() {
-        return new FlatFileItemReaderBuilder<User>()
-                .name("simReader")
-                .resource(new ClassPathResource("users.csv"))
-                .delimited()
-                .names("name", "email")
-                .fieldSetMapper(new BeanWrapperFieldSetMapper<>() {{
-                    setTargetType(User.class);
-                }})
-                .build();
-    }
 
-    @Bean
-    public Step writeStep(StepBuilderFactory stepBuilderFactory, ItemReader<SimRoundResults> reader, ItemWriter<SimRoundResults> writer) {
-        return stepBuilderFactory.get("writeStep")
-                .<SimRoundResults, SimRoundResults>chunk(1) // Elaboriamo un record alla volta
-                .reader(reader)  // Usa un reader che fornisce SimRoundResults
-                .writer(writer)  // Usa il writer per scrivere SimRoundResults in CSV
-                .build();
-    }
-
-    @Bean
-    public ItemWriter<SimRoundResults> csvFileWriter() {
-        FlatFileItemWriter<SimRoundResults> writer = new FlatFileItemWriter<>();
-
-        // Definisce il percorso del file di output CSV
-        writer.setResource(new FileSystemResource("output_simulation_results.csv"));
-
-        // Definisce l'aggregatore per il formato CSV
-        DelimitedLineAggregator<SimRoundResults> aggregator = new DelimitedLineAggregator<>();
-        aggregator.setDelimiter(","); // Usa la virgola come delimitatore
-
-        // Estrae i dati necessari dal SimRoundResults
-        BeanWrapperFieldExtractor<SimRoundResults> fieldExtractor = new BeanWrapperFieldExtractor<>();
-
-        // Aggiungiamo i metodi della classe SimRoundResults che vogliamo scrivere nel CSV
-        fieldExtractor.setNames(new String[] {
-                "numCreators", "maxCreators", "minCreators", "avgCreators", "stdCreators",
-                "numAssets", "maxAssets", "minAssets", "avgAssets", "stdAssets"
-        });
-
-        aggregator.setFieldExtractor(fieldExtractor);
-        writer.setLineAggregator(aggregator);
-
-        return writer;
-    }
+//    @Bean
+//    public FlatFileItemReader<User> simReader() {
+//        return new FlatFileItemReaderBuilder<User>()
+//                .name("simReader")
+//                .resource(new ClassPathResource("users.csv"))
+//                .delimited()
+//                .names("name", "email")
+//                .fieldSetMapper(new BeanWrapperFieldSetMapper<>() {{
+//                    setTargetType(User.class);
+//                }})
+//                .build();
+//    }
+//
+//    @Bean
+//    public Step writeStep(StepBuilderFactory stepBuilderFactory, ItemReader<SimRoundResults> reader, ItemWriter<SimRoundResults> writer) {
+//        return stepBuilderFactory.get("writeStep")
+//                .<SimRoundResults, SimRoundResults>chunk(1) // Elaboriamo un record alla volta
+//                .reader(reader)  // Usa un reader che fornisce SimRoundResults
+//                .writer(writer)  // Usa il writer per scrivere SimRoundResults in CSV
+//                .build();
+//    }
+//
+//    @Bean
+//    public ItemWriter<SimRoundResults> csvFileWriter() {
+//        FlatFileItemWriter<SimRoundResults> writer = new FlatFileItemWriter<>();
+//
+//        // Definisce il percorso del file di output CSV
+//        writer.setResource(new FileSystemResource("output_simulation_results.csv"));
+//
+//        // Definisce l'aggregatore per il formato CSV
+//        DelimitedLineAggregator<SimRoundResults> aggregator = new DelimitedLineAggregator<>();
+//        aggregator.setDelimiter(","); // Usa la virgola come delimitatore
+//
+//        // Estrae i dati necessari dal SimRoundResults
+//        BeanWrapperFieldExtractor<SimRoundResults> fieldExtractor = new BeanWrapperFieldExtractor<>();
+//
+//        // Aggiungiamo i metodi della classe SimRoundResults che vogliamo scrivere nel CSV
+//        fieldExtractor.setNames(new String[] {
+//                "numCreators", "maxCreators", "minCreators", "avgCreators", "stdCreators",
+//                "numAssets", "maxAssets", "minAssets", "avgAssets", "stdAssets"
+//        });
+//
+//        aggregator.setFieldExtractor(fieldExtractor);
+//        writer.setLineAggregator(aggregator);
+//
+//        return writer;
+//    }
 }
 
