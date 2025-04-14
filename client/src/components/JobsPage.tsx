@@ -6,7 +6,6 @@ import {
     CircularProgress,
     Stack,
     Typography,
-    LinearProgress,
     Table,
     TableBody,
     TableCell,
@@ -18,6 +17,9 @@ import {
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import bcLogo from "../assets/blockchain-10000.svg";
+import StopCircleIcon from '@mui/icons-material/StopCircle';
+import IconButton from '@mui/material/IconButton';
+import JobProgress from "./JobProgress.tsx";
 
 interface JobStep {
     stepName: string;
@@ -61,6 +63,17 @@ function JobsPage() {
         return () => clearInterval(interval);
     }, []);
 
+    const handleStopJob = async (executionId: number) => {
+        try {
+            await axios.post(`http://localhost:8099/jobs/stop/${executionId}`);
+            alert(`Richiesta di STOP inviata per jobExecutionId: ${executionId}`);
+            fetchJobs(); // aggiorna la lista
+        } catch (err) {
+            console.error("Errore nello stop del job:", err);
+            alert("Errore nello stop del job");
+        }
+    };
+
     return (
         <div>
             <div>
@@ -93,7 +106,7 @@ function JobsPage() {
 
             {lastUpdated && (
                 <Typography variant="body2" >
-                    Ultimo aggiornamento: {lastUpdated}
+                   Last update: {lastUpdated}
                 </Typography>
             )}
 
@@ -116,6 +129,8 @@ function JobsPage() {
                             <TableCell>Exit Status</TableCell>
                             <TableCell>Steps</TableCell>
                             <TableCell>Progress</TableCell>
+                            <TableCell>Actions</TableCell>
+
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -137,15 +152,22 @@ function JobsPage() {
                                         ))}
                                     </ul>
                                 </TableCell>
-                                <TableCell style={{ width: 200 }}>
-                                    <Typography variant="body2" color="textSecondary">
-                                        {job.progress.toFixed(2)}%
-                                    </Typography>
-                                    <LinearProgress
-                                        variant="determinate"
-                                        value={job.progress}
-                                        sx={{ height: 8, borderRadius: 4 }}
-                                    />
+                                <TableCell style={{ width: 250 }}>
+                                    {/*<LinearProgress*/}
+                                    {/*    variant="determinate"*/}
+                                    {/*    value={job.progress}*/}
+                                    {/*    sx={{ height: 8, borderRadius: 4 }}*/}
+                                    {/*/>*/}
+                                    <JobProgress progress={job.progress} startTime={job.startTime} />
+                                </TableCell>
+                                <TableCell>
+                                    <IconButton
+                                        color="error"
+                                        onClick={() => handleStopJob(job.jobExecutionId)}
+                                        title="Stop Job"
+                                    >
+                                        <StopCircleIcon />
+                                    </IconButton>
                                 </TableCell>
                             </TableRow>
                         ))}

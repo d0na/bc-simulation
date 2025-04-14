@@ -5,6 +5,7 @@ import {Container, Button, Stack} from '@mui/material';
 import bcLogo from '../assets/blockchain-10000.svg';
 import '../App.css';
 import axios from 'axios';
+import SimulationFormModal from "./SimulationFormModal.tsx";
 
 function HomePage() {
     const [simulationStatus, setSimulationStatus] = useState<string | null>(null);
@@ -69,14 +70,15 @@ function HomePage() {
 
                     <div className="card">
                         <p>Launch your </p>
-                        <Button variant="contained" color="primary" onClick={handleSimulationClick}>
-                            Simulation
-                        </Button>
-                        {simulationStatus && (
-                            <div>
-                                <p>Status: {simulationStatus}</p>
-                            </div>
-                        )}
+                        {/*<Button variant="contained" color="primary" onClick={handleSimulationClick}>*/}
+                        {/*    Simulation*/}
+                        {/*</Button>*/}
+                        <SimulationFormModal/>
+                        {/*{simulationStatus && (*/}
+                        {/*    <div>*/}
+                        {/*        <p>Status: {simulationStatus}</p>*/}
+                        {/*    </div>*/}
+                        {/*)}*/}
                     </div>
 
                     <div className="card">
@@ -90,6 +92,7 @@ function HomePage() {
                             </div>
                         )}
                     </div>
+
                 </Stack>
 
 
