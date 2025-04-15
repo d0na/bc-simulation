@@ -54,7 +54,7 @@ function HomePage() {
                         <img src={bcLogo} className="logo" alt="Blockchain logo"/>
                     </a>
                 </div>
-                <h1>Blockchain Simulation (BC Simulation)</h1>
+                <h1>Blockchain Simulation Engine</h1>
                 <Stack direction="row" spacing={3} justifyContent="center" alignItems="flex-start" sx={{ marginTop: 2 }}>
                     <div className="card">
                         <p>Launch your </p>
