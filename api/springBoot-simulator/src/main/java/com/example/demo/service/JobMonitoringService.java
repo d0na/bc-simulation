@@ -57,9 +57,6 @@ public class JobMonitoringService {
             for (JobInstance instance : instances) {
                 List<JobExecution> executions = jobExplorer.getJobExecutions(instance);
                 for (JobExecution execution : executions) {
-                    String jobIdParam = execution.getJobParameters().getString("jobId");
-                    log.info("getJobId " + tracker.getProgress(execution.getJobId()));
-                    log.info("getId" + tracker.getProgress(execution.getId()));
                     List<StepStatusDTO> stepStatuses = new ArrayList<>();
                     double jobProgress = tracker.getProgress(execution.getJobId());
 
