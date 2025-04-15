@@ -16,6 +16,8 @@ import org.springframework.stereotype.Component;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Random;
 import java.util.SplittableRandom;
 import java.util.concurrent.ThreadLocalRandom;
@@ -62,7 +64,9 @@ public class SimRevTasklet implements Tasklet {
         int _numRuns = params.getLong("numRuns").intValue();
         String _dir = params.getString("dir");
         String _simType = params.getString("simType");
-        String _outFile = _dir + _simType + _maxTime + "a" + _numAggr + ".tsv";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+        String timestamp = LocalDateTime.now().format(formatter);
+        String _outFile = _dir + _simType + _maxTime + "a" + _numAggr + "_" + timestamp + ".tsv";
         // Tipo di simulazione dinamico
         SimParams _simToRun = switch (_simType) {
             case "SimParams5Scaled" -> new SimParams5Scaled();
