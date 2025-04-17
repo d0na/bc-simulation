@@ -31,7 +31,8 @@ public class SimRevTasklet implements Tasklet {
     @Autowired
     private ProgressTracker tracker;
 
-    String dir  = "./";
+    String dir = "./";
+
     private SimParams getSimParams(String simType) {
         return switch (simType) {
             case "SimParams5Scaled" -> new SimParams5Scaled();
@@ -41,6 +42,27 @@ public class SimRevTasklet implements Tasklet {
         };
     }
 
+    /**
+     * Executes a simulation batch step as part of a Spring Batch job.
+     *
+     * This method initializes simulation parameters from job parameters,
+     * prepares the output file, and iteratively performs simulation steps
+     * in fixed aggregation intervals. At each step, gas and entity statistics
+     * are computed and written to a TSV file. The progress is updated
+     * and stored in the execution context for tracking.
+     *
+     * The logic is divided into helper methods to enhance readability
+     * and maintainability:
+     * - buildOutFileName: generates the simulation result filename
+     * - logSimConfiguration: logs simulation setup details
+     * - runSimulationSteps: performs the simulation loop and data writing
+     * - logSimulationEnd: logs completion information
+     *
+     * @param contribution the contribution to a step's execution
+     * @param chunkContext the context of the chunk being processed
+     * @return RepeatStatus.FINISHED when the step is complete
+     * @throws Exception if any error occurs during execution
+     */
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
         JobExecution jobExecution = chunkContext.getStepContext().getStepExecution().getJobExecution();
@@ -70,6 +92,7 @@ public class SimRevTasklet implements Tasklet {
     /**
      * Generates the output file name based on the directory, simulation type, max simulation time, aggregation interval,
      * and a current timestamp. This helps uniquely identify each simulation result file.
+     *
      * @param dir
      * @param simType
      * @param maxTime
@@ -85,6 +108,7 @@ public class SimRevTasklet implements Tasklet {
     /**
      * Logs the simulation configuration parameters, including the number of runs, max simulation time, aggregation interval,
      * output file path, and simulation class name. Useful for debugging and audit purposes.
+     *
      * @param numAggr
      * @param maxTime
      * @param numRuns
@@ -104,6 +128,7 @@ public class SimRevTasklet implements Tasklet {
     /**
      * Runs the main simulation loop by performing steps at each aggregated time interval. It writes the results to the
      * output file and tracks progress, updating the execution context and an external tracker (if any).
+     *
      * @param sRounds
      * @param numAggr
      * @param maxTime
@@ -144,6 +169,7 @@ public class SimRevTasklet implements Tasklet {
     /**
      * Writes the header row of the TSV output file, describing each column (e.g., gas statistics and asset/creator
      * statistics). This ensures that the data file is structured and readable.
+     *
      * @param bw
      * @throws IOException
      */
@@ -162,6 +188,7 @@ public class SimRevTasklet implements Tasklet {
     /**
      * Writes a single line of simulation output for the current time step. It computes averages and standard deviations
      * for each gas metric and appends creator and asset statistics.
+     *
      * @param bw
      * @param sRounds
      * @param timeStep
@@ -202,6 +229,7 @@ public class SimRevTasklet implements Tasklet {
     /**
      * Updates the job execution context with the current progress percentage. This enables external components
      * (like listeners or a frontend) to track simulation progress in real time.
+     *
      * @param chunkContext
      * @param progress
      * @param jobExecutionId
@@ -215,6 +243,7 @@ public class SimRevTasklet implements Tasklet {
     /**
      * Logs the end of the simulation, including the number of runs and the total simulated days. This provides a clear
      * marker in logs to indicate completion.
+     *
      * @param numRuns
      * @param numAggr
      * @param maxTime
