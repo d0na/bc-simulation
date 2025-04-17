@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.example.demo.nmtsimulation;
+package com.example.demo.nmtsimulation.helper;
 
 /**
  *Returns the probability of an event happening given teh time

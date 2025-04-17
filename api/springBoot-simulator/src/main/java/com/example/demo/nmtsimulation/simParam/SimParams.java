@@ -1,7 +1,10 @@
-package com.example.demo.nmtsimulation;/*
+package com.example.demo.nmtsimulation.simParam;/*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
+
+import com.example.demo.nmtsimulation.helper.ProbabilityFunction;
+import com.example.demo.nmtsimulation.probDistribution.UniformProbDistr;
 
 /**
  *

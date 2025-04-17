@@ -2,7 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.example.demo.nmtsimulation;
+package com.example.demo.nmtsimulation.probDistribution;
+
+import com.example.demo.nmtsimulation.helper.ProbabilityFunction;
 
 /**
  *The higher std the more it flattens the bell curve
@@ -24,21 +26,20 @@ package com.example.demo.nmtsimulation;
  * 
  * @author brodo
  */
-public class NormalProbDistrScaled extends ProbabilityFunction{
+public class NormalProbDistr extends ProbabilityFunction {
     double mean;
     double std;
-    double scalingFactorX;
-    double scalingFactorY;
+    double scalingFactor;
     
-    public NormalProbDistrScaled(double _mean, double _std, double _scalingX, double _scalingY){
-        mean = _mean; std = _std; scalingFactorX = _scalingX; scalingFactorY = _scalingY;
+    public NormalProbDistr(double _mean, double _std, double _scaling){
+        mean = _mean; std = _std; scalingFactor = _scaling;
     }
     
     @Override
     public double getProb(int time){        
-        double realTime = time*scalingFactorX;
+        double realTime = time*scalingFactor;
         double exp = -1 * (((realTime - mean)*(realTime - mean))/(2*std*std));
         double ratio = Math.sqrt(2*std*std*Math.PI);
-        return (scalingFactorY/ratio) * Math.exp(exp); 
+        return (1/ratio) * Math.exp(exp); 
     }
 }

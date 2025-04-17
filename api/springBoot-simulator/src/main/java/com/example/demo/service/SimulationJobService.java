@@ -1,7 +1,11 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.SimTaskletJobRequestDTO;
-import com.example.demo.nmtsimulation.*;
+import com.example.demo.nmtsimulation.helper.AggregationGranularity;
+import com.example.demo.nmtsimulation.helper.SimulationDuration;
+import com.example.demo.nmtsimulation.simParam.SimParams;
+import com.example.demo.nmtsimulation.simParam.SimParams5Scaled;
+import com.example.demo.nmtsimulation.simParam.SimParams6Scaled;
 import org.springframework.batch.core.*;
 import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.launch.JobLauncher;
@@ -12,7 +16,6 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 /**
  * @author francesco

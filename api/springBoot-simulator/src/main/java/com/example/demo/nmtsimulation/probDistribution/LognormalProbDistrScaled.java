@@ -2,7 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.example.demo.nmtsimulation;
+package com.example.demo.nmtsimulation.probDistribution;
+
+import com.example.demo.nmtsimulation.helper.ProbabilityFunction;
 
 /**
  *1,1 falls fast after 30
@@ -17,22 +19,23 @@ package com.example.demo.nmtsimulation;
  * 
  * @author brodo
  */
-public class LognormalProbDistr extends ProbabilityFunction{
+public class LognormalProbDistrScaled extends ProbabilityFunction {
     double mean;
     double std;
-    double scalingFactor;
+    double scalingFactorX;
+    double scalingFactorY;
     
-    public LognormalProbDistr(double _mean, double _std, double _scaling){
-        mean = _mean; std = _std; scalingFactor = _scaling;
+    public LognormalProbDistrScaled(double _mean, double _std, double _scalingX, double _scalingY){
+        mean = _mean; std = _std; scalingFactorX = _scalingX; scalingFactorY = _scalingY;
     }
     
     @Override
     public double getProb(int time){
-        double realTime = time*scalingFactor;
+        double realTime = time*scalingFactorX;
         if(realTime == 0)
             return 0;
         double exp = -1 * (Math.log(realTime) - mean) * (Math.log(realTime) - mean) / (2*std*std);
         double ratio = realTime * std * Math.sqrt(2*Math.PI);
-        return 1/ratio * Math.exp(exp); 
+        return scalingFactorY*(1/ratio * Math.exp(exp)); 
     }
 }

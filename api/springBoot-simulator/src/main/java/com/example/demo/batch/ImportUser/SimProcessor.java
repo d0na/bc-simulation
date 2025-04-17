@@ -1,7 +1,13 @@
 package com.example.demo.batch.ImportUser;
 
 import com.example.demo.model.User;
-import com.example.demo.nmtsimulation.*;
+import com.example.demo.nmtsimulation.helper.ProbabilityFunction;
+import com.example.demo.nmtsimulation.probDistribution.*;
+import com.example.demo.nmtsimulation.roundResults.SimRoundResults;
+import com.example.demo.nmtsimulation.roundResults.SimRoundResultsAggregated;
+import com.example.demo.nmtsimulation.simParam.SimParams;
+import com.example.demo.nmtsimulation.simParam.SimParams5Scaled;
+import com.example.demo.nmtsimulation.simParam.SimParams6Scaled;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.stereotype.Component;

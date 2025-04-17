@@ -1,9 +1,5 @@
 package com.example.demo.dto;
 
-import com.example.demo.nmtsimulation.AggregationGranularity;
-import com.example.demo.nmtsimulation.SimParams;
-import com.example.demo.nmtsimulation.SimParams5Scaled;
-import com.example.demo.nmtsimulation.SimulationDuration;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

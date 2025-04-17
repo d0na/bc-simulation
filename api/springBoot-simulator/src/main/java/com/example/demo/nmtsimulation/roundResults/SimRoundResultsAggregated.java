@@ -1,4 +1,6 @@
-package com.example.demo.nmtsimulation;
+package com.example.demo.nmtsimulation.roundResults;
+
+import com.example.demo.nmtsimulation.simParam.SimParams;
 
 import java.util.LinkedList;
 import java.util.SplittableRandom;
@@ -7,11 +9,25 @@ import java.util.SplittableRandom;
  *
  * Is responsible for running multiple simulations (NUMRUNS) of a given model (SimParams) and aggregating the results
  * over time, based on an interval (NUMAGGR).
+ *
+ *
+ * simulazione aggregata su più intervalli di tempo, utile per analizzare il consumo
+ * di gas e la dinamica di creazione/aggiornamento di entità (creator, asset)
+ * in un sistema simile a un'infrastruttura blockchain (tipicamente Non-Fungible
+ * Token con politiche e attributi).
+ *
+ * Effettuare NUMRUNS simulazioni indipendenti, ciascuna delle quali simula il comportamento del sistema per un
+ * intervallo di tempo aggregato lungo NUMAGGR secondi, e raccoglie statistiche su:
+ * -Consumo di gas per vari tipi di operazioni
+ * -Numero di creator e asset creati
+ * -Statistiche derivate (max, min, media, deviazione standard)
  * @author brodo
  */
 public class SimRoundResultsAggregated {
 
     final int NUMRUNS;     // Number of simulations to run for each time interval
+
+    // Durata temporale dell’intervallo aggregato (in secondi)
     final int NUMAGGR;     // Number of time intervals to aggregate results (in seconds)
     SimParams sim;         // Parameters of the simulation (probabilities, gas costs, etc.)
 
@@ -48,6 +64,17 @@ public class SimRoundResultsAggregated {
     /**
      * Simulate NUMRUNS executions of the system in the period [time, time + NUMAGGR), and fills the gas* vectors with
      * the results.
+     *
+     * Simula il sistema in un intervallo [time, time + NUMAGGR) per ciascuna delle NUMRUNS esecuzioni indipendenti.
+     * 1. Per ogni esecuzione (i) e per ogni istante di tempo nel range:
+     * 2. Se timeInner == 0, si considera il deploy iniziale del contratto NMT (una tantum).
+     * 3. Se un numero casuale è sotto la soglia PROBnewCreatorCreation, si crea un nuovo creator.
+     * 4. Per ciascun creator esistente, si può creare un asset con probabilità PROBnewAssetsCreation.
+     *    - Per ciascun asset esistente, possono avvenire:
+     *    - aggiornamento della holder policy
+     *    - aggiornamento di caratteristiche
+     *    - trasferimento
+     * Tutti gli eventi sono condizionati da probabilità tempo-dipendenti e contribuiscono al conteggio del gas speso per ogni run.
      */
     public void computeSimStepNoMasterFixedRandomAggregated(int time) {
         gasTotal = new long[NUMRUNS];

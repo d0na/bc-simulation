@@ -2,26 +2,41 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.example.demo.nmtsimulation;
+package com.example.demo.nmtsimulation.roundResults;
 
-import java.util.HashSet;
+import com.example.demo.nmtsimulation.simParam.SimParams;
+
 import java.util.LinkedList;
 import java.util.SplittableRandom;
 
 /**
  *All public for testing, add proper setters and getters.
- * 
+ *
+ *
+ * Gestisce e registra i risultati di una simulazione in cui,
+ * ad ogni intervallo di tempo (time), vengono effettuate varie operazioni
+ * (creazione asset, aggiornamenti, trasferimenti) e ne vengono monitorati
+ * i costi in gas. L'obiettivo è simulare scenari realistici legati al
+ * comportamento degli NFT mutabili (o simili), valutando metriche aggregate
+ * sui costi e sulla dinamica dei partecipanti e degli asset creati.
+ *
+ * Quindi,
+ * - Simula la dinamica di creazione e aggiornamento di entità (creator e asset) su più run indipendenti.
+ * - Registra quanto gas viene speso per ciascuna operazione.
+ * - Fornisce statistiche sintetiche (come media, minimo, massimo, std) sul comportamento del sistema.
  * @author brodo
  */
 public class SimRoundResults {
     
-    int NUMRUNS;
+    int NUMRUNS; // numero di esecuzioni indipendenti della simulazione.
     SimParams sim;
-    
+
+    // tengono traccia dei tempi di creazione dei creator e degli asset.
     private LinkedList<Integer>[] creators;
     private LinkedList<Integer>[] assets;
     
     //gas expenditures for this round
+    // array che tiene conto dei costi in gas per ciascuna tipologia di operazione in ogni run.
     public long[] gasTotal;//currentResults;
     public long[] gasNewCreator;
     public long[] gasNewAsset;
@@ -45,8 +60,21 @@ public class SimRoundResults {
         for(int i = 0; i<vect.length; i++)
             vect[i] = 0;
     }
-    
-    
+
+
+    /**
+     * Questo metodo simula un singolo passo temporale (es. una unità di tempo) su NUMRUNS esecuzioni.
+     * Per ciascuna run:
+     * 1. Inizializza i contatori dei consumi di gas.
+     * 2. Genera un numero casuale per decidere se effettuare certe azioni basate sulle probabilità.
+     * 3. Se time == 0: registra il costo del deploy dell’NFT (sim.GASdeployNMT()).
+     * 4. Con probabilità definite da SimParams, decide:
+     *     - Se creare un nuovo creator (PROBnewCreatorCreation).
+     *     - Se aggiornare la policy del creator (PROBcreatorPolicyUpdate).
+     *     - Se creare un nuovo asset (PROBnewAssetsCreation).
+     *     - Se aggiornare la policy dell’holder, modificare caratteristiche, o trasferire asset (PROBholderPolicyUpdate, PROBcharacteristicUpdate, PROBtransfer).
+     * @param time
+     */
     public void computeSimStepNoMasterFixedRandom(int time){
         gasTotal = new long[NUMRUNS];
         initialise(gasTotal);
@@ -114,7 +142,12 @@ public class SimRoundResults {
         
         }
     }
-    
+
+    /**
+     *  calcola la media dei valori passati come parametro
+     * @param values
+     * @return
+     */
     public static double computeAvg(long[] values){
         long sumAvg = 0;
         for(int j=0;j<values.length;j++){
@@ -122,7 +155,14 @@ public class SimRoundResults {
         }
         return (1.0 * sumAvg) / values.length;        
     }
-    
+
+    /** calcola la deviazione standard.
+     *  la deviazione standard è la radice quadrata della somma delle deviazioni standard
+     *  per ogni valore passato come parametro.
+     * @param values
+     * @param mean
+     * @return
+     */
     public static double computeStd(long[] values, double mean){
         double sumStd = 0;
         for(int j=0;j<values.length;j++){
@@ -130,7 +170,16 @@ public class SimRoundResults {
         }
         return Math.sqrt(sumStd / values.length);  
     }
-    
+
+    /**
+     * Crea un stringa in formato TSV (tab-separated) con le statistiche sulle
+     * creazioni e sulle trasferimenti:
+     *     - numero totale
+     *     - max, min
+     *     - media
+     *     - eviazione standard dei creator e degli asset per run
+     * @return
+     */
     public String getTSVInfoCreatorsAssetsStats(){
         StringBuilder str = new StringBuilder();
             int numCreators = 0,numAssets = 0;

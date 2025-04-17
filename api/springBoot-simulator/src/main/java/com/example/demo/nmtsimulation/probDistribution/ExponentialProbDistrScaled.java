@@ -2,7 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.example.demo.nmtsimulation;
+package com.example.demo.nmtsimulation.probDistribution;
+
+import com.example.demo.nmtsimulation.helper.ProbabilityFunction;
 
 /**
  * Best fits are 0.1 and 0.01
@@ -19,7 +21,7 @@ package com.example.demo.nmtsimulation;
  * 
  * @author brodo
  */
-public class ExponentialProbDistrScaled extends ProbabilityFunction{
+public class ExponentialProbDistrScaled extends ProbabilityFunction {
     double rate;
     double scalingFactorX;
     double scalingFactorY;

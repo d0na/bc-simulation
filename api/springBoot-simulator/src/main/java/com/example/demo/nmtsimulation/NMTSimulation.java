@@ -1,15 +1,19 @@
 package com.example.demo.nmtsimulation;
 
+import com.example.demo.nmtsimulation.helper.ProbabilityFunction;
+import com.example.demo.nmtsimulation.probDistribution.*;
+import com.example.demo.nmtsimulation.roundResults.SimRoundResults;
+import com.example.demo.nmtsimulation.roundResults.SimRoundResultsAggregated;
+import com.example.demo.nmtsimulation.simParam.SimParams;
+import com.example.demo.nmtsimulation.simParam.SimParams5Scaled;
+import com.example.demo.nmtsimulation.simParam.SimParams6Scaled;
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Random;
 import java.util.SplittableRandom;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -27,7 +31,13 @@ public class NMTSimulation {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        
+
+        /** Parametri  simulazione,
+         - unità di tempo tempo considerato (NUMAGGR): 1 sec / 60 min / 3600 h
+         - durata della simulazione (maxtime):
+         - volte che viene ripetuta la simulazione (numruns):
+         */
+
         int NUMRUNS = 10;//100;
         int MAXTIME = 1209600;//86400; one day//2592000; one month//864000; ten days//604800 seven days  //  1209600 two weeks
         //int AGGR = 60;
@@ -36,14 +46,19 @@ public class NMTSimulation {
         //String dir = "/home/brodo/Universita/TrustSense2024/simResults/";
         String dir = "./";
         //String outFileAggr = "/home/brodo/Universita/TrustSense2024/simResults/simResultsTest1Aggr.tsv";
+        /** Definizione del file in cui vengono salvati i risultati di output **/
         String outFile = dir+"simResultsTest5Scaledt"+MAXTIME+"a"+NUMAGGR+".tsv";
-        SimParams simToRun = new SimParams5Scaled();        
+
+        /** Configuratore Parametri simuazione dipendenti dagli eventi*/
+        SimParams simToRun = new SimParams5Scaled();
+
+        /** parte che elabora le simulazione */
         runSimSpaceOptimisedAggregated(simToRun, NUMRUNS, MAXTIME, outFile, NUMAGGR);
         //runSimAggregated(simToRun, NUMRUNS, MAXTIME, outFileAggr, AGGR); 
         System.out.println("*** DONE SIM5Scaled AGGR ("+NUMAGGR+" seconds) "+(MAXTIME/86400)+" days ***");
         
         outFile = dir+"simResultsTest6Scaledt"+MAXTIME+"a"+NUMAGGR+".tsv";
-        simToRun = new SimParams6Scaled();       
+        simToRun = new SimParams6Scaled();
         runSimSpaceOptimisedAggregated(simToRun, NUMRUNS, MAXTIME, outFile, NUMAGGR);
         System.out.println("*** DONE SIM6Scaled AGGR ("+NUMAGGR+" seconds) "+(MAXTIME/86400)+" days ***"); 
         
@@ -198,7 +213,7 @@ public class NMTSimulation {
     //2) all we care about for creators and assets is the time they where created, so we model them as repeatable ints (as longs are not yet needed as of the time of writing and ints are twice as small than longs)
     public static void runSimSpaceOptimised(SimParams simToRun, int NUMRUNS, int MAXTIME, String outFile){
         //Master is implicit at time 0
-        SimRoundResults sRounds = new SimRoundResults(NUMRUNS, simToRun); 
+        SimRoundResults sRounds = new SimRoundResults(NUMRUNS, simToRun);
         double resultMean, resultStd;
         
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(outFile))) {
@@ -268,7 +283,7 @@ public class NMTSimulation {
     //2) all we care about for creators and assets is the time they where created, so we model them as repeatable ints (as longs are not yet needed as of the time of writing and ints are twice as small than longs)
     public static void runSimSpaceOptimisedAggregated(SimParams simToRun, int NUMRUNS, int MAXTIME, String outFile, int NUMAGGR){
         //Master is implicit at time 0
-        SimRoundResultsAggregated sRounds = new SimRoundResultsAggregated(NUMRUNS, simToRun, NUMAGGR); 
+        SimRoundResultsAggregated sRounds = new SimRoundResultsAggregated(NUMRUNS, simToRun, NUMAGGR);
         double resultMean, resultStd;
         
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(outFile))) {

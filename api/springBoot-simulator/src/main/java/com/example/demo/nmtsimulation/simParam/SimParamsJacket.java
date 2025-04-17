@@ -2,13 +2,18 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.example.demo.nmtsimulation;
+package com.example.demo.nmtsimulation.simParam;
+
+import com.example.demo.nmtsimulation.probDistribution.ExponentialProbDistr;
+import com.example.demo.nmtsimulation.probDistribution.NormalProbDistr;
+import com.example.demo.nmtsimulation.helper.ProbabilityFunction;
+import com.example.demo.nmtsimulation.probDistribution.UniformProbDistr;
 
 /**
  *
  * @author brodo
  */
-public class SimParams4 extends SimParams {
+public class SimParamsJacket extends SimParams {
     
     //exponential -> the lower teh rate, teh less steep the curve
     //normal -> the higher the variance, the flatter it gets

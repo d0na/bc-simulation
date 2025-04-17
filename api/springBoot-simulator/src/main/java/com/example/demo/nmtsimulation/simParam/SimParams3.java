@@ -2,7 +2,12 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.example.demo.nmtsimulation;
+package com.example.demo.nmtsimulation.simParam;
+
+import com.example.demo.nmtsimulation.probDistribution.ExponentialProbDistr;
+import com.example.demo.nmtsimulation.probDistribution.LognormalProbDistr;
+import com.example.demo.nmtsimulation.helper.ProbabilityFunction;
+import com.example.demo.nmtsimulation.probDistribution.UniformProbDistr;
 
 /**
  *
@@ -27,6 +32,6 @@ public class SimParams3 extends SimParams {
     public int GAStransfer(){ return 98730;}
     public ProbabilityFunction PROBtransfer(){ return new LognormalProbDistr(1,10, 0.1);}
     
-    public ProbabilityFunction PROBnewCreatorCreation(){ return new UniformProbDistr(0.0001);}//return new LognormalProbDistr(10,100);}    
+    public ProbabilityFunction PROBnewCreatorCreation(){ return new UniformProbDistr(0.0001);}//return new LognormalProbDistr(10,100);}
     
 }
