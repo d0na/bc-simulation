@@ -6,9 +6,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
+ * Simulation Configuration DTO
  * @author francesco
  * @project springBoot-simulator
  */
+
 
 @Data
 @Builder
