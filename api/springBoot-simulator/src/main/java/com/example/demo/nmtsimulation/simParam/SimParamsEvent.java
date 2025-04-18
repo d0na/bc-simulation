@@ -5,10 +5,10 @@
 package com.example.demo.nmtsimulation.simParam;
 
 import com.example.demo.nmtsimulation.helper.ProbabilityFunction;
-import com.example.demo.nmtsimulation.probDistribution.ExponentialProbDistr;
-import com.example.demo.nmtsimulation.probDistribution.LognormalProbDistr;
-import com.example.demo.nmtsimulation.probDistribution.NormalProbDistr;
-import com.example.demo.nmtsimulation.probDistribution.UniformProbDistr;
+import com.example.demo.nmtsimulation.distribution.ExponentialProbDistr;
+import com.example.demo.nmtsimulation.distribution.LognormalProbDistr;
+import com.example.demo.nmtsimulation.distribution.NormalProbDistr;
+import com.example.demo.nmtsimulation.distribution.UniformProbDistr;
 
 /**
  *

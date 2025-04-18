@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.example.demo.nmtsimulation.probDistribution;
+package com.example.demo.nmtsimulation.distribution;
 
 import com.example.demo.nmtsimulation.helper.ProbabilityFunction;
 
@@ -21,18 +21,17 @@ import com.example.demo.nmtsimulation.helper.ProbabilityFunction;
  * 
  * @author brodo
  */
-public class ExponentialProbDistrScaled extends ProbabilityFunction {
+public class ExponentialProbDistr extends ProbabilityFunction {
     double rate;
-    double scalingFactorX;
-    double scalingFactorY;
+    double scalingFactor;
     
-    public ExponentialProbDistrScaled(double _rate, double _scalingX, double _scalingY){
-        rate = _rate; scalingFactorX = _scalingX; scalingFactorY = _scalingY;
+    public ExponentialProbDistr(double _rate, double _scaling){
+        rate = _rate; scalingFactor = _scaling;
     }
     
     @Override
     public double getProb(int time){
-        double realTime = time*scalingFactorX;
-        return scalingFactorY*rate*Math.exp(-1*rate*realTime); 
+        double realTime = time*scalingFactor;
+        return rate*Math.exp(-1*rate*realTime); 
     }
 }

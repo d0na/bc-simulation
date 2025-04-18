@@ -1,7 +1,7 @@
 package com.example.demo.batch.simulation;
 
 import com.example.demo.nmtsimulation.helper.ProbabilityFunction;
-import com.example.demo.nmtsimulation.probDistribution.*;
+import com.example.demo.nmtsimulation.distribution.*;
 import com.example.demo.nmtsimulation.roundResults.SimRoundResults;
 import com.example.demo.nmtsimulation.roundResults.SimRoundResultsAggregated;
 import com.example.demo.nmtsimulation.simParam.SimParams;

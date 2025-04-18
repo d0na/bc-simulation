@@ -1,0 +1,29 @@
+```
+http POST http://localhost:8099/simulation/params Content-Type:application/json << EOF
+[
+{
+   "event":"creatorPolicy",
+   "distribution":{
+      "type":"UNIFORM",
+      "params":{
+         "min":1,
+         "max":1,
+         "scalingFactor":1
+      }
+   },
+   "gasCost":1000
+},
+{
+   "event":"creatorPolicy",
+   "distribution":{
+      "type":"LOGNORMAL",
+      "params":{
+         "min":1,
+         "max":1,
+         "scalingFactor":1
+      }
+   },
+   "gasCost":1000
+}
+]
+```

@@ -3,9 +3,9 @@ package com.example.demo.nmtsimulation.simParam;/*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 
-import com.example.demo.nmtsimulation.probDistribution.NormalProbDistrScaled;
+import com.example.demo.nmtsimulation.distribution.NormalProbDistrScaled;
 import com.example.demo.nmtsimulation.helper.ProbabilityFunction;
-import com.example.demo.nmtsimulation.probDistribution.UniformProbDistr;
+import com.example.demo.nmtsimulation.distribution.UniformProbDistr;
 
 /**
  *

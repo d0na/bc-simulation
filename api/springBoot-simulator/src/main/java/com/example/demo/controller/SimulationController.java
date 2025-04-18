@@ -1,11 +1,15 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.EventDTO;
 import com.example.demo.dto.JobStatusDTO;
 import com.example.demo.dto.SimTaskletJobRequestDTO;
 import com.example.demo.service.JobMonitoringService;
 import com.example.demo.service.SimulationJobService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.batch.core.*;
+import org.springframework.batch.core.Job;
+import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.JobParametersBuilder;
+import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
@@ -22,7 +26,7 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-public class JobMonitoringController {
+public class SimulationController {
 
     private final JobMonitoringService jobMonitoringService;
     @Autowired
@@ -51,29 +55,24 @@ public class JobMonitoringController {
 
     @PostMapping("/jobs/hallo")
     public String postHallo() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
-        jobLauncher.run(jobHallo, new JobParametersBuilder()
-                .toJobParameters());
+        jobLauncher.run(jobHallo, new JobParametersBuilder().toJobParameters());
         return "Lanciato il job Hello World!";
     }
 
     @PostMapping("/jobs/import-user")
     public String postImportUser() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
-        jobLauncher.run(importUserJob, new JobParametersBuilder()
-                .toJobParameters());
+        jobLauncher.run(importUserJob, new JobParametersBuilder().toJobParameters());
         return "Lanciato il job Import User!";
     }
 
     @PostMapping("/jobs/simulation")
     public String postSimulation() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
-        jobLauncher.run(jobSimulation, new JobParametersBuilder()
-                .toJobParameters());
+        jobLauncher.run(jobSimulation, new JobParametersBuilder().toJobParameters());
         return "Lanciato il job Import User!";
     }
 
     @PostMapping("/simulate-rev")
-    public ResponseEntity<?> runSimulation(@RequestBody SimTaskletJobRequestDTO request)
-            throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException,
-            JobParametersInvalidException, JobRestartException {
+    public ResponseEntity<?> runSimulation(@RequestBody SimTaskletJobRequestDTO request) throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
 
         try {
             Map<String, Object> response = simulationJobService.runSimulation(request);
@@ -85,19 +84,17 @@ public class JobMonitoringController {
     }
 
 
-
     @PostMapping("jobs/stop/{executionId}")
     public ResponseEntity<String> stopJob(@PathVariable Long executionId) {
         try {
             boolean stopResult = simulationJobService.stopJob(executionId); // Metodo built-in
-            if( stopResult) {
+            if (stopResult) {
                 return ResponseEntity.ok("Job STOP richiesto per executionId: " + executionId);
-            }else {
+            } else {
                 return ResponseEntity.badRequest().build();
             }
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Errore durante lo stop del job: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Errore durante lo stop del job: " + e.getMessage());
         }
     }
 
@@ -107,4 +104,23 @@ public class JobMonitoringController {
         List<JobExecution> completedJobs = simulationJobService.getAllJobExecutions();
         return ResponseEntity.ok(completedJobs);
     }
+
+
+    // Gestisce la creazione della simulazione (salvataggio di eventi)
+    @PostMapping("/simulation/params")
+    public ResponseEntity<?> receiveEvents(@RequestBody List<EventDTO> request) {
+        return ResponseEntity.ok(request);
+    }
+
+    // Gestisce l'ottenimento degli eventi di simulazione
+//    @GetMapping("/simulation/events")
+//    public ResponseEntity<List<EventDTO>> getSimulationEvents() {
+//        // In un caso reale, questi eventi verrebbero recuperati dal database o da un altro servizio
+//        List<EventDTO> events = List.of(
+//                new EventDTO("GASnewAssetsCreation", DistributionType.NORMAL, Map.of("mean", 100, "stdDev", 10, "scale", 0.04, "shape", 4), 1025897L),
+//                new EventDTO("PROBnewCreatorCreation", DistributionType.UNIFORM, Map.of("probability", 0.0001), null)
+//        );
+//
+//        return ResponseEntity.ok(events);
+//    }
 }
