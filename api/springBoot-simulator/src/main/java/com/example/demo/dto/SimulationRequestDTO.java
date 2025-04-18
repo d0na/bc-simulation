@@ -1,0 +1,94 @@
+package com.example.demo.dto;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.batch.core.JobParameters;
+import org.springframework.batch.core.JobParametersBuilder;
+
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Slf4j
+public class SimulationRequestDTO {
+    List<EventDTO> events;
+    int numAggr;
+    int maxTime;
+    int numRuns;
+    String dir;
+
+    public String toJson() {
+        try {
+            return new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public JobParameters toJobParameters() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        String eventsJson;
+
+        try {
+            eventsJson = objectMapper.writeValueAsString(this.events);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Failed to serialize events list", e);
+        }
+
+        return new JobParametersBuilder()
+                .addLong("timestamp", System.currentTimeMillis()) // per unicità
+                .addLong("numAggr", (long) this.numAggr)
+                .addLong("maxTime", (long) this.maxTime)
+                .addLong("numRuns", (long) this.numRuns)
+                .addString("dir", this.dir)
+                .addString("outfile", buildOutFileName(this.dir, this.maxTime, this.numAggr))
+                .addString("events", eventsJson)
+                .addString("uuid", java.util.UUID.randomUUID().toString())
+                .toJobParameters();
+    }
+
+
+    private String buildOutFileName(String dir, int maxTime, int numAggr) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+        String timestamp = LocalDateTime.now().format(formatter);
+        return dir + maxTime + "a" + numAggr + "_" + timestamp + ".tsv";
+    }
+
+    public static SimulationRequestDTO fromJobParameters(JobParameters params) {
+        SimulationRequestDTO dto = new SimulationRequestDTO();
+
+        dto.setNumAggr(params.getLong("numAggr").intValue());
+        dto.setMaxTime(params.getLong("maxTime").intValue());
+        dto.setNumRuns(params.getLong("numRuns").intValue());
+        dto.setDir(params.getString("dir"));
+
+
+
+        // Per la lista events, se è serializzata come JSON, possiamo deserializzarla
+        String eventsJson = params.getString("events");
+        log.info("eventsJson: "+eventsJson);
+        if (eventsJson != null) {
+            ObjectMapper objectMapper = new ObjectMapper();
+            try {
+                List<EventDTO> events = objectMapper.readValue(eventsJson, new TypeReference<List<EventDTO>>() {});
+                dto.setEvents(events);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to deserialize events", e);
+            }
+        }
+
+        return dto;
+    }
+
+}

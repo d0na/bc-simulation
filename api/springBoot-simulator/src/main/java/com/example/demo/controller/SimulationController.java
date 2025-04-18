@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.dto.EventDTO;
 import com.example.demo.dto.JobStatusDTO;
 import com.example.demo.dto.SimTaskletJobRequestDTO;
+import com.example.demo.dto.SimulationRequestDTO;
 import com.example.demo.service.JobMonitoringService;
 import com.example.demo.service.SimulationJobService;
 import lombok.RequiredArgsConstructor;
@@ -112,15 +113,18 @@ public class SimulationController {
         return ResponseEntity.ok(request);
     }
 
-    // Gestisce l'ottenimento degli eventi di simulazione
-//    @GetMapping("/simulation/events")
-//    public ResponseEntity<List<EventDTO>> getSimulationEvents() {
-//        // In un caso reale, questi eventi verrebbero recuperati dal database o da un altro servizio
-//        List<EventDTO> events = List.of(
-//                new EventDTO("GASnewAssetsCreation", DistributionType.NORMAL, Map.of("mean", 100, "stdDev", 10, "scale", 0.04, "shape", 4), 1025897L),
-//                new EventDTO("PROBnewCreatorCreation", DistributionType.UNIFORM, Map.of("probability", 0.0001), null)
-//        );
-//
-//        return ResponseEntity.ok(events);
-//    }
+
+    @PostMapping("/newsimulation")
+    public ResponseEntity<?> runNewSimulation(@RequestBody SimulationRequestDTO request) throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
+
+        try {
+            System.out.println("Events: " + request.getEvents()); // <-- per debug
+            Map<String, Object> response = simulationJobService.runNewSimulation(request);
+            System.out.println("Response: " + response); // <-- per debug
+            return ResponseEntity.accepted().body(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred during simulation");
+        }
+    }
 }

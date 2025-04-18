@@ -1,11 +1,14 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.EventDTO;
 import com.example.demo.dto.SimTaskletJobRequestDTO;
+import com.example.demo.dto.SimulationRequestDTO;
 import com.example.demo.nmtsimulation.helper.AggregationGranularity;
 import com.example.demo.nmtsimulation.helper.SimulationDuration;
 import com.example.demo.nmtsimulation.simParam.SimParams;
 import com.example.demo.nmtsimulation.simParam.SimParams5Scaled;
 import com.example.demo.nmtsimulation.simParam.SimParams6Scaled;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.batch.core.*;
 import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.launch.JobLauncher;
@@ -14,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
@@ -29,6 +34,9 @@ public class SimulationJobService {
 
     @Autowired
     private Job jobSimulation;
+    @Autowired
+    private Job jobNewSimulation;
+
     @Autowired
     private JobExplorer jobExplorer;  // Per esplorare i job eseguiti
 
@@ -135,6 +143,32 @@ public class SimulationJobService {
         }
 
         return allExecutions;
+    }
+
+
+    public Map<String, Object> runNewSimulation(SimulationRequestDTO request) throws Exception {
+
+        // Params retrieval from request
+        JobParameters jobParameters = request.toJobParameters();
+        // Job parameters
+        CompletableFuture.runAsync(() -> {
+            try {
+                jobLauncher.run(jobNewSimulation, jobParameters);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+        // Puoi eventualmente restituire l'output come risultato del metodo
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "Launching simulation");
+        response.put("numAggr", request.getNumAggr());
+        response.put("maxTime", request.getMaxTime());
+        response.put("numRuns",request.getNumRuns());
+        response.put("outFile", jobParameters.getString("outfile"));
+        response.put("configuration", request);
+
+        return response;
     }
 
 }

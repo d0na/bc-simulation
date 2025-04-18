@@ -1,5 +1,6 @@
 package com.example.demo.batch.simulation;
 
+import com.example.demo.dto.SimulationRequestDTO;
 import com.example.demo.nmtsimulation.roundResults.SimRoundResults;
 import com.example.demo.nmtsimulation.roundResults.SimRoundResultsAggregated;
 import com.example.demo.nmtsimulation.simParam.SimParams;
@@ -26,64 +27,30 @@ import java.util.Objects;
 
 @Component
 @Slf4j
-public class SimRevTasklet implements Tasklet {
+public class NewSimTasklet implements Tasklet {
 
     @Autowired
     private ProgressTracker tracker;
 
-    String dir = "./";
 
-    private SimParams getSimParams(String simType) {
-        return switch (simType) {
-            case "SimParams5Scaled" -> new SimParams5Scaled();
-            case "SimParams6Scaled" -> new SimParams6Scaled();
-            // adds other types here if necessary
-            default -> throw new IllegalArgumentException("Tipo di simulazione non valido: " + simType);
-        };
-    }
-
-    /**
-     * Executes a simulation batch step as part of a Spring Batch job.
-     *
-     * This method initializes simulation parameters from job parameters,
-     * prepares the output file, and iteratively performs simulation steps
-     * in fixed aggregation intervals. At each step, gas and entity statistics
-     * are computed and written to a TSV file. The progress is updated
-     * and stored in the execution context for tracking.
-     *
-     * The logic is divided into helper methods to enhance readability
-     * and maintainability:
-     * - buildOutFileName: generates the simulation result filename
-     * - logSimConfiguration: logs simulation setup details
-     * - runSimulationSteps: performs the simulation loop and data writing
-     * - logSimulationEnd: logs completion information
-     *
-     * @param contribution the contribution to a step's execution
-     * @param chunkContext the context of the chunk being processed
-     * @return RepeatStatus.FINISHED when the step is complete
-     * @throws Exception if any error occurs during execution
-     */
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
+
         JobExecution jobExecution = chunkContext.getStepContext().getStepExecution().getJobExecution();
         Long jobExecutionId = jobExecution.getId();
         JobParameters params = chunkContext.getStepContext().getStepExecution().getJobParameters();
 
-        int _numAggr = params.getLong("numAggr").intValue();
-        int _maxTime = params.getLong("maxTime").intValue();
-        int _numRuns = params.getLong("numRuns").intValue();
-        String _dir = params.getString("dir");
-        String _simType = params.getString("simType");
-        SimParams _simToRun = getSimParams(_simType);
+        int _numAggr = Objects.requireNonNull(params.getLong("numAggr")).intValue();
+        int _maxTime = Objects.requireNonNull(params.getLong("maxTime")).intValue();
+        int _numRuns = Objects.requireNonNull(params.getLong("numRuns")).intValue();
 
-        String _outFile = buildOutFileName(_dir, _simType, _maxTime, _numAggr);
+        log.info("Converstion:",SimulationRequestDTO.fromJobParameters(params).toString());
 
-        logSimConfiguration(_numAggr, _maxTime, _numRuns, _outFile, _simToRun);
+        log.info(params.toString());
+        Simulation simulation = new Simulation(_maxTime, _numAggr, _numRuns);
+        simulation.run();
 
-        SimRoundResultsAggregated sRounds = new SimRoundResultsAggregated(_numRuns, _simToRun, _numAggr);
-        runSimulationSteps(sRounds, _numAggr, _maxTime, _outFile, jobExecutionId, chunkContext);
 
-        logSimulationEnd(_numRuns, _numAggr, _maxTime);
 
         return RepeatStatus.FINISHED;
     }

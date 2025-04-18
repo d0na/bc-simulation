@@ -158,5 +158,20 @@ public class SimulationConfig {
 //
 //        return writer;
 //    }
+
+
+    @Bean
+    public Job jobNewSimulation(JobRepository jobRepository, Step stepNewSimulation) {
+        return new JobBuilder("jobNewSimulation", jobRepository).start(stepNewSimulation).build();
+    }
+
+    @Bean
+    public Step stepNewSimulation(JobRepository jobRepository, PlatformTransactionManager transactionManager, NewSimTasklet newSimTasklet) {
+        log.info("step simulation call");
+        return new StepBuilder("stepNewSimulation", jobRepository)
+//                .<User, User>chunk(10, transactionManager)
+                .tasklet(newSimTasklet, transactionManager)
+                .build();
+    }
 }
 
