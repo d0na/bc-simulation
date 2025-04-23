@@ -1,6 +1,7 @@
 package com.example.demo.dto.distribution;
 
 public enum DistributionType {
+    NONE("NoneDistribution"),
     NORMAL("NormalProbDistr"),
     NORMAL_SCALED("NormalProbDistrScaled"),
     EXPONENTIAL("ExponentialProbDistr"),

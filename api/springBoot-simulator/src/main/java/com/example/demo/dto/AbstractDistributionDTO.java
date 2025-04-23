@@ -2,6 +2,7 @@ package com.example.demo.dto;
 
 import com.example.demo.dto.distribution.*;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.Data;
@@ -24,6 +25,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public abstract class AbstractDistributionDTO {
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private DistributionType type; // Tipo di distribuzione (e.g. EXPONENTIAL, LOGNORMAL, etc.)
     public double getProb(int time){
         return time;

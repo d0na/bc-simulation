@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class Simulation {
     SimulationRequestDTO simParams;
+
     public void run() {
         long time = System.currentTimeMillis();
         ResultsAggregated resultsAggregated = new ResultsAggregated(simParams);
@@ -40,26 +41,48 @@ public class Simulation {
                 time = System.currentTimeMillis();
             }
 
+            System.out.print(t);
             // Run the simulation step
             resultsAggregated.compute(t);
 
             // total gas stats mean (average) and std (standard deviation)
-            printStats(resultsAggregated.results.get("gasTotal"));
+
+
+            resultsAggregated.results.forEach((key, value) -> {
+                printStats(resultsAggregated.results.get(key));
+            });
+            resultsAggregated.generateInstanceSizeReport();
+            System.out.println();
 
         }
-        System.out.println("Ending sim of "+simParams.getNumRuns()+" runs.");
+        System.out.print("time\t");
+        resultsAggregated.results.forEach((key, value) -> {
+            System.out.print(key + "\t");
+        });
+        System.out.println();
+
+        resultsAggregated.results.forEach((key, value) -> {
+            if (key.contains("time_")) {
+                System.out.print(key + "\t" + ":" + value.length + "\t");
+            }
+        });
+        System.out.println();
+        System.out.println("Ending sim of " + simParams.getNumRuns() + " runs.");
     }
 
     /**
      * Prints the mean and standard deviation of the results
+     *
      * @param result
      */
     public static void printStats(long[] result) {
         long[] values = result;
         double mean = ResultsAggregated.computeAvg(values);
         double stdDev = ResultsAggregated.computeStd(values, mean);
-        System.out.println("\t" + mean + "\t" + stdDev);
+        System.out.print("\t" + mean + "\t" + stdDev);
     }
+
+
 }
 
 
