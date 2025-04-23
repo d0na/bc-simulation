@@ -66,6 +66,7 @@ public class SimulationRequestDTO {
     }
 
     public static SimulationRequestDTO fromJobParameters(JobParameters params) {
+
         SimulationRequestDTO dto = new SimulationRequestDTO();
 
         dto.setNumAggr(params.getLong("numAggr").intValue());
@@ -73,15 +74,13 @@ public class SimulationRequestDTO {
         dto.setNumRuns(params.getLong("numRuns").intValue());
         dto.setDir(params.getString("dir"));
 
-
-
         // Per la lista events, se è serializzata come JSON, possiamo deserializzarla
         String eventsJson = params.getString("events");
         log.info("eventsJson: "+eventsJson);
         if (eventsJson != null) {
             ObjectMapper objectMapper = new ObjectMapper();
             try {
-                List<EventDTO> events = objectMapper.readValue(eventsJson, new TypeReference<List<EventDTO>>() {});
+                List<EventDTO> events = objectMapper.readValue(eventsJson,  new TypeReference<List<EventDTO>>(){} );
                 dto.setEvents(events);
             } catch (IOException e) {
                 throw new RuntimeException("Failed to deserialize events", e);
@@ -91,4 +90,15 @@ public class SimulationRequestDTO {
         return dto;
     }
 
+
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+
+    public static SimulationRequestDTO fromJobParametersTo(JobParameters jobParameters) {
+        String json = jobParameters.getString("simulationRequest");
+        try {
+            return objectMapper.readValue(json, SimulationRequestDTO.class);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to parse SimulationRequestDTO from JobParameters", e);
+        }
+    }
 }

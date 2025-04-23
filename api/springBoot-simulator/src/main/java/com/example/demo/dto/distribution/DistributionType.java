@@ -1,10 +1,12 @@
 package com.example.demo.dto.distribution;
 
 public enum DistributionType {
-    NONE("None"),
-    NORMAL("NormalProbDistrScaled"),
-    EXPONENTIAL("ExponentialProbDistrScaled"),
-    LOGNORMAL("LognormalProbDistrScaled"),
+    NORMAL("NormalProbDistr"),
+    NORMAL_SCALED("NormalProbDistrScaled"),
+    EXPONENTIAL("ExponentialProbDistr"),
+    EXPONENTIAL_SCALED("ExponentialProbDistrScaled"),
+    LOGNORMAL("LognormalProbDistr"),
+    LOGNORMAL_SCALED("LognormalProbDistrScaled"),
     UNIFORM("UniformProbDistr");
 
     private final String type;

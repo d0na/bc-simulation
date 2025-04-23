@@ -4,8 +4,6 @@ import com.example.demo.dto.SimulationRequestDTO;
 import com.example.demo.nmtsimulation.roundResults.SimRoundResults;
 import com.example.demo.nmtsimulation.roundResults.SimRoundResultsAggregated;
 import com.example.demo.nmtsimulation.simParam.SimParams;
-import com.example.demo.nmtsimulation.simParam.SimParams5Scaled;
-import com.example.demo.nmtsimulation.simParam.SimParams6Scaled;
 import com.example.demo.service.ProgressTracker;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.JobExecution;
@@ -23,7 +21,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Objects;
 
 @Component
 @Slf4j
@@ -40,17 +37,8 @@ public class NewSimTasklet implements Tasklet {
         Long jobExecutionId = jobExecution.getId();
         JobParameters params = chunkContext.getStepContext().getStepExecution().getJobParameters();
 
-        int _numAggr = Objects.requireNonNull(params.getLong("numAggr")).intValue();
-        int _maxTime = Objects.requireNonNull(params.getLong("maxTime")).intValue();
-        int _numRuns = Objects.requireNonNull(params.getLong("numRuns")).intValue();
-
-        log.info("Converstion:",SimulationRequestDTO.fromJobParameters(params).toString());
-
-        log.info(params.toString());
-        Simulation simulation = new Simulation(_maxTime, _numAggr, _numRuns);
+        Simulation simulation = new Simulation(SimulationRequestDTO.fromJobParameters(params));
         simulation.run();
-
-
 
         return RepeatStatus.FINISHED;
     }
