@@ -21,6 +21,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 @Component
 @Slf4j
@@ -38,7 +39,14 @@ public class NewSimTasklet implements Tasklet {
         JobParameters params = chunkContext.getStepContext().getStepExecution().getJobParameters();
 
         Simulation simulation = new Simulation(SimulationRequestDTO.fromJobParameters(params));
-        simulation.run();
+
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(Objects.requireNonNull(params.getString("outfile"))))) {
+            simulation.run(bw);
+        } catch (IOException ex) {
+            System.err.println("ERROR WHILE WRITING TO FILE.");
+            ex.printStackTrace();
+        }
+
 
         return RepeatStatus.FINISHED;
     }

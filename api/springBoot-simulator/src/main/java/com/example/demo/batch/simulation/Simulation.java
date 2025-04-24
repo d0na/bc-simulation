@@ -4,33 +4,22 @@ import com.example.demo.dto.SimulationRequestDTO;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+
 @AllArgsConstructor
 @Slf4j
 public class Simulation {
     SimulationRequestDTO simParams;
 
-    public void run() {
+    public void run(BufferedWriter bw) throws IOException {
         long time = System.currentTimeMillis();
         ResultsAggregated resultsAggregated = new ResultsAggregated(simParams);
         double resultMean, resultStd;
-//        simParams.getEvents().forEach(eventDTO -> {
-//                    AbstractDistributionDTO dist = eventDTO.getDistribution();
-//
-//                    switch (dist.getType().toString()) {
-//                        case "UNIFORM" -> {
-//                            UniformDistributionDTO u = dist.as(UniformDistributionDTO.class);
-//                            // usa u.getParams()
-//                            UniformParamsDTO up = u.getParams();
-//
-//                        }
-//                        case "LOGNORMAL" -> {
-//                            LognormalDistributionDTO l = dist.as(LognormalDistributionDTO.class);
-//                            // usa l.getParams()
-//                            LognormalParamsDTO ul = l.getParams();
-//                        }
-//                    }
-//                }
-//        );
+
+        String header = resultsAggregated.generateCSVHeader(";");
+        bw.write(header);
+        bw.newLine();
 
 
         for (int t = 0; t < simParams.getMaxTime(); t = t + simParams.getNumAggr()) {
@@ -41,32 +30,25 @@ public class Simulation {
                 time = System.currentTimeMillis();
             }
 
-            System.out.print(t);
             // Run the simulation step
             resultsAggregated.compute(t);
-
+            String s = resultsAggregated.generateCSVComputationStats(";");
+            bw.write(t + ";" + s);
+            bw.newLine();
             // total gas stats mean (average) and std (standard deviation)
 
-
-            resultsAggregated.results.forEach((key, value) -> {
-                printStats(resultsAggregated.results.get(key));
-            });
-            resultsAggregated.generateInstanceSizeReport();
-            System.out.println();
-
+//            resultsAggregated.results.forEach((key, value) -> {
+//                printStats(resultsAggregated.results.get(key));
+//            });
+//            resultsAggregated.generateInstanceSizeReport();
         }
-        System.out.print("time\t");
-        resultsAggregated.results.forEach((key, value) -> {
-            System.out.print(key + "\t");
-        });
-        System.out.println();
 
-        resultsAggregated.results.forEach((key, value) -> {
-            if (key.contains("time_")) {
-                System.out.print(key + "\t" + ":" + value.length + "\t");
-            }
-        });
-        System.out.println();
+//        resultsAggregated.results.forEach((key, value) -> {
+//            if (key.contains("time_")) {
+//                System.out.print(key + "\t" + ":" + value.length + "\t");
+//            }
+//        });
+//        System.out.println();
         System.out.println("Ending sim of " + simParams.getNumRuns() + " runs.");
     }
 
@@ -75,11 +57,11 @@ public class Simulation {
      *
      * @param result
      */
-    public static void printStats(long[] result) {
-        long[] values = result;
-        double mean = ResultsAggregated.computeAvg(values);
-        double stdDev = ResultsAggregated.computeStd(values, mean);
-        System.out.print("\t" + mean + "\t" + stdDev);
+    public static String printStats(long[] result, String separator) {
+        StringBuilder sb = new StringBuilder();
+        double mean = ResultsAggregated.computeAvg(result);
+        double stdDev = ResultsAggregated.computeStd(result, mean);
+        return sb.append(separator).append(mean).append(separator).append(stdDev).toString();
     }
 
 

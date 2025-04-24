@@ -62,7 +62,7 @@ public class SimulationRequestDTO {
     private String buildOutFileName(String dir, int maxTime, int numAggr) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
         String timestamp = LocalDateTime.now().format(formatter);
-        return dir + maxTime + "a" + numAggr + "_" + timestamp + ".tsv";
+        return dir + "/" + maxTime + "a" + numAggr + "_" + timestamp + ".tsv";
     }
 
     public static SimulationRequestDTO fromJobParameters(JobParameters params) {
@@ -76,11 +76,12 @@ public class SimulationRequestDTO {
 
         // Per la lista events, se è serializzata come JSON, possiamo deserializzarla
         String eventsJson = params.getString("events");
-        log.info("eventsJson: "+eventsJson);
+        log.info("eventsJson: " + eventsJson);
         if (eventsJson != null) {
             ObjectMapper objectMapper = new ObjectMapper();
             try {
-                List<EventDTO> events = objectMapper.readValue(eventsJson,  new TypeReference<List<EventDTO>>(){} );
+                List<EventDTO> events = objectMapper.readValue(eventsJson, new TypeReference<List<EventDTO>>() {
+                });
                 dto.setEvents(events);
             } catch (IOException e) {
                 throw new RuntimeException("Failed to deserialize events", e);
