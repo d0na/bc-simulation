@@ -1,29 +1,90 @@
-```
-http POST http://localhost:8099/simulation/params Content-Type:application/json << EOF
-[
+## API EXAMPLE CALL
+
+
+http POST http://localhost:8099/newsimulation Content-Type:application/json << EOF
 {
-   "event":"creatorPolicy",
-   "distribution":{
-      "type":"UNIFORM",
-      "params":{
-         "min":1,
-         "max":1,
-         "scalingFactor":1
-      }
-   },
-   "gasCost":1000
+"dir":"./output",
+"entities":[
+"creator",
+"asset"
+],
+"events":[
+{
+"eventName":"deployNMT",
+"eventDescription":"NMT Deploy",
+"gasCost":2466753
 },
 {
-   "event":"creatorPolicy",
-   "distribution":{
-      "type":"LOGNORMAL",
-      "params":{
-         "min":1,
-         "max":1,
-         "scalingFactor":1
-      }
-   },
-   "gasCost":1000
+"eventName":"deployMasterPolicy",
+"eventDescription":"Master Policy Deploy",
+"gasCost":285213
+},
+{
+"eventName":"creatorCreation",
+"eventDescription":"New Creator",
+"gasCost":526438,
+"probabilityDistribution":{
+"value":0.0001,
+"type":"UNIFORM"
+},
+"instanceOf":"creator"
+},
+{
+"eventName":"assetCreation",
+"eventDescription":"New Asset",
+"gasCost":1025897,
+"probabilityDistribution":{
+"type":"NORMAL_SCALED",
+"mean":100,
+"std":10,
+"scalingFactorX":0.04,
+"scalingFactorY":4
+},
+"instanceOf":"asset",
+"dependOn":"creator"
+},
+{
+"eventName":"holderPolicyUpdate",
+"eventDescription":"Update holder policy",
+"gasCost":411525,
+"dependOn":"asset",
+"probabilityDistribution":{
+"type":"NORMAL_SCALED",
+"mean":100,
+"std":10,
+"scalingFactorX":0.04,
+"scalingFactorY":4
 }
-]
-```
+},
+{
+"eventName":"descriptorUpdate",
+"eventDescription":"Update asset descriptor",
+"gasCost":90893,
+"dependOn":"asset",
+"probabilityDistribution":{
+"type":"NORMAL_SCALED",
+"mean":100,
+"std":10,
+"scalingFactorX":0.04,
+"scalingFactorY":4
+}
+},
+{
+"eventName":"assetTransfer",
+"eventDescription":"Transfer asset",
+"gasCost":98730,
+"dependOn":"asset",
+"probabilityDistribution":{
+"type":"NORMAL_SCALED",
+"mean":100,
+"std":10,
+"scalingFactorX":0.04,
+"scalingFactorY":4
+}
+}
+],
+"maxTime":86400,
+"numAggr":1,
+"numRuns":5
+}
+EOF
