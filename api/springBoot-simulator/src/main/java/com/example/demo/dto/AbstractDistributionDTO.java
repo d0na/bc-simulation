@@ -21,6 +21,7 @@ import lombok.NoArgsConstructor;
         @JsonSubTypes.Type(value = LognormalProbDistrScaledDTO.class, name = "LOGNORMAL_SCALED"),
         @JsonSubTypes.Type(value = ExponentialProbDistrDTO.class, name = "EXPONENTIAL"),
         @JsonSubTypes.Type(value = ExponentialProbDistrScaledDTO.class, name = "EXPONENTIAL_SCALED"),
+        @JsonSubTypes.Type(value = FixedProbDistrDTO.class, name = "FIXED"),
 })
 @Data
 @NoArgsConstructor
