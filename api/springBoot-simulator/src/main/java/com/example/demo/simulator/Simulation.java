@@ -16,8 +16,9 @@ public class Simulation {
         long time = System.currentTimeMillis();
         ResultsAggregated resultsAggregated = new ResultsAggregated(simParams);
         double resultMean, resultStd;
+        String separator = "\t";
 
-        String header = resultsAggregated.generateCSVHeader(";");
+        String header = resultsAggregated.generateCSVHeader(separator);
         bw.write(header);
         bw.newLine();
 
@@ -32,8 +33,8 @@ public class Simulation {
 
             // Run the simulation step
             resultsAggregated.compute(t);
-            String s = resultsAggregated.generateCSVComputationStats(";");
-            bw.write(t + ";" + s);
+            String s = resultsAggregated.generateCSVComputationStats(separator);
+            bw.write(t + separator + s);
             bw.newLine();
             // total gas stats mean (average) and std (standard deviation)
 

@@ -272,7 +272,7 @@ public class ResultsAggregated {
      * @return
      */
     public String generateCSVHeader(String separator) {
-        return "time;" + generateCSVHeaderWithStats(results, entities, separator);
+        return "time" + separator+ generateCSVHeaderWithStats(results, entities, separator);
     }
 
     public static String toCamelCase(String input) {
