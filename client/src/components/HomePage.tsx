@@ -6,6 +6,7 @@ import bcLogo from '../assets/blockchain-10000.svg';
 import '../App.css';
 import axios from 'axios';
 import SimulationFormModal from "./SimulationFormModal.tsx";
+import SimulatorFormModal from "./SimluatorFormModal.tsx";
 
 function HomePage() {
     const [simulationStatus, setSimulationStatus] = useState<string | null>(null);
@@ -83,9 +84,7 @@ function HomePage() {
 
                     <div className="card">
                         <p>Launch your </p>
-                        <Button variant="contained" color="primary" onClick={handleJob2Click}>
-                            Job2
-                        </Button>
+                        <SimulatorFormModal/>
                         {job2Status && (
                             <div>
                                 <p>Status: {job2Status}</p>
