@@ -150,6 +150,7 @@ public class SimulationJobService {
 
         // Params retrieval from request
         JobParameters jobParameters = request.toJobParameters();
+
         // Job parameters
         CompletableFuture.runAsync(() -> {
             try {

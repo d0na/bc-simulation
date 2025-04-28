@@ -6,8 +6,6 @@ import com.example.demo.dto.SimulationRequestDTO;
 
 import java.util.*;
 
-import static com.example.demo.batch.simulation.Simulation.printStats;
-
 
 public class ResultsAggregated {
     // Parameters of the simulation
@@ -16,6 +14,8 @@ public class ResultsAggregated {
     Map<String, long[]> results;
     // Maps the event name to an array of linked lists, one for each run
     Map<String, LinkedList<Integer>[]> instances;
+    String seedEvent;
+    int count;
 
     final String gasTotal = "gasTotal";
 
@@ -25,6 +25,9 @@ public class ResultsAggregated {
         this.instances = new HashMap<>();
         this.results.put(gasTotal, new long[simParams.getNumRuns()]);
         simParams.getEvents().forEach(this::initEventStructures);
+        simParams.getEntities().forEach(this::initEntities);
+        count = 0;
+        this.seedEvent = "";
     }
 
     /**
@@ -53,7 +56,9 @@ public class ResultsAggregated {
                 double finalRandomDouble = randomDouble;
                 int finalTimeInner = timeInner;
                 int finalI = i;
-                simParams.getEvents().forEach(event -> processEvent(event, finalRandomDouble, finalTimeInner, finalI, 0));
+//                simParams.getEvents().forEach(event -> processEvent(event, finalRandomDouble, finalTimeInner, finalI, 0));
+                simParams.getEvents().forEach(event -> processEventNewJson(event, finalRandomDouble,
+                        finalTimeInner, finalI, 0, simParams.getEntities()));
             }
         }
     }
@@ -96,35 +101,232 @@ public class ResultsAggregated {
      * @param i
      * @param refTime
      */
+
+    //    private void processEvent(EventDTO event, double randomDouble, int timeInner, int i, int refTime) {
+//        AbstractDistributionDTO dist = event.getProbabilityDistribution();
+//        double prob = (dist != null) ? dist.getProb(timeInner - refTime) : 0;
+//
+//        // Get costs of events that not have a probability distribution on the first level
+//        if (timeInner == 0 && event.getProbabilityDistribution() == null) {
+//            this.results.get(gasTotal)[i] += event.getGasCost();
+//            this.results.get(toCamelCase("gas_" + event.getEventName()))[i] = event.getGasCost();
+//        }
+//
+//        if (randomDouble <= prob) {
+//            if (event.getRelatedEvents() != null && !event.getRelatedEvents().isEmpty()) {
+//                this.instances.get(toCamelCase("num_" + event.getEventName()))[i].add(timeInner);
+//            }
+//            this.results.get(toCamelCase("gas_" + event.getEventName()))[i] = event.getGasCost();
+//            this.results.get(gasTotal)[i] += event.getGasCost();
+//        }
+//
+//        if (event.getRelatedEvents() != null && !event.getRelatedEvents().isEmpty()) {
+//            LinkedList[] instanceList = this.instances.get(toCamelCase("num_" + event.getEventName()));
+//            if (instanceList != null) {
+//                for (int k = 0; k < instanceList.length; k++) {
+//                    for (EventDTO related : event.getRelatedEvents()) {
+//                        processEvent(related, randomDouble, timeInner, i, k);
+//                    }
+//                }
+//            }
+//        }
+//    }
+//
     private void processEvent(EventDTO event, double randomDouble, int timeInner, int i, int refTime) {
         AbstractDistributionDTO dist = event.getProbabilityDistribution();
         double prob = (dist != null) ? dist.getProb(timeInner - refTime) : 0;
 
         // Get costs of events that not have a probability distribution on the first level
         if (timeInner == 0 && event.getProbabilityDistribution() == null) {
-            this.results.get(gasTotal)[i] += event.getGasCost();
-            this.results.get(toCamelCase("gas_" + event.getEventName()))[i] = event.getGasCost();
+            addGas(i, event.getEventName(), event.getGasCost());
+//            this.results.get(gasTotal)[i] += event.getGasCost();
+//            this.results.get(toCamelCase("gas_" + event.getEventName()))[i] = event.getGasCost();
         }
 
         if (randomDouble <= prob) {
             if (event.getRelatedEvents() != null && !event.getRelatedEvents().isEmpty()) {
                 this.instances.get(toCamelCase("num_" + event.getEventName()))[i].add(timeInner);
             }
-            this.results.get(toCamelCase("gas_" + event.getEventName()))[i] = event.getGasCost();
-            this.results.get(gasTotal)[i] += event.getGasCost();
+//            this.results.get(toCamelCase("gas_" + event.getEventName()))[i] = event.getGasCost();
+//            this.results.get(gasTotal)[i] += event.getGasCost();
+            addGas(i, event.getEventName(), event.getGasCost());
         }
 
         if (event.getRelatedEvents() != null && !event.getRelatedEvents().isEmpty()) {
-            LinkedList[] instanceList = this.instances.get(toCamelCase("num_" + event.getEventName()));
+            LinkedList<Integer>[] instanceList = this.instances.get(toCamelCase("num_" + event.getEventName()));
             if (instanceList != null) {
-                for (int k = 0; k < instanceList.length; k++) {
+                for (Integer instanceTime : instanceList[i]) {
                     for (EventDTO related : event.getRelatedEvents()) {
-                        processEvent(related, randomDouble, timeInner, i, k);
+                        processEvent(related, randomDouble, timeInner, i, instanceTime);
+                    }
+                }
+            }
+        }
+
+
+//        if (event.getRelatedEvents() != null && !event.getRelatedEvents().isEmpty() && event.getInstanceOf() != null && event.getTimeDepOf() == null) {
+//            LinkedList<Integer>[] instanceList = this.instances.get(toCamelCase(event.getInstanceOf()));
+//            if (instanceList != null) {
+//                for (Integer instanceTime : instanceList[i]) {
+//                    for (EventDTO related : event.getRelatedEvents()) {
+//                        processEvent(related, randomDouble, timeInner, i, instanceTime);
+//                    }
+//                }
+//            }
+//        }
+
+//        if (event.getRelatedEvents() != null && !event.getRelatedEvents().isEmpty() && event.getInstanceOf() != null) {
+//            if (event.getTimeDepOf() != null) {
+//                LinkedList<Integer>[] instanceList = this.instances.get(toCamelCase(event.getTimeDepOf()));
+//                if (instanceList != null) {
+//                    for (Integer instanceTime : instanceList[i]) {
+//                        for (EventDTO related : event.getRelatedEvents()) {
+//                            processEvent(related, randomDouble, timeInner, i, instanceTime);
+//                        }
+//                    }
+//                }
+//            } else {
+//                LinkedList<Integer>[] instanceList = this.instances.get(toCamelCase(event.getInstanceOf()));
+//                if (instanceList != null) {
+//                    for (Integer instanceTime : instanceList[i]) {
+//                        for (EventDTO related : event.getRelatedEvents()) {
+//                            processEvent(related, randomDouble, timeInner, i, instanceTime);
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//
+//        // crea random un istanza che non è un evento di tipo timeDepOf
+//        if (event.getInstanceOf() != null && event.getTimeDepOf() == null && randomDouble <= prob) {
+//            this.instances.get(toCamelCase(event.getInstanceOf()))[i].add(timeInner);
+//            this.results.get(toCamelCase("gas_" + event.getEventName()))[i] = event.getGasCost();
+//            this.results.get(gasTotal)[i] += event.getGasCost();
+//        }
+//
+//        // crea random un istanza che non è un evento di tipo timeDepOf
+//        if (event.getInstanceOf() != null && event.getTimeDepOf() != null ) {
+//            LinkedList<Integer>[] instanceList = this.instances.get(toCamelCase(event.getTimeDepOf()));
+//            for (Integer instanceIndex : instanceList[i]) {
+//                if (randomDouble <= prob) {
+//                    this.instances.get(toCamelCase(event.getInstanceOf()))[i].add(timeInner);
+//                    this.results.get(toCamelCase("gas_" + event.getEventName()))[i] = event.getGasCost();
+//                    this.results.get(gasTotal)[i] += event.getGasCost();
+//                }
+//            }
+//
+//            this.instances.get(toCamelCase(event.getInstanceOf()))[i].add(timeInner);
+//            this.results.get(toCamelCase("gas_" + event.getEventName()))[i] = event.getGasCost();
+//            this.results.get(gasTotal)[i] += event.getGasCost();
+//        }
+//
+//
+//        if (event.getRelatedEvents() != null && !event.getRelatedEvents().isEmpty() && event.getInstanceOf() != null && event.getTimeDepOf() != null) {
+//            LinkedList<Integer>[] instanceList = this.instances.get(toCamelCase(event.getTimeDepOf()));
+//            if (instanceList != null) {
+//                for (Integer instanceIndex : instanceList[i]) {
+//                    if (event.getInstanceOf() != null && event.getTimeDepOf() == null && randomDouble <= prob) {
+//                        this.instances.get(toCamelCase(event.getInstanceOf()))[i].add(timeInner);
+//                        this.results.get(toCamelCase("gas_" + event.getEventName()))[i] = event.getGasCost();
+//                        this.results.get(gasTotal)[i] += event.getGasCost();
+//                    }
+//                    for (EventDTO related : event.getRelatedEvents()) {
+//                        processEvent(related, randomDouble, timeInner, i, instanceIndex);
+//                    }
+//                }
+//            }
+//        }
+    }
+
+//    public void processRecursively(int time, List<EventDTO> events, int runIndex, int timeInner, SplittableRandom random, double randomDouble) {
+//        for (EventDTO event : events) {
+//            AbstractDistributionDTO dist = event.getProbabilityDistribution();
+//            double prob = dist.getProb(timeInner);
+//            if (randomDouble <= prob) {
+//                addGas(runIndex, event.getEventName(), event.getGasCost());
+//                if (event.getRelatedEvents() != null && !event.getRelatedEvents().isEmpty()) {
+//                    processRecursively(time, event.getRelatedEvents(), runIndex, timeInner, random, randomDouble);
+//                }
+//            }
+//        }
+//    }
+
+    private void processEventNewJson(EventDTO event, double randomDouble, int timeInner, int i, int refTime, List<String> entities) {
+
+        AbstractDistributionDTO dist = event.getProbabilityDistribution();
+        double prob = (dist != null) ? dist.getProb(timeInner) : 1;
+
+        if (timeInner == 0 && event.getProbabilityDistribution() == null) {
+            addGas(i, event.getEventName(), event.getGasCost());
+        }
+
+        if (event.getInstanceOf() != null && event.getDependOn() == null) {
+            if (randomDouble <= prob) {
+                this.instances.get(toCamelCase(event.getInstanceOf()))[i].add(timeInner);
+                addGas(i, event.getEventName(), event.getGasCost());
+            }
+        }
+
+        if (event.getDependOn() != null) {
+            LinkedList<Integer>[] instanceList = this.instances.get(toCamelCase(event.getDependOn()));
+            if (instanceList != null) {
+                for (Integer instanceTime : instanceList[i]) {
+                    double probTimeDep = (dist != null) ? dist.getProb(timeInner - instanceTime) : 1;
+                    if (randomDouble <= probTimeDep) {
+                        if (event.getInstanceOf() != null) {
+                            this.instances.get(toCamelCase(event.getInstanceOf()))[i].add(timeInner);
+                        }
+                        addGas(i, event.getEventName(), event.getGasCost());
                     }
                 }
             }
         }
     }
+
+    private void addGas(int runIndex, String eventName, long gasValue) {
+        this.results.get(gasTotal)[runIndex] += gasValue;
+        this.results.get(toCamelCase("gas_" + eventName))[runIndex] = gasValue;
+    }
+
+//    private void processEvent(EventDTO event, double randomDouble, int timeInner, int i, int refTime) {
+//        AbstractDistributionDTO dist = event.getProbabilityDistribution();
+//        double prob = (dist != null) ? dist.getProb(timeInner - refTime) : 0;
+//        boolean isCreatesInstance = event.getRelatedEvents() != null && !event.getRelatedEvents().isEmpty();
+//        String gasKey = toCamelCase("gas_" + event.getEventName());
+//        String numKey = toCamelCase("num_" + event.getEventName());
+//
+//        // Evento senza distribuzione → solo deploy (es: GASdeployNMT)
+//        if (timeInner == 0 && dist == null) {
+//            this.results.get(gasTotal)[i] += event.getGasCost();
+//            this.results.get(gasKey)[i] += event.getGasCost();
+////            return;
+//        }
+//
+//        // Evento con distribuzione e condizione random rispettata
+//        if (randomDouble <= prob) {
+//            // Se l'evento genera nuove istanze (es: nuovo creator, nuovo asset)
+//            if (isCreatesInstance) {
+//                this.instances.get(numKey)[i].add(timeInner);
+//            }
+//
+//            // Aggiorna gas specifico e totale
+//            this.results.get(gasKey)[i] += event.getGasCost();
+//            this.results.get(gasTotal)[i] += event.getGasCost();
+//        }
+//
+//        // Se ha eventi collegati quindi istanze esistenti → iterali
+//        if (isCreatesInstance) {
+//            LinkedList<Integer>[] instanceList = this.instances.get(numKey);
+//            if (instanceList != null) {
+//                for (Integer instanceTime : instanceList[i]) {
+//                    for (EventDTO relatedEvent : event.getRelatedEvents()) {
+//                        processEvent(relatedEvent, randomDouble, timeInner, i, instanceTime);
+//                    }
+//                }
+//            }
+//        }
+//    }
+
 
     /**
      * Initializes the structures for the event and its related events
@@ -135,16 +337,27 @@ public class ResultsAggregated {
         // Initializes the results array for the event
         this.results.computeIfAbsent(toCamelCase("gas_" + event.getEventName()), k -> new long[simParams.getNumRuns()]);
 
-        if (event.getProbabilityDistribution() != null && event.getRelatedEvents() != null && !event.getRelatedEvents().isEmpty()) {
-            // Initializes the instances array for the event only if it has related events
-            this.instances.computeIfAbsent(toCamelCase("num_" + event.getEventName()), k -> createLinkedListArray(simParams.getNumRuns()));
+//        if (event.getProbabilityDistribution() != null && event.getRelatedEvents() != null && !event.getRelatedEvents().isEmpty()) {
+//            // Initializes the instances array for the event only if it has related events
+//            this.instances.computeIfAbsent(toCamelCase("num_" + event.getEventName()), k -> createLinkedListArray(simParams.getNumRuns()));
+//        }
+//        if (event.getInstanceOf() != null) {
+//            this.instances.computeIfAbsent(toCamelCase(event.getInstanceOf()), k -> createLinkedListArray(simParams.getNumRuns()));
+//        }
+//        // If event has related events, initializes the structures for them too
+//        if (event.getRelatedEvents() != null && !event.getRelatedEvents().isEmpty()) {
+//            for (EventDTO related : event.getRelatedEvents()) {
+//                initEventStructures(related);
+//            }
+//        }
+    }
+
+    private void initEntities(String entityName) {
+        // Initializes the results array for the event
+        if (entityName != null) {
+            this.instances.computeIfAbsent(toCamelCase(entityName), k -> createLinkedListArray(simParams.getNumRuns()));
         }
         // If event has related events, initializes the structures for them too
-        if (event.getRelatedEvents() != null && !event.getRelatedEvents().isEmpty()) {
-            for (EventDTO related : event.getRelatedEvents()) {
-                initEventStructures(related);
-            }
-        }
     }
 
 
@@ -181,16 +394,19 @@ public class ResultsAggregated {
      * @param lists
      * @return
      */
-    public  List<String> generateInstanceSizeReportForValue(LinkedList<Integer>[] lists) {
-        List<String> result = new ArrayList<>();
+    public Map<String, String> generateInstanceSizeReportForValue(LinkedList<Integer>[] lists) {
+        Map<String, String> result = new HashMap<>();
         int numSteps = simParams.getNumRuns();
         int totalSize = 0;
         int minSize = Integer.MAX_VALUE;
         int maxSize = Integer.MIN_VALUE;
 
+        // Prima passata: calcolo tot, min, max
+        int[] sizes = new int[numSteps];  // salvo le size per riuso nel calcolo della std dev
         for (int i = 0; i < numSteps; i++) {
             LinkedList<Integer> currentList = lists[i];
             int size = (currentList != null) ? currentList.size() : 0;
+            sizes[i] = size;
 
             totalSize += size;
             if (size < minSize) minSize = size;
@@ -198,15 +414,23 @@ public class ResultsAggregated {
         }
 
         double avgSize = (double) totalSize / numSteps;
-        result.add(Integer.toString(totalSize));
-        result.add(Double.toString(avgSize));
-        result.add(Integer.toString(minSize));
-        result.add(Integer.toString(maxSize));
+
+        // Seconda passata: calcolo deviazione standard
+        double sumSquaredDiffs = 0.0;
+        for (int i = 0; i < numSteps; i++) {
+            sumSquaredDiffs += Math.pow(sizes[i] - avgSize, 2);
+        }
+        double stdDev = Math.sqrt(sumSquaredDiffs / numSteps);
+
+        // Inserisco tutto nel risultato
+        result.put("totalSize", Integer.toString(totalSize));
+        result.put("avgSize", Double.toString(avgSize));
+        result.put("minSize", Integer.toString(minSize));
+        result.put("maxSize", Integer.toString(maxSize));
+        result.put("stdDev", Double.toString(stdDev));
+
         return result;
     }
-
-
-
 
 
     /**
@@ -247,6 +471,7 @@ public class ResultsAggregated {
             headers.add(toCamelCase("avg_" + key));
             headers.add(toCamelCase("min_" + key));
             headers.add(toCamelCase("max_" + key));
+            headers.add(toCamelCase("stdDev" + key));
         }
 
         // Costruisco la stringa CSV
@@ -258,15 +483,16 @@ public class ResultsAggregated {
 
         for (String key : results.keySet()) {
             headers.add(Double.toString(computeAvg(results.get(key))));
-            headers.add(Double.toString(computeStd(results.get(key),computeAvg(results.get(key)))));
+            headers.add(Double.toString(computeStd(results.get(key), computeAvg(results.get(key)))));
 
         }
         for (String key : instances.keySet()) {
-            List<String> stats = generateInstanceSizeReportForValue(instances.get(key));
-            headers.add(stats.get(0));
-            headers.add(stats.get(1));
-            headers.add(stats.get(2));
-            headers.add(stats.get(3));
+            Map<String, String> stats = generateInstanceSizeReportForValue(instances.get(key));
+            headers.add(stats.get("totalSize"));
+            headers.add(stats.get("avgSize"));
+            headers.add(stats.get("minSize"));
+            headers.add(stats.get("maxSize"));
+            headers.add(stats.get("stdDev"));
         }
         return String.join(separator, headers);
     }

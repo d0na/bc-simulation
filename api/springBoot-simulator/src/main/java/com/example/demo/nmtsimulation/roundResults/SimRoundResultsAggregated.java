@@ -3,24 +3,25 @@ package com.example.demo.nmtsimulation.roundResults;
 import com.example.demo.nmtsimulation.simParam.SimParams;
 
 import java.util.LinkedList;
+import java.util.Objects;
 import java.util.SplittableRandom;
 
 /**
- *
  * Is responsible for running multiple simulations (NUMRUNS) of a given model (SimParams) and aggregating the results
  * over time, based on an interval (NUMAGGR).
- *
- *
+ * <p>
+ * <p>
  * simulazione aggregata su più intervalli di tempo, utile per analizzare il consumo
  * di gas e la dinamica di creazione/aggiornamento di entità (creator, asset)
  * in un sistema simile a un'infrastruttura blockchain (tipicamente Non-Fungible
  * Token con politiche e attributi).
- *
+ * <p>
  * Effettuare NUMRUNS simulazioni indipendenti, ciascuna delle quali simula il comportamento del sistema per un
  * intervallo di tempo aggregato lungo NUMAGGR secondi, e raccoglie statistiche su:
  * -Consumo di gas per vari tipi di operazioni
  * -Numero di creator e asset creati
  * -Statistiche derivate (max, min, media, deviazione standard)
+ *
  * @author brodo
  */
 public class SimRoundResultsAggregated {
@@ -42,6 +43,7 @@ public class SimRoundResultsAggregated {
     public long[] gasHolderPolicyUpdate;
     public long[] gasCharacteristicUpdate;
     public long[] gasTransfer;
+    public int count ;
 
     public SimRoundResultsAggregated(int _NUMRUNS, SimParams _sim, int _NUMAGGR) {
         NUMRUNS = _NUMRUNS;
@@ -53,6 +55,7 @@ public class SimRoundResultsAggregated {
             assets[j] = new LinkedList<Integer>();
         }
         NUMAGGR = _NUMAGGR;
+        count = 0;
     }
 
 
@@ -64,16 +67,16 @@ public class SimRoundResultsAggregated {
     /**
      * Simulate NUMRUNS executions of the system in the period [time, time + NUMAGGR), and fills the gas* vectors with
      * the results.
-     *
+     * <p>
      * Simula il sistema in un intervallo [time, time + NUMAGGR) per ciascuna delle NUMRUNS esecuzioni indipendenti.
      * 1. Per ogni esecuzione (i) e per ogni istante di tempo nel range:
      * 2. Se timeInner == 0, si considera il deploy iniziale del contratto NMT (una tantum).
      * 3. Se un numero casuale è sotto la soglia PROBnewCreatorCreation, si crea un nuovo creator.
      * 4. Per ciascun creator esistente, si può creare un asset con probabilità PROBnewAssetsCreation.
-     *    - Per ciascun asset esistente, possono avvenire:
-     *    - aggiornamento della holder policy
-     *    - aggiornamento di caratteristiche
-     *    - trasferimento
+     * - Per ciascun asset esistente, possono avvenire:
+     * - aggiornamento della holder policy
+     * - aggiornamento di caratteristiche
+     * - trasferimento
      * Tutti gli eventi sono condizionati da probabilità tempo-dipendenti e contribuiscono al conteggio del gas speso per ogni run.
      */
     public void computeSimStepNoMasterFixedRandomAggregated(int time) {
@@ -103,7 +106,8 @@ public class SimRoundResultsAggregated {
                     gasTotal[i] += sim.GASdeployNMT();
                 }
                 //random creation of new creator
-                if (randomDouble <= sim.PROBnewCreatorCreation().getProb(timeInner)) {
+                double prob = Objects.requireNonNull(sim.PROBnewCreatorCreation()).getProb(timeInner);
+                if (randomDouble <= prob) {
                     creators[i].add(timeInner);
                     gasTotal[i] += sim.GAScreatorPolicyUpdate();
                     gasNewCreator[i] += sim.GAScreatorPolicyUpdate();
@@ -115,22 +119,28 @@ public class SimRoundResultsAggregated {
                 }
             }*/
                 for (Integer creator : creators[i]) {
-                    if (randomDouble <= sim.PROBnewAssetsCreation().getProb(timeInner - creator)) {
+                    double probTimeDep = Objects.requireNonNull(sim.PROBnewCreatorCreation()).getProb(timeInner - creator);
+                    if (randomDouble <= probTimeDep) {
                         assets[i].add(timeInner);
                         gasTotal[i] += sim.GASnewAssetsCreation();
                         gasNewAsset[i] += sim.GASnewAssetsCreation();
                     }
                 }
                 for (Integer asset : assets[i]) {
-                    if (randomDouble <= sim.PROBholderPolicyUpdate().getProb(timeInner - asset)) {
+                    double probTimeDep1 = Objects.requireNonNull(sim.PROBholderPolicyUpdate()).getProb(timeInner - asset);
+                    if (randomDouble <= probTimeDep1) {
+                        count ++;
                         gasTotal[i] += sim.GASholderPolicyUpdate();
                         gasHolderPolicyUpdate[i] += sim.GASholderPolicyUpdate();
                     }
-                    if (randomDouble <= sim.PROBcharacteristicUpdate().getProb(timeInner - asset)) {
+                    double probTimeDep2 = Objects.requireNonNull(sim.PROBcharacteristicUpdate()).getProb(timeInner - asset);
+
+                    if (randomDouble <= probTimeDep2) {
                         gasTotal[i] += sim.GAScharacteristicUpdate();
                         gasCharacteristicUpdate[i] += sim.GAScharacteristicUpdate();
                     }
-                    if (randomDouble <= sim.PROBtransfer().getProb(timeInner - asset)) {
+                    double probTimeDep3 = Objects.requireNonNull(sim.PROBtransfer()).getProb(timeInner - asset);
+                    if (randomDouble <= probTimeDep3) {
                         gasTotal[i] += sim.GAStransfer();
                         gasTransfer[i] += sim.GAStransfer();
                     }
@@ -158,10 +168,10 @@ public class SimRoundResultsAggregated {
 
     /**
      * Creates a string in TSV (tab-separated) format with statistics on creator and asset:
-     *     - total number
-     *     - max, min
-     *     - average
-     *     - standard deviation
+     * - total number
+     * - max, min
+     * - average
+     * - standard deviation
      */
 
     public String getTSVInfoCreatorsAssetsStats() {

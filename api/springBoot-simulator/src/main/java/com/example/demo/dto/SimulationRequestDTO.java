@@ -22,11 +22,14 @@ import java.util.List;
 @AllArgsConstructor
 @Slf4j
 public class SimulationRequestDTO {
+    List<String> entities;
     List<EventDTO> events;
     int numAggr;
     int maxTime;
     int numRuns;
     String dir;
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
 
     public String toJson() {
         try {
@@ -36,7 +39,7 @@ public class SimulationRequestDTO {
         }
     }
 
-    public JobParameters toJobParameters() {
+    public JobParameters toJobParameters() throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         String eventsJson;
 
@@ -53,7 +56,8 @@ public class SimulationRequestDTO {
                 .addLong("numRuns", (long) this.numRuns)
                 .addString("dir", this.dir)
                 .addString("outfile", buildOutFileName(this.dir, this.maxTime, this.numAggr))
-                .addString("events", eventsJson)
+                .addString("events", OBJECT_MAPPER.writeValueAsString(this.events))
+                .addString("entities", OBJECT_MAPPER.writeValueAsString(this.entities))
                 .addString("uuid", java.util.UUID.randomUUID().toString())
                 .toJobParameters();
     }
@@ -85,6 +89,19 @@ public class SimulationRequestDTO {
                 dto.setEvents(events);
             } catch (IOException e) {
                 throw new RuntimeException("Failed to deserialize events", e);
+            }
+        }
+
+
+        // Deserialize entities
+        String entitiesJson = params.getString("entities");
+        if (entitiesJson != null && !entitiesJson.isEmpty()) {
+            try {
+                List<String> entities = OBJECT_MAPPER.readValue(entitiesJson, new TypeReference<List<String>>() {});
+                dto.setEntities(entities);
+            } catch (IOException e) {
+                log.error("Failed to deserialize entities", e);
+                throw new RuntimeException("Failed to deserialize entities", e);
             }
         }
 

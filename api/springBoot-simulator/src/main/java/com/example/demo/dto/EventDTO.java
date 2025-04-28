@@ -14,10 +14,13 @@ public class EventDTO {
     private String eventName;
     /** event name */
     private String eventDescription;
+    private String instanceOf;
+    private String dependOn;
     /** probability distribution of the event */
     private AbstractDistributionDTO probabilityDistribution;
     /** gas cost of the event */
     private long gasCost;
     /** related events to this event */
     private List<EventDTO> relatedEvents;
+
 }

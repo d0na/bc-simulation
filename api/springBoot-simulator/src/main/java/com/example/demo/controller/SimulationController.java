@@ -1,11 +1,10 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.EventDTO;
-import com.example.demo.dto.JobStatusDTO;
-import com.example.demo.dto.SimTaskletJobRequestDTO;
-import com.example.demo.dto.SimulationRequestDTO;
+import com.example.demo.dto.*;
+import com.example.demo.service.GraphService;
 import com.example.demo.service.JobMonitoringService;
 import com.example.demo.service.SimulationJobService;
+import com.opencsv.exceptions.CsvValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
@@ -21,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -48,6 +48,9 @@ public class SimulationController {
     @Autowired
     private SimulationJobService simulationJobService;
 
+
+    @Autowired
+    private GraphService graphService;
     @GetMapping("/jobs/status")
     public ResponseEntity<List<JobStatusDTO>> getJobStatuses() {
         List<JobStatusDTO> statuses = jobMonitoringService.getJobStatuses();
@@ -126,5 +129,11 @@ public class SimulationController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred during simulation");
         }
+    }
+
+    @GetMapping("/bezier-data")
+    public ResponseEntity<List<PointDTO>> getBezierData(@RequestBody String request) throws CsvValidationException, IOException {
+        List<PointDTO> data = graphService.loadDataFromCsv("aa.csv");
+        return ResponseEntity.ok(data);
     }
 }

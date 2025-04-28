@@ -156,7 +156,7 @@ public class SimRevTasklet implements Tasklet {
 
                 sRounds.computeSimStepNoMasterFixedRandomAggregated(i);
                 writeSimLine(bw, sRounds, i);
-
+                System.out.println("count:"+sRounds.count);
                 double progress = ((i / (double) maxTime) * 100);
                 updateProgressInContext(chunkContext, progress, jobExecutionId);
             }
