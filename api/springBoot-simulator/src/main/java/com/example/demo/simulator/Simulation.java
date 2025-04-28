@@ -1,4 +1,4 @@
-package com.example.demo.batch.simulation;
+package com.example.demo.simulator;
 
 import com.example.demo.dto.SimulationRequestDTO;
 import lombok.AllArgsConstructor;

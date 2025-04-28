@@ -5,6 +5,7 @@ import com.example.demo.nmtsimulation.roundResults.SimRoundResults;
 import com.example.demo.nmtsimulation.roundResults.SimRoundResultsAggregated;
 import com.example.demo.nmtsimulation.simParam.SimParams;
 import com.example.demo.service.ProgressTracker;
+import com.example.demo.simulator.Simulation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParameters;
