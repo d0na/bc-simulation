@@ -9,6 +9,7 @@ import com.example.demo.nmtsimulation.helper.ProbabilityFunction;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 /**
  *1,1 falls fast after 30
@@ -25,6 +26,7 @@ import lombok.EqualsAndHashCode;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
+@NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class LognormalProbDistrDTO extends AbstractDistributionDTO {
     double mean;

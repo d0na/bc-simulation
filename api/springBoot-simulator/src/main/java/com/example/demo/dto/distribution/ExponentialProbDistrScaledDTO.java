@@ -6,8 +6,10 @@ package com.example.demo.dto.distribution;
 
 import com.example.demo.dto.AbstractDistributionDTO;
 import com.example.demo.nmtsimulation.helper.ProbabilityFunction;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 /**
  * Best fits are 0.1 and 0.01
@@ -26,6 +28,8 @@ import lombok.EqualsAndHashCode;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
+@NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ExponentialProbDistrScaledDTO extends AbstractDistributionDTO {
     double rate;
     double scalingFactorX;

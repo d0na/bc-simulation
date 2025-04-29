@@ -6,8 +6,10 @@ package com.example.demo.dto.distribution;
 
 import com.example.demo.dto.AbstractDistributionDTO;
 import com.example.demo.nmtsimulation.helper.ProbabilityFunction;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 /**
  *The higher std the more it flattens the bell curve
@@ -31,6 +33,8 @@ import lombok.EqualsAndHashCode;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
+@NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class NormalProbDistrDTO extends AbstractDistributionDTO {
     double mean;
     double std;
