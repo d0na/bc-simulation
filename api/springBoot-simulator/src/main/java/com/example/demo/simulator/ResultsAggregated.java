@@ -12,6 +12,7 @@ public class ResultsAggregated {
     SimulationRequestDTO simParams;
     // Maps the event name to an array of longs, one for each run
     Map<String, long[]> results;
+    Map<String, long[]> counters;
     // Maps the event name to an array of linked lists, one for each run
     Map<String, LinkedList<Integer>[]> entities;
     String seedEvent;
@@ -22,6 +23,7 @@ public class ResultsAggregated {
     public ResultsAggregated(SimulationRequestDTO simParams) {
         this.simParams = simParams;
         this.results = new HashMap<>();
+        this.counters = new HashMap<>();
         this.entities = new HashMap<>();
         this.results.put(gasTotal, new long[simParams.getNumRuns()]);
         simParams.getEvents().forEach(this::initEventStructures);
@@ -53,11 +55,10 @@ public class ResultsAggregated {
                 timeInner = time + j;
 
                 //random creation of first related events
-                double finalRandomDouble = randomDouble;
-                int finalTimeInner = timeInner;
-                int finalI = i;
-                simParams.getEvents().forEach(event -> processEvent(event, finalRandomDouble,
-                        finalTimeInner, finalI, simParams.getEntities()));
+                double curRandom = randomDouble;
+                int curTimerInner = timeInner;
+                int curRun = i;
+                simParams.getEvents().forEach(event -> processEvent(event, curRandom, curTimerInner, curRun));
             }
         }
     }
@@ -97,44 +98,54 @@ public class ResultsAggregated {
      * @param event
      * @param randomDouble
      * @param timeInner
-     * @param i
+     * @param run
      */
 
-    private void processEvent(EventDTO event, double randomDouble, int timeInner, int i, List<String> entities) {
-
+    private void processEvent(EventDTO event, double randomDouble, int timeInner, int run) {
         AbstractDistributionDTO dist = event.getProbabilityDistribution();
-        double prob = (dist != null) ? dist.getProb(timeInner) : 1;
+        double baseProb = (dist != null) ? dist.getProb(timeInner) : 0;
 
-        if (timeInner == 0 && event.getProbabilityDistribution() == null) {
-            addGas(i, event.getEventName(), event.getGasCost());
+        String instanceOf = event.getInstanceOf();
+        String dependOn = event.getDependOn();
+        String eventName = event.getEventName();
+        long gasCost = event.getGasCost();
+
+        // Caso: evento senza dipendenze né istanze (azione pura)
+        if (instanceOf == null && dependOn == null && randomDouble <= baseProb) {
+            addGas(run, eventName, gasCost);
         }
 
-        if (event.getInstanceOf() != null && event.getDependOn() == null) {
-            if (randomDouble <= prob) {
-                this.entities.get(toCamelCase(event.getInstanceOf()))[i].add(timeInner);
-                addGas(i, event.getEventName(), event.getGasCost());
-            }
+        // Caso: evento indipendente da altro e con istanza
+        if (instanceOf != null && dependOn == null && randomDouble <= baseProb) {
+            this.entities.get(toCamelCase(instanceOf))[run].add(timeInner);
+            addGas(run, eventName, gasCost);
+            return;
         }
 
-        if (event.getDependOn() != null) {
-            LinkedList<Integer>[] instanceList = this.entities.get(toCamelCase(event.getDependOn()));
+        // Caso: evento dipendente da altro
+        if (dependOn != null) {
+            LinkedList<Integer>[] instanceList = this.entities.get(toCamelCase(dependOn));
             if (instanceList != null) {
-                for (Integer instanceTime : instanceList[i]) {
-                    double probTimeDep = (dist != null) ? dist.getProb(timeInner - instanceTime) : 1;
+                for (Integer instanceTime : instanceList[run]) {
+                    double probTimeDep = (dist != null) ? dist.getProb(timeInner - instanceTime) : 0;
                     if (randomDouble <= probTimeDep) {
-                        if (event.getInstanceOf() != null) {
-                            this.entities.get(toCamelCase(event.getInstanceOf()))[i].add(timeInner);
+                        // Se deve anche creare un'istanza nuova
+                        if (instanceOf != null) {
+                            this.entities.get(toCamelCase(instanceOf))[run].add(timeInner);
                         }
-                        addGas(i, event.getEventName(), event.getGasCost());
+                        addGas(run, eventName, gasCost);
                     }
                 }
             }
+            return;
         }
     }
 
+
     private void addGas(int runIndex, String eventName, long gasValue) {
         this.results.get(gasTotal)[runIndex] += gasValue;
-        this.results.get(toCamelCase("gas_" + eventName))[runIndex] = gasValue;
+        this.results.get(toCamelCase("gas_" + eventName))[runIndex] += gasValue;
+        this.counters.get(toCamelCase(eventName))[runIndex]++;
     }
 
 
@@ -147,6 +158,7 @@ public class ResultsAggregated {
 
         // Initializes the results array for the event
         this.results.computeIfAbsent(toCamelCase("gas_" + event.getEventName()), k -> new long[simParams.getNumRuns()]);
+        this.counters.computeIfAbsent(toCamelCase(event.getEventName()), k -> new long[simParams.getNumRuns()]);
     }
 
     private void initEntities(String entityName) {
@@ -223,22 +235,35 @@ public class ResultsAggregated {
      * @return
      */
     private String generateCSVHeaderWithStats(Map<String, ?> results, Map<String, ?> instances, String separator) {
-
+        int count = 2;
         // For each event creates a map entry with the Event name
         List<String> headers = new ArrayList<>();
 
         for (String key : results.keySet()) {
-            headers.add(toCamelCase("mean_" + key));
-            headers.add(toCamelCase("std_" + key));
+            headers.add(toCamelCase(key + "_mean(" + count + ")"));
+            count++;
+            headers.add(toCamelCase(key + "_std(" + count + ")"));
+            count++;
         }
 
+        for (String key : counters.keySet()) {
+            headers.add(toCamelCase(key + "_mean(" + count + ")"));
+            count++;
+            headers.add(toCamelCase(key + "_std(" + count + ")"));
+            count++;
+        }
         // Per ogni chiave di instances genero le 4 intestazioni
         for (String key : instances.keySet()) {
-            headers.add(toCamelCase("tot_" + key));
-            headers.add(toCamelCase("avg_" + key));
-            headers.add(toCamelCase("min_" + key));
-            headers.add(toCamelCase("max_" + key));
-            headers.add(toCamelCase("stdDev" + key));
+            headers.add(toCamelCase("tot_" + key+"(" + count + ")"));
+            count++;
+            headers.add(toCamelCase("avg_" + key+"(" + count + ")"));
+            count++;
+            headers.add(toCamelCase("min_" + key+"(" + count + ")"));
+            count++;
+            headers.add(toCamelCase("max_" + key+"(" + count + ")"));
+            count++;
+            headers.add(toCamelCase("std_" + key+"(" + count + ")"));
+            count++;
         }
 
         // Costruisco la stringa CSV
@@ -251,8 +276,13 @@ public class ResultsAggregated {
         for (String key : results.keySet()) {
             headers.add(Double.toString(computeAvg(results.get(key))));
             headers.add(Double.toString(computeStd(results.get(key), computeAvg(results.get(key)))));
-
         }
+
+        for (String key : counters.keySet()) {
+            headers.add(Double.toString(computeAvg(counters.get(key))));
+            headers.add(Double.toString(computeStd(counters.get(key), computeAvg(counters.get(key)))));
+        }
+
         for (String key : entities.keySet()) {
             Map<String, String> stats = generateInstanceSizeReportForValue(entities.get(key));
             headers.add(stats.get("totalSize"));
@@ -272,7 +302,7 @@ public class ResultsAggregated {
      * @return
      */
     public String generateCSVHeader(String separator) {
-        return "time" + separator+ generateCSVHeaderWithStats(results, entities, separator);
+        return "time" + separator + generateCSVHeaderWithStats(results, entities, separator);
     }
 
     public static String toCamelCase(String input) {
