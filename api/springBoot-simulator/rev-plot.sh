@@ -35,8 +35,10 @@ set key font 'Times-New-Roman,18 \n";
 
 #set yrange [0:6800000]
 
-fileIn1=./output/86400a1_20250429131319
-fileOut="simGraph1Variance"
+fileIn1=./output/singlePeakt86400aggr1_20250429161215
+fileIn2=./output/BoomAndBust_t86400_aggr1_20250429165727
+
+fileOut="./output/simGraph1Variance"
 gnuplot --persist << EOF
 $same
 set output "$fileOut.$outf"
@@ -48,8 +50,8 @@ plot \
   "$fileIn1.tsv" using 1:16 with lines title "bezier" smooth bezier lw 3 lc "medium-blue"
 EOF
 
-fileIn2=./output/sim2-86400a1_20250429120029
-fileOut="simGraph2Variance"
+
+fileOut="./output/simGraph2Variance"
 gnuplot --persist << EOF
 $same
 set output "$fileOut.$outf"
@@ -60,7 +62,7 @@ plot \
   "$fileIn2.tsv" using 1:16 with lines title "bezier" smooth bezier lw 3 lc "medium-blue"
 EOF
 
-fileOut="simGraph1Creators"
+fileOut="./output/simGraph1Creators"
 gnuplot --persist << EOF
 $same
 set output "$fileOut.$outf"
@@ -74,7 +76,7 @@ plot \
   '$fileIn1.tsv' using 1:34 with lines title 'min' smooth bezier lw 3 lc "green"
 EOF
 
-fileOut="simGraph1Assets"
+fileOut="./output/simGraph1Assets"
 gnuplot --persist << EOF
 $same
 set output "$fileOut.$outf"
@@ -88,7 +90,7 @@ plot \
   '$fileIn1.tsv' using 1:39 with lines title 'min' smooth bezier lw 3 lc "green"
 EOF
 
-fileOut="simGraph2Creators"
+fileOut="./output/simGraph2Creators"
 gnuplot --persist << EOF
 $same
 set output "$fileOut.$outf"
@@ -102,7 +104,7 @@ plot \
   '$fileIn2.tsv' using 1:34 with lines title 'min' smooth bezier lw 3 lc "green"
 EOF
 
-fileOut="simGraph2Assets"
+fileOut="./output/simGraph2Assets"
 gnuplot --persist << EOF
 $same
 set output "$fileOut.$outf"
@@ -116,7 +118,7 @@ plot \
   '$fileIn2.tsv' using 1:39 with lines title 'min' smooth bezier lw 3 lc "green"
 EOF
 
-fileOut="simGraph1Operationss"
+fileOut="./output/simGraph1Operationss"
 size="600,600"
 gnuplot --persist << EOF
 $same
@@ -134,7 +136,7 @@ plot \
   '$fileIn1.tsv' using 1:6 with filledcurves smooth bezie title 'newCreatorCreation' lc "green"
 EOF
 
-fileOut="simGraph2Operations"
+fileOut="./output/simGraph2Operations"
 size="600,600"
 gnuplot --persist << EOF
 $same
@@ -152,7 +154,7 @@ plot \
   '$fileIn2.tsv' using 1:6 with filledcurves smooth bezie title 'newCreatorCreation' lc "green"
 EOF
 
-fileOut="simGraph12Bezier"
+fileOut="./output/simGraph12Bezier"
 size="600,600"
 gnuplot --persist << EOF
 $same
