@@ -117,13 +117,16 @@ const SimulationConfiguratorModalForm: React.FC = () => {
     const [open, setOpen] = useState(false);
     const [events, setEvents] = useState<Event[]>([]);
     const [name, setName] = useState("");
-    const [dir, setDir] = useState("");
-    const [duration, setDuration] = useState<number | "">("");
-    const [aggregation, setAggregation] = useState<number | "">("");
+    const [dir, setDir] = useState("./output");
+// Per cambiare la duration predefinita a 7 giorni (604800 secondi)
+    const [duration, setDuration] = useState<number>(604800);
+
+// Per cambiare l'aggregation predefinita a minuti (60 secondi)
+    const [aggregation, setAggregation] = useState<number>(60);
     const [entityInput, setEntityInput] = useState("");
     const [entities, setEntities] = useState<string[]>([]);
     const [configPreview, setConfigPreview] = useState<SimulationConfig | null>(null);
-    const [numRuns, setNumRuns] = useState<number | "">("");
+    const [numRuns, setNumRuns] = useState<number | "">("5");
     const [expandedEvent, setExpandedEvent] = useState<number | null>(null);
 
     const handleReset = () => {
@@ -484,11 +487,12 @@ const SimulationConfiguratorModalForm: React.FC = () => {
                                             onChange={(e) => setDir(e.target.value)}
                                         />
                                     </Grid>
-                                    <Grid item xs={12} sm={6}>
+
+                                    {/* Nuova riga per Duration */}
+                                    <Grid item xs={12}>
                                         <TextField
                                             label="Duration"
                                             select
-                                            fullWidth
                                             size="small"
                                             value={duration}
                                             onChange={(e) => setDuration(Number(e.target.value))}
@@ -500,7 +504,9 @@ const SimulationConfiguratorModalForm: React.FC = () => {
                                             ))}
                                         </TextField>
                                     </Grid>
-                                    <Grid item xs={12} sm={4}>
+
+                                    {/* Nuova riga per Aggregation */}
+                                    <Grid item xs={12}>
                                         <TextField
                                             label="Aggregation"
                                             select
@@ -516,7 +522,9 @@ const SimulationConfiguratorModalForm: React.FC = () => {
                                             ))}
                                         </TextField>
                                     </Grid>
-                                    <Grid item xs={12} sm={4}>
+
+                                    {/* Nuova riga per Number of Runs */}
+                                    <Grid item xs={12}>
                                         <TextField
                                             label="Number of Runs"
                                             type="number"
@@ -624,41 +632,42 @@ const SimulationConfiguratorModalForm: React.FC = () => {
                                                     value={event.gasCost}
                                                     onChange={(e) => handleEventChange(index, "gasCost", Number(e.target.value))}
                                                 />
-                                                <Grid container spacing={1}>
-                                                    <Grid item xs={12} sm={6}>
-                                                        <TextField
-                                                            label="Instance Of"
-                                                            select
-                                                            size="small"
-                                                            fullWidth
-                                                            value={event.instanceOf || ""}
-                                                            onChange={(e) => handleEventChange(index, "instanceOf", e.target.value || null)}
-                                                        >
-                                                            <MenuItem value="">None</MenuItem>
-                                                            {entities.map((entity, idx) => (
-                                                                <MenuItem key={idx} value={entity}>
-                                                                    {entity}
-                                                                </MenuItem>
-                                                            ))}
-                                                        </TextField>
-                                                    </Grid>
-                                                    <Grid item xs={12} sm={6}>
-                                                        <TextField
-                                                            label="Depends On"
-                                                            select
-                                                            size="small"
-                                                            fullWidth
-                                                            value={event.dependOn || ""}
-                                                            onChange={(e) => handleEventChange(index, "dependOn", e.target.value || null)}
-                                                        >
-                                                            <MenuItem value="">None</MenuItem>
-                                                            {entities.map((entity, idx) => (
-                                                                <MenuItem key={idx} value={entity}>
-                                                                    {entity}
-                                                                </MenuItem>
-                                                            ))}
-                                                        </TextField>
-                                                    </Grid>
+                                                {/* Nuova riga singola per Instance Of */}
+                                                <Grid item xs={12}>
+                                                    <TextField
+                                                        label="Instance Of"
+                                                        select
+                                                        size="small"
+                                                        fullWidth
+                                                        value={event.instanceOf || ""}
+                                                        onChange={(e) => handleEventChange(index, "instanceOf", e.target.value || null)}
+                                                    >
+                                                        <MenuItem value="">None</MenuItem>
+                                                        {entities.map((entity, idx) => (
+                                                            <MenuItem key={idx} value={entity}>
+                                                                {entity}
+                                                            </MenuItem>
+                                                        ))}
+                                                    </TextField>
+                                                </Grid>
+
+                                                {/* Nuova riga singola per Depends On */}
+                                                <Grid item xs={12}>
+                                                    <TextField
+                                                        label="Depends On"
+                                                        select
+                                                        size="small"
+                                                        fullWidth
+                                                        value={event.dependOn || ""}
+                                                        onChange={(e) => handleEventChange(index, "dependOn", e.target.value || null)}
+                                                    >
+                                                        <MenuItem value="">None</MenuItem>
+                                                        {entities.map((entity, idx) => (
+                                                            <MenuItem key={idx} value={entity}>
+                                                                {entity}
+                                                            </MenuItem>
+                                                        ))}
+                                                    </TextField>
                                                 </Grid>
                                                 <TextField
                                                     label="Distribution Type"
