@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import {
     Box,
     TextField,
@@ -11,15 +11,29 @@ import {
     DialogContent,
     DialogActions,
     IconButton,
+    Grid,
+    Paper,
+    Divider,
+    Chip,
+    Collapse,
+    Tooltip,
+    InputAdornment,
 } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
-import SaveIcon from "@mui/icons-material/Save";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import EditIcon from "@mui/icons-material/Edit";
+import {
+    Close,
+    Save,
+    ContentCopy,
+    Edit,
+    Add,
+    Delete,
+    Refresh,
+    Visibility,
+    Upload,
+} from "@mui/icons-material";
 
 type ProbabilityDistribution = {
     type: string;
-    [key: string]: any; // Parametri specifici per ogni tipo
+    [key: string]: any;
 };
 
 type Event = {
@@ -42,34 +56,33 @@ type SimulationConfig = {
     dir: string;
 };
 
-
 const durationOptions = [
-    {value: 86400, label: "ONE_DAY (86400)"},
-    {value: 604800, label: "SEVEN_DAYS (604800)"},
-    {value: 864000, label: "TEN_DAYS (864000)"},
-    {value: 1209600, label: "TWO_WEEKS (1209600)"},
-    {value: 2592000, label: "ONE_MONTH (2592000)"},
+    { value: 86400, label: "1 Day" },
+    { value: 604800, label: "7 Days" },
+    { value: 864000, label: "10 Days" },
+    { value: 1209600, label: "14 Days" },
+    { value: 2592000, label: "30 Days" },
 ];
 
 const aggregationOptions = [
-    {value: 1, label: "SECONDS (1)"},
-    {value: 60, label: "MINUTES (60)"},
-    {value: 3600, label: "HOURS (3600)"},
+    { value: 1, label: "Seconds" },
+    { value: 60, label: "Minutes" },
+    { value: 3600, label: "Hours" },
 ];
 
 const distributionTypes = [
-    {value: "UNIFORM", label: "Uniform"},
-    {value: "NORMAL_SCALED", label: "Normal Scaled"},
-    {value: "NORMAL", label: "Normal"},
-    {value: "LOGNORMAL_SCALED", label: "LogNormal Scaled"},
-    {value: "LOGNORMAL", label: "LogNormal"},
-    {value: "EXPONENTIAL", label: "Exponential"},
-    {value: "EXPONENTIAL_SCALED", label: "Exponential Scaled"},
+    { value: "UNIFORM", label: "Uniform" },
+    { value: "NORMAL_SCALED", label: "Normal Scaled" },
+    { value: "NORMAL", label: "Normal" },
+    { value: "LOGNORMAL_SCALED", label: "LogNormal Scaled" },
+    { value: "LOGNORMAL", label: "LogNormal" },
+    { value: "EXPONENTIAL", label: "Exponential" },
+    { value: "EXPONENTIAL_SCALED", label: "Exponential Scaled" },
 ];
 
 const downloadConfig = (config: SimulationConfig) => {
     const element = document.createElement("a");
-    const file = new Blob([JSON.stringify(config, null, 2)], {type: "application/json"});
+    const file = new Blob([JSON.stringify(config, null, 2)], { type: "application/json" });
     element.href = URL.createObjectURL(file);
     element.download = `${config.name}_simulation_config.json`;
     document.body.appendChild(element);
@@ -78,679 +91,637 @@ const downloadConfig = (config: SimulationConfig) => {
 
 const getProbabilityDistribution = (event: Event) => {
     const type = event.probabilityDistribution.type;
+    const dist = event.probabilityDistribution;
 
     switch (type) {
         case "FIXED":
-            return {
-                type: "FIXED",
-                fixedTime: event.probabilityDistribution.fixedTime,
-                tolerance: event.probabilityDistribution.tolerance
-            };
+            return { type, fixedTime: dist.fixedTime, tolerance: dist.tolerance };
         case "UNIFORM":
-            return {
-                type: "UNIFORM",
-                value: event.probabilityDistribution.value
-            };
+            return { type, value: dist.value };
         case "NORMAL_SCALED":
-            return {
-                type: "NORMAL_SCALED",
-                mean: event.probabilityDistribution.mean,
-                std: event.probabilityDistribution.std,
-                scalingFactorX: event.probabilityDistribution.scalingFactorX,
-                scalingFactorY: event.probabilityDistribution.scalingFactorY
-            };
-        case "NORMAL":
-            return {
-                type: "NORMAL",
-                mean: event.probabilityDistribution.mean,
-                std: event.probabilityDistribution.std,
-                scalingFactor: event.probabilityDistribution.scalingFactor
-            };
         case "LOGNORMAL_SCALED":
-            return {
-                type: "LOGNORMAL_SCALED",
-                mean: event.probabilityDistribution.mean,
-                std: event.probabilityDistribution.std,
-                scalingFactorX: event.probabilityDistribution.scalingFactorX,
-                scalingFactorY: event.probabilityDistribution.scalingFactorY
-            };
+            return { type, mean: dist.mean, std: dist.std, scalingFactorX: dist.scalingFactorX, scalingFactorY: dist.scalingFactorY };
+        case "NORMAL":
         case "LOGNORMAL":
-            return {
-                type: "LOGNORMAL",
-                mean: event.probabilityDistribution.mean,
-                std: event.probabilityDistribution.std,
-                scalingFactor: event.probabilityDistribution.scalingFactor
-            };
+            return { type, mean: dist.mean, std: dist.std, scalingFactor: dist.scalingFactor };
         case "EXPONENTIAL_SCALED":
-            return {
-                type: "EXPONENTIAL_SCALED",
-                rate: event.probabilityDistribution.rate,
-                scalingFactorX: event.probabilityDistribution.scalingFactorX,
-                scalingFactorY: event.probabilityDistribution.scalingFactorY
-            };
+            return { type, rate: dist.rate, scalingFactorX: dist.scalingFactorX, scalingFactorY: dist.scalingFactorY };
         case "EXPONENTIAL":
-            return {
-                type: "EXPONENTIAL",
-                rate: event.probabilityDistribution.rate,
-                scalingFactor: event.probabilityDistribution.scalingFactor
-            };
+            return { type, rate: dist.rate, scalingFactor: dist.scalingFactor };
         default:
             return {};
     }
 };
 
-
 const SimulationConfiguratorModalForm: React.FC = () => {
-        const [open, setOpen] = useState(false);
-        const [events, setEvents] = useState<Event[]>([]);
-        const [name, setName] = useState("");
-        const [dir, setDir] = useState("");
-        const [duration, setDuration] = useState<number | "">("");
-        const [aggregation, setAggregation] = useState<number | "">("");
-        const [entityInput, setEntityInput] = useState("");
-        const [entities, setEntities] = useState<string[]>([]);
-        const [configPreview, setConfigPreview] = useState<SimulationConfig | null>(null);
+    const [open, setOpen] = useState(false);
+    const [events, setEvents] = useState<Event[]>([]);
+    const [name, setName] = useState("");
+    const [dir, setDir] = useState("");
+    const [duration, setDuration] = useState<number | "">("");
+    const [aggregation, setAggregation] = useState<number | "">("");
+    const [entityInput, setEntityInput] = useState("");
+    const [entities, setEntities] = useState<string[]>([]);
+    const [configPreview, setConfigPreview] = useState<SimulationConfig | null>(null);
+    const [numRuns, setNumRuns] = useState<number | "">("");
+    const [expandedEvent, setExpandedEvent] = useState<number | null>(null);
 
-        const [numRuns, setNumRuns] = useState<number | "">("");
-
-        const handleReset = () => {
+    const handleReset = () => {
+        if (window.confirm("Are you sure you want to reset all fields?")) {
             setName("");
             setDir("");
             setDuration("");
             setAggregation("");
             setEntityInput("");
             setEntities([]);
-            setEvents([]); // o setBlocks([]) se usi blocks
+            setEvents([]);
             setNumRuns("");
             setConfigPreview(null);
+        }
+    };
+
+    const handleAddEvent = () => {
+        const newEvent: Event = {
+            eventName: "",
+            eventDescription: "",
+            instanceOf: null,
+            dependOn: null,
+            probabilityDistribution: { type: "" },
+            gasCost: 0,
+            relatedEvents: null
         };
+        setEvents([...events, newEvent]);
+        setExpandedEvent(events.length);
+    };
 
+    const handleImportConfig = (config: SimulationConfig) => {
+        setName(config.name);
+        setDir(config.dir);
+        setDuration(config.maxTime);
+        setAggregation(config.numAggr);
+        setNumRuns(config.numRuns);
+        setEntities(config.entities);
+        setEvents(config.events);
+    };
 
-        const handleAddBlock = () => {
-            setEvents([
-                ...events, {
-                    eventName: "",
-                    eventDescription: "",
-                    instanceOf: null,
-                    dependOn: null,
-                    probabilityDistribution: {
-                        type: ""
-                    },
-                    gasCost: 0,
-                    relatedEvents: null
-                }]);
-        };
+    const handleRemoveEvent = (index: number) => {
+        const updated = events.filter((_, i) => i !== index);
+        setEvents(updated);
+        if (expandedEvent === index) setExpandedEvent(null);
+    };
 
-        const handleImportConfig = (config: SimulationConfig) => {
-            setName(config.name);
-            setDir(config.dir);
-            setDuration(config.maxTime);
-            setAggregation(config.numAggr);
-            setNumRuns(config.numRuns);
-            setEntities(config.entities);
-            setEvents(config.events);
-        };
-
-
-        const handleRemoveBlock = (index: number) => {
-            const updated = events.filter((_, i) => i !== index);
-            setEvents(updated);
-        };
-
-        const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-            const file = event.target.files?.[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const text = e.target?.result as string;
-                    const jsonConfig = JSON.parse(text) as SimulationConfig;
+    const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const jsonConfig = JSON.parse(e.target?.result as string) as SimulationConfig;
                     handleImportConfig(jsonConfig);
-                };
-                reader.readAsText(file);
-            }
-        };
-
-
-        const handleBlockChange = (index: number, param: string, value: any) => {
-            const updated = [...events];
-            const updatedEvent = updated[index];
-
-            // Gestisci la modifica di un parametro dentro probabilityDistribution
-            if (param.startsWith("probabilityDistribution.")) {
-                const paramName = param.split(".")[1]; // Estrae il nome del parametro (ad esempio "type")
-                updatedEvent.probabilityDistribution[paramName] = value;
-            }
-
-            setEvents(updated); // Aggiorna lo stato
-        };
-
-
-        const handleAddEntity = () => {
-            const trimmed = entityInput.trim();
-            if (trimmed && !entities.includes(trimmed)) {
-                setEntities([...entities, trimmed]);
-                setEntityInput("");
-            }
-        };
-
-        const handleParamChange = (index: number, param: string, value: any) => {
-            const updated = [...events]; // Assicurati di aggiornare il giusto stato, in questo caso blocks
-            const updatedEvent = updated[index];
-
-            // Se param è un tipo di parametro in probabilityDistribution, aggiorna il campo corrispondente
-            updatedEvent.probabilityDistribution[param] = value;
-
-            setEvents(updated); // Aggiorna lo stato con il nuovo array
-        };
-
-
-        const handleRemoveEntity = (index: number) => {
-            setEntities((prev) => prev.filter((_, i) => i !== index));
-        };
-
-
-        const handleSubmit = () => {
-            const configJson = {
-                maxTime: duration,
-                numAggr: aggregation,
-                dir: dir,
-                numRuns: numRuns,
-                configuration: {
-                    entities: entities,
-                    events: events.map((event) => ({
-                        eventName: event.eventName,
-                        eventDescription: event.eventDescription,
-                        instanceOf: event.instanceOf || null,
-                        dependOn: event.dependOn || null,
-                        probabilityDistribution: getProbabilityDistribution(event),
-                        gasCost: event.gasCost,
-                    })),
-                    name: name,
+                } catch (error) {
+                    alert("Invalid JSON file");
                 }
             };
+            reader.readAsText(file);
+        }
+    };
 
-            console.log("JSON pronto da inviare:", configJson);
-            // eventuale POST qui
+    const handleEventChange = (index: number, field: string, value: any) => {
+        const updated = [...events];
+        const updatedEvent = updated[index];
 
-            setOpen(false);
+        if (field.startsWith("probabilityDistribution.")) {
+            const paramName = field.split(".")[1];
+            updatedEvent.probabilityDistribution[paramName] = value;
+        } else {
+            updatedEvent[field as keyof Event] = value;
+        }
+
+        setEvents(updated);
+    };
+
+    const handleAddEntity = () => {
+        const trimmed = entityInput.trim();
+        if (trimmed && !entities.includes(trimmed)) {
+            setEntities([...entities, trimmed]);
+            setEntityInput("");
+        }
+    };
+
+    const handleRemoveEntity = (index: number) => {
+        setEntities(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const handleSubmit = () => {
+        const config = {
+            maxTime: duration,
+            numAggr: aggregation,
+            dir: dir,
+            numRuns: numRuns,
+            configuration: {
+                entities: entities,
+                events: events.map(event => ({
+                    ...event,
+                    probabilityDistribution: getProbabilityDistribution(event),
+                })),
+                name: name,
+            }
         };
 
+        console.log("Configuration ready:", config);
+        setOpen(false);
+    };
 
-        const handlePreview = () => {
-            const config: SimulationConfig = {
-                entities,
-                events,
-                name,
-                numAggr: aggregation as number,
-                maxTime: duration as number,
-                numRuns: numRuns as number,
-                dir
-            };
-            setConfigPreview(config);
+    const handlePreview = () => {
+        const config: SimulationConfig = {
+            entities,
+            events,
+            name,
+            numAggr: aggregation as number,
+            maxTime: duration as number,
+            numRuns: numRuns as number,
+            dir
         };
+        setConfigPreview(config);
+    };
+
+    const renderDistributionFields = (event: Event, index: number) => {
+        const type = event.probabilityDistribution.type;
+        const dist = event.probabilityDistribution;
+
+        const fields = [];
+        const commonProps = {
+            size: "small" as const,
+            fullWidth: true,
+            sx: { mb: 1 },
+            type: "number",
+        };
+
+        switch (type) {
+            case "FIXED":
+                fields.push(
+                    <TextField
+                        {...commonProps}
+                        key="fixedTime"
+                        label="Fixed Time (s)"
+                        value={dist.fixedTime || ""}
+                        onChange={(e) => handleEventChange(index, "probabilityDistribution.fixedTime", parseFloat(e.target.value))}
+                    />,
+                    <TextField
+                        {...commonProps}
+                        key="tolerance"
+                        label="Tolerance (s)"
+                        value={dist.tolerance || ""}
+                        onChange={(e) => handleEventChange(index, "probabilityDistribution.tolerance", parseFloat(e.target.value))}
+                    />
+                );
+                break;
+            case "UNIFORM":
+                fields.push(
+                    <TextField
+                        {...commonProps}
+                        key="value"
+                        label="Value"
+                        value={dist.value || ""}
+                        onChange={(e) => handleEventChange(index, "probabilityDistribution.value", parseFloat(e.target.value))}
+                    />
+                );
+                break;
+            case "NORMAL":
+            case "LOGNORMAL":
+                fields.push(
+                    <TextField
+                        {...commonProps}
+                        key="mean"
+                        label="Mean"
+                        value={dist.mean || ""}
+                        onChange={(e) => handleEventChange(index, "probabilityDistribution.mean", parseFloat(e.target.value))}
+                    />,
+                    <TextField
+                        {...commonProps}
+                        key="std"
+                        label="Standard Deviation"
+                        value={dist.std || ""}
+                        onChange={(e) => handleEventChange(index, "probabilityDistribution.std", parseFloat(e.target.value))}
+                    />,
+                    <TextField
+                        {...commonProps}
+                        key="scalingFactor"
+                        label="Scaling Factor"
+                        value={dist.scalingFactor || ""}
+                        onChange={(e) => handleEventChange(index, "probabilityDistribution.scalingFactor", parseFloat(e.target.value))}
+                    />
+                );
+                break;
+            case "NORMAL_SCALED":
+            case "LOGNORMAL_SCALED":
+                fields.push(
+                    <TextField
+                        {...commonProps}
+                        key="mean"
+                        label="Mean"
+                        value={dist.mean || ""}
+                        onChange={(e) => handleEventChange(index, "probabilityDistribution.mean", parseFloat(e.target.value))}
+                    />,
+                    <TextField
+                        {...commonProps}
+                        key="std"
+                        label="Standard Deviation"
+                        value={dist.std || ""}
+                        onChange={(e) => handleEventChange(index, "probabilityDistribution.std", parseFloat(e.target.value))}
+                    />,
+                    <TextField
+                        {...commonProps}
+                        key="scalingFactorX"
+                        label="Scaling Factor X"
+                        value={dist.scalingFactorX || ""}
+                        onChange={(e) => handleEventChange(index, "probabilityDistribution.scalingFactorX", parseFloat(e.target.value))}
+                    />,
+                    <TextField
+                        {...commonProps}
+                        key="scalingFactorY"
+                        label="Scaling Factor Y"
+                        value={dist.scalingFactorY || ""}
+                        onChange={(e) => handleEventChange(index, "probabilityDistribution.scalingFactorY", parseFloat(e.target.value))}
+                    />
+                );
+                break;
+            case "EXPONENTIAL":
+                fields.push(
+                    <TextField
+                        {...commonProps}
+                        key="rate"
+                        label="Rate"
+                        value={dist.rate || ""}
+                        onChange={(e) => handleEventChange(index, "probabilityDistribution.rate", parseFloat(e.target.value))}
+                    />,
+                    <TextField
+                        {...commonProps}
+                        key="scalingFactor"
+                        label="Scaling Factor"
+                        value={dist.scalingFactor || ""}
+                        onChange={(e) => handleEventChange(index, "probabilityDistribution.scalingFactor", parseFloat(e.target.value))}
+                    />
+                );
+                break;
+            case "EXPONENTIAL_SCALED":
+                fields.push(
+                    <TextField
+                        {...commonProps}
+                        key="rate"
+                        label="Rate"
+                        value={dist.rate || ""}
+                        onChange={(e) => handleEventChange(index, "probabilityDistribution.rate", parseFloat(e.target.value))}
+                    />,
+                    <TextField
+                        {...commonProps}
+                        key="scalingFactorX"
+                        label="Scaling Factor X"
+                        value={dist.scalingFactorX || ""}
+                        onChange={(e) => handleEventChange(index, "probabilityDistribution.scalingFactorX", parseFloat(e.target.value))}
+                    />,
+                    <TextField
+                        {...commonProps}
+                        key="scalingFactorY"
+                        label="Scaling Factor Y"
+                        value={dist.scalingFactorY || ""}
+                        onChange={(e) => handleEventChange(index, "probabilityDistribution.scalingFactorY", parseFloat(e.target.value))}
+                    />
+                );
+                break;
+            default:
+                return null;
+        }
 
         return (
-            <div>
-                <Button variant="contained" onClick={() => setOpen(true)}>
-                    Configure simulation
-                </Button>
+            <Grid container spacing={1}>
+                {fields.map((field, i) => (
+                    <Grid item xs={6} key={i}>
+                        {field}
+                    </Grid>
+                ))}
+            </Grid>
+        );
+    };
 
-                <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="md">
-                    <DialogTitle>
-                        Simulation configurator
-                        <IconButton
-                            aria-label="close"
-                            onClick={() => setOpen(false)}
-                            sx={{position: "absolute", right: 8, top: 8}}
-                        >
-                            <CloseIcon/>
+    return (
+        <>
+            <Button variant="contained" onClick={() => setOpen(true)} startIcon={<Add />}>
+                Configure Simulation
+            </Button>
+
+            <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="md">
+                <DialogTitle>
+                    <Stack direction="row" justifyContent="space-between" alignItems="center">
+                        <Typography variant="h6">Simulation Configurator</Typography>
+                        <IconButton onClick={() => setOpen(false)}>
+                            <Close />
                         </IconButton>
-                    </DialogTitle>
+                    </Stack>
+                </DialogTitle>
 
-                    <Button component="label">
-                        Import Config
-                        <input type="file" hidden onChange={handleFileUpload}/>
-                    </Button>
-
-                    <DialogContent dividers>
-                        {configPreview ? (
-
-
-                            <>
-                            <Typography variant="h6" gutterBottom>
-                            Configuration Preview
-                            </Typography>
-
-                            <div style={{ position: "relative" }}>
-                        {/* Bottone copia in alto a destra */}
-                        <Button
-                            onClick={() => {
-                                navigator.clipboard.writeText(JSON.stringify(configPreview, null, 2));
-                            }}
-                            size="small"
-                            color="primary"
-                            variant="outlined"
-                            sx={{ position: "absolute", top: 8, right: 8 }}
-                            startIcon={<ContentCopyIcon />}
-                        >
-                            Copy
-                        </Button>
-
-                        <pre
-                            style={{
-                                background: "#f5f5f5",
-                                padding: "1rem",
-                                borderRadius: "8px",
-                                overflowX: "auto",
-                                overflowY: "auto",
-                                maxHeight: "400px",
-                                marginTop: "1rem",
-                            }}
-                        >
-      {JSON.stringify(configPreview, null, 2)}
-    </pre>
-            </div>
-
-        <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
-            <Button
-                onClick={() => downloadConfig(configPreview)}
-                color="inherit"
-                variant="contained"
-                startIcon={<SaveIcon />}
-            >
-                Save JSON
-            </Button>
-
-
-
-            <Button
-                onClick={() => setConfigPreview(null)}
-                color="primary"
-                variant="outlined"
-                startIcon={<EditIcon />}
-            >
-                Edit
-            </Button>
-        </Stack>
-    </>
-
-
-
-
-    ) : (
+                <DialogContent dividers>
+                    {configPreview ? (
+                        <Paper elevation={0} sx={{ p: 2, position: "relative" }}>
                             <Stack spacing={2}>
-                                <TextField
-                                    label="Simulation name"
-                                    fullWidth
-                                    value={name}
-                                    onChange={(e) => setName(e.target.value)}
-                                />
-
-                                <TextField
-                                    label="Output directory"
-                                    fullWidth
-                                    value={dir}
-                                    onChange={(e) => setDir(e.target.value)}
-                                />
-
-                                <TextField
-                                    label="Duration"
-                                    select
-                                    fullWidth
-                                    value={duration}
-                                    onChange={(e) => setDuration(Number(e.target.value))}
-                                >
-                                    {durationOptions.map((opt) => (
-                                        <MenuItem key={opt.value} value={opt.value}>
-                                            {opt.label}
-                                        </MenuItem>
-                                    ))}
-                                </TextField>
-
-                                <TextField
-                                    label="Numero di simulazioni (numRuns)"
-                                    type="number"
-                                    fullWidth
-                                    value={numRuns}
-                                    onChange={(e) => setNumRuns(Number(e.target.value))}
-                                />
-
-                                <TextField
-                                    label="Aggregation"
-                                    select
-                                    fullWidth
-                                    value={aggregation}
-                                    onChange={(e) => setAggregation(Number(e.target.value))}
-                                >
-                                    {aggregationOptions.map((opt) => (
-                                        <MenuItem key={opt.value} value={opt.value}>
-                                            {opt.label}
-                                        </MenuItem>
-                                    ))}
-                                </TextField>
-
-                                <Typography variant="h6">Entities</Typography>
-                                <Stack direction="row" spacing={2} alignItems="center">
-                                    <TextField
-                                        label="Nuova entity"
-                                        value={entityInput}
-                                        fullWidth
-                                        onChange={(e) => setEntityInput(e.target.value)}
-                                        onKeyDown={(e) => {
-                                            if (e.key === "Enter") {
-                                                e.preventDefault();
-                                                handleAddEntity();
-                                            }
-                                        }}
-                                    />
-                                    <Button onClick={handleAddEntity} variant="contained">
-                                        Aggiungi
-                                    </Button>
+                                <Stack direction="row" justifyContent="space-between" alignItems="center">
+                                    <Typography variant="h6">Configuration Preview</Typography>
+                                    <Stack direction="row" spacing={1}>
+                                        <Tooltip title="Copy to clipboard">
+                                            <IconButton
+                                                onClick={() => navigator.clipboard.writeText(JSON.stringify(configPreview, null, 2))}
+                                            >
+                                                <ContentCopy fontSize="small" />
+                                            </IconButton>
+                                        </Tooltip>
+                                        <Button
+                                            onClick={() => downloadConfig(configPreview)}
+                                            size="small"
+                                            startIcon={<Save />}
+                                        >
+                                            Save
+                                        </Button>
+                                        <Button
+                                            onClick={() => setConfigPreview(null)}
+                                            size="small"
+                                            startIcon={<Edit />}
+                                        >
+                                            Edit
+                                        </Button>
+                                    </Stack>
                                 </Stack>
 
-                                <Box display="flex" flexWrap="wrap" gap={1} mt={1}>
-                                    {entities.map((entity, index) => (
-                                        <Box
-                                            key={index}
-                                            sx={{
-                                                display: "flex",
-                                                alignItems: "center",
-                                                bgcolor: "primary.light",
-                                                px: 1.5,
-                                                py: 0.5,
-                                                borderRadius: 2,
-                                            }}
+                                <Paper variant="outlined" sx={{ p: 2, maxHeight: 400, overflow: "auto" }}>
+                                    <pre style={{ margin: 0 }}>
+                                        {JSON.stringify(configPreview, null, 2)}
+                                    </pre>
+                                </Paper>
+                            </Stack>
+                        </Paper>
+                    ) : (
+                        <Stack spacing={3}>
+                            <Paper elevation={0} sx={{ p: 2 }}>
+                                <Typography variant="subtitle1" gutterBottom>
+                                    Basic Configuration
+                                </Typography>
+                                <Divider sx={{ mb: 2 }} />
+                                <Grid container spacing={2}>
+                                    <Grid item xs={12} sm={6}>
+                                        <TextField
+                                            label="Simulation Name"
+                                            fullWidth
+                                            size="small"
+                                            value={name}
+                                            onChange={(e) => setName(e.target.value)}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12} sm={6}>
+                                        <TextField
+                                            label="Output Directory"
+                                            fullWidth
+                                            size="small"
+                                            value={dir}
+                                            onChange={(e) => setDir(e.target.value)}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12} sm={6}>
+                                        <TextField
+                                            label="Duration"
+                                            select
+                                            fullWidth
+                                            size="small"
+                                            value={duration}
+                                            onChange={(e) => setDuration(Number(e.target.value))}
                                         >
-                                            <Typography variant="body2" color="white" sx={{mr: 1}}>
-                                                {entity}
-                                            </Typography>
-                                            <IconButton size="small" onClick={() => handleRemoveEntity(index)}>
-                                                <CloseIcon fontSize="small" sx={{color: "white"}}/>
-                                            </IconButton>
-                                        </Box>
-                                    ))}
-                                </Box>
-
-
-                                {events.map((event, index) => (
-                                    <Box
-                                        key={index}
-                                        p={2}
-                                        border={1}
-                                        borderColor="grey.300"
-                                        borderRadius={2}
-                                    >
-                                        <Stack spacing={2}>
-                                            <Typography variant="h6" component="div" gutterBottom>
-                                                Event {index + 1} {event.eventName && `(${event.eventName})`}
-                                            </Typography>
-
-                                            {/* Input per il nome dell'evento */}
-                                            <TextField
-                                                label="Event Name"
-                                                fullWidth
-                                                value={event.eventName}
-                                                onChange={(e) =>
-                                                    handleBlockChange(index, "eventName", e.target.value)
-                                                }
-                                            />
-
-                                            <TextField
-                                                label="Description"
-                                                fullWidth
-                                                multiline
-                                                rows={1}  // Puoi scegliere il numero di righe che preferisci
-                                                value={event.eventDescription}
-                                                onChange={(e) =>
-                                                    handleBlockChange(index, "eventDescription", e.target.value)
-                                                }
-                                            />
-
-
-                                            <TextField
-                                                label="Gas cost"
-                                                type="number"
-                                                fullWidth
-                                                value={event.gasCost}
-                                                onChange={(e) =>
-                                                    handleBlockChange(index, "gasCost", Number(e.target.value))
-                                                }
-                                            />
-
-                                            <TextField
-                                                label="Instance Of"
-                                                select
-                                                fullWidth
-                                                value={event.instanceOf || ""}  // Gestisci il caso in cui sia null
-                                                onChange={(e) =>
-                                                    handleBlockChange(index, "instanceOf", e.target.value || null)  // Imposta null se non selezionato nulla
-                                                }
-                                            >
-                                                {/* Aggiungi l'opzione "Nessuno" per il valore null */}
-                                                <MenuItem value={null}>
-                                                    None
+                                            {durationOptions.map((opt) => (
+                                                <MenuItem key={opt.value} value={opt.value}>
+                                                    {opt.label}
                                                 </MenuItem>
-
-                                                {/* Popola le entità dinamicamente */}
-                                                {entities.map((entity, idx) => (
-                                                    <MenuItem key={idx} value={entity}>
-                                                        {entity}
-                                                    </MenuItem>
-                                                ))}
-                                            </TextField>
-
-                                            <TextField
-                                                label="Depend On"
-                                                select
-                                                fullWidth
-                                                value={event.dependOn || ""}  // Gestisci il caso in cui sia null
-                                                onChange={(e) =>
-                                                    handleBlockChange(index, "dependOn", e.target.value || null)  // Imposta null se non selezionato nulla
-                                                }
-                                            >
-                                                {/* Aggiungi l'opzione "Nessuno" per il valore null */}
-                                                <MenuItem value={null}>
-                                                    None
+                                            ))}
+                                        </TextField>
+                                    </Grid>
+                                    <Grid item xs={12} sm={4}>
+                                        <TextField
+                                            label="Aggregation"
+                                            select
+                                            fullWidth
+                                            size="small"
+                                            value={aggregation}
+                                            onChange={(e) => setAggregation(Number(e.target.value))}
+                                        >
+                                            {aggregationOptions.map((opt) => (
+                                                <MenuItem key={opt.value} value={opt.value}>
+                                                    {opt.label}
                                                 </MenuItem>
+                                            ))}
+                                        </TextField>
+                                    </Grid>
+                                    <Grid item xs={12} sm={4}>
+                                        <TextField
+                                            label="Number of Runs"
+                                            type="number"
+                                            fullWidth
+                                            size="small"
+                                            value={numRuns}
+                                            onChange={(e) => setNumRuns(Number(e.target.value))}
+                                        />
+                                    </Grid>
+                                </Grid>
+                            </Paper>
 
-                                                {/* Popola le entità dinamicamente */}
-                                                {entities.map((entity, idx) => (
-                                                    <MenuItem key={idx} value={entity}>
-                                                        {entity}
-                                                    </MenuItem>
-                                                ))}
-                                            </TextField>
-
-
-                                            <TextField
-                                                label="Distribution Type"
-                                                select
-                                                fullWidth
-                                                value={event?.probabilityDistribution?.type}
-                                                onChange={(e) =>
-                                                    handleBlockChange(index, "probabilityDistribution.type", e.target.value)
-                                                }
-                                            >
-                                                {distributionTypes.map((opt) => (
-                                                    <MenuItem key={opt.value} value={opt.value}>
-                                                        {opt.label}
-                                                    </MenuItem>
-                                                ))}
-                                            </TextField>
-
-                                            {(() => {
-                                                const type = event?.probabilityDistribution?.type;
-                                                switch (type) {
-                                                    case "EXPONENTIAL":
-                                                        return (
-                                                            <>
-                                                                <TextField
-                                                                    label="Rate"
-                                                                    type="number"
-                                                                    value={event?.probabilityDistribution?.rate || ""}
-                                                                    onChange={(e) => handleParamChange(index, "rate", parseFloat(e.target.value))}
-                                                                />
-                                                                <TextField
-                                                                    label="Scaling Factor"
-                                                                    type="number"
-                                                                    value={event?.probabilityDistribution?.scalingFactor || ""}
-                                                                    onChange={(e) => handleParamChange(index, "scalingFactor", parseFloat(e.target.value))}
-                                                                />
-                                                            </>
-                                                        );
-                                                    case "EXPONENTIAL_SCALED":
-                                                        return (
-                                                            <>
-                                                                <TextField
-                                                                    label="Rate"
-                                                                    type="number"
-                                                                    value={event?.probabilityDistribution?.rate || ""}
-                                                                    onChange={(e) => handleParamChange(index, "rate", parseFloat(e.target.value))}
-                                                                />
-                                                                <TextField
-                                                                    label="Scaling Factor X"
-                                                                    type="number"
-                                                                    value={event?.probabilityDistribution?.scalingFactorX || ""}
-                                                                    onChange={(e) => handleParamChange(index, "scalingFactorX", parseFloat(e.target.value))}
-                                                                />
-                                                                <TextField
-                                                                    label="Scaling Factor Y"
-                                                                    type="number"
-                                                                    value={event?.probabilityDistribution?.scalingFactorY || ""}
-                                                                    onChange={(e) => handleParamChange(index, "scalingFactorY", parseFloat(e.target.value))}
-                                                                />
-                                                            </>
-                                                        );
-                                                    case "NORMAL":
-                                                    case "LOGNORMAL":
-                                                        return (
-                                                            <>
-                                                                <TextField
-                                                                    label="Mean"
-                                                                    type="number"
-                                                                    value={event?.probabilityDistribution?.mean || ""}
-                                                                    onChange={(e) => handleParamChange(index, "mean", parseFloat(e.target.value))}
-                                                                />
-                                                                <TextField
-                                                                    label="Std Dev"
-                                                                    type="number"
-                                                                    value={event?.probabilityDistribution?.std || ""}
-                                                                    onChange={(e) => handleParamChange(index, "std", parseFloat(e.target.value))}
-                                                                />
-                                                                <TextField
-                                                                    label="Scaling Factor"
-                                                                    type="number"
-                                                                    value={event?.probabilityDistribution?.scalingFactor || ""}
-                                                                    onChange={(e) => handleParamChange(index, "scalingFactor", parseFloat(e.target.value))}
-                                                                />
-                                                            </>
-                                                        );
-                                                    case "NORMAL_SCALED":
-                                                    case "LOGNORMAL_SCALED":
-                                                        return (
-                                                            <>
-                                                                <TextField
-                                                                    label="Mean"
-                                                                    type="number"
-                                                                    value={event?.probabilityDistribution?.mean || ""}
-                                                                    onChange={(e) => handleParamChange(index, "mean", parseFloat(e.target.value))}
-                                                                />
-                                                                <TextField
-                                                                    label="Std Dev"
-                                                                    type="number"
-                                                                    value={event?.probabilityDistribution?.std || ""}
-                                                                    onChange={(e) => handleParamChange(index, "std", parseFloat(e.target.value))}
-                                                                />
-                                                                <TextField
-                                                                    label="Scaling Factor X"
-                                                                    type="number"
-                                                                    value={event?.probabilityDistribution?.scalingFactorX || ""}
-                                                                    onChange={(e) => handleParamChange(index, "scalingFactorX", parseFloat(e.target.value))}
-                                                                />
-                                                                <TextField
-                                                                    label="Scaling Factor Y"
-                                                                    type="number"
-                                                                    value={event?.probabilityDistribution?.scalingFactorY || ""}
-                                                                    onChange={(e) => handleParamChange(index, "scalingFactorY", parseFloat(e.target.value))}
-                                                                />
-                                                            </>
-                                                        );
-                                                    case "FIXED":
-                                                        return (
-                                                            <>
-                                                                <TextField
-                                                                    label="Fixed Time"
-                                                                    type="number"
-                                                                    value={event?.probabilityDistribution?.fixedTime || ""}
-                                                                    onChange={(e) => handleParamChange(index, "fixedTime", parseFloat(e.target.value))}
-                                                                />
-                                                                <TextField
-                                                                    label="Tolerance"
-                                                                    type="number"
-                                                                    value={event?.probabilityDistribution?.tolerance || ""}
-                                                                    onChange={(e) => handleParamChange(index, "tolerance", parseFloat(e.target.value))}
-                                                                />
-                                                            </>
-                                                        );
-                                                    case "UNIFORM":
-                                                        return (
-                                                            <TextField
-                                                                label="Value"
-                                                                type="number"
-                                                                value={event?.probabilityDistribution?.value || ""}
-                                                                onChange={(e) => handleParamChange(index, "value", parseFloat(e.target.value))}
-                                                            />
-                                                        );
-                                                    default:
-                                                        return null;
-                                                }
-                                            })()}
-
-
-                                            <Button
-                                                color="error"
-                                                onClick={() => handleRemoveBlock(index)}
-                                            >
-                                                Remove event
-                                            </Button>
-                                        </Stack>
+                            <Paper elevation={0} sx={{ p: 2 }}>
+                                <Typography variant="subtitle1" gutterBottom>
+                                    Entities
+                                </Typography>
+                                <Divider sx={{ mb: 2 }} />
+                                <Stack spacing={2}>
+                                    <Stack direction="row" spacing={1}>
+                                        <TextField
+                                            label="Add New Entity"
+                                            fullWidth
+                                            size="small"
+                                            value={entityInput}
+                                            onChange={(e) => setEntityInput(e.target.value)}
+                                            onKeyDown={(e) => e.key === "Enter" && handleAddEntity()}
+                                            InputProps={{
+                                                endAdornment: (
+                                                    <InputAdornment position="end">
+                                                        <IconButton
+                                                            edge="end"
+                                                            onClick={handleAddEntity}
+                                                            disabled={!entityInput.trim()}
+                                                        >
+                                                            <Add />
+                                                        </IconButton>
+                                                    </InputAdornment>
+                                                ),
+                                            }}
+                                        />
+                                    </Stack>
+                                    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+                                        {entities.map((entity, index) => (
+                                            <Chip
+                                                key={index}
+                                                label={entity}
+                                                onDelete={() => handleRemoveEntity(index)}
+                                                size="small"
+                                            />
+                                        ))}
                                     </Box>
-                                ))}
+                                </Stack>
+                            </Paper>
 
-                                <Button variant="outlined" onClick={handleAddBlock}>
-                                    + Add Event
-                                </Button>
-                            </Stack>)}
-                    </DialogContent>
+                            <Paper elevation={0} sx={{ p: 2 }}>
+                                <Stack direction="row" justifyContent="space-between" alignItems="center">
+                                    <Typography variant="subtitle1">Events</Typography>
+                                    <Button
+                                        variant="outlined"
+                                        size="small"
+                                        startIcon={<Add />}
+                                        onClick={handleAddEvent}
+                                    >
+                                        Add Event
+                                    </Button>
+                                </Stack>
+                                <Divider sx={{ my: 2 }} />
+                                <Stack spacing={2}>
+                                    {events.map((event, index) => (
+                                        <Paper key={index} variant="outlined" sx={{ p: 1 }}>
+                                            <Stack spacing={1}>
+                                                <Stack direction="row" justifyContent="space-between" alignItems="center">
+                                                    <Typography variant="subtitle2">
+                                                        Event {index + 1}{event.eventName && `: ${event.eventName}`}
+                                                    </Typography>
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={() => handleRemoveEvent(index)}
+                                                        color="error"
+                                                    >
+                                                        <Delete fontSize="small" />
+                                                    </IconButton>
+                                                </Stack>
+                                                <TextField
+                                                    label="Event Name"
+                                                    size="small"
+                                                    fullWidth
+                                                    value={event.eventName}
+                                                    onChange={(e) => handleEventChange(index, "eventName", e.target.value)}
+                                                />
+                                                <TextField
+                                                    label="Description"
+                                                    size="small"
+                                                    fullWidth
+                                                    multiline
+                                                    rows={2}
+                                                    value={event.eventDescription}
+                                                    onChange={(e) => handleEventChange(index, "eventDescription", e.target.value)}
+                                                />
+                                                <TextField
+                                                    label="Gas Cost"
+                                                    type="number"
+                                                    size="small"
+                                                    fullWidth
+                                                    value={event.gasCost}
+                                                    onChange={(e) => handleEventChange(index, "gasCost", Number(e.target.value))}
+                                                />
+                                                <Grid container spacing={1}>
+                                                    <Grid item xs={12} sm={6}>
+                                                        <TextField
+                                                            label="Instance Of"
+                                                            select
+                                                            size="small"
+                                                            fullWidth
+                                                            value={event.instanceOf || ""}
+                                                            onChange={(e) => handleEventChange(index, "instanceOf", e.target.value || null)}
+                                                        >
+                                                            <MenuItem value="">None</MenuItem>
+                                                            {entities.map((entity, idx) => (
+                                                                <MenuItem key={idx} value={entity}>
+                                                                    {entity}
+                                                                </MenuItem>
+                                                            ))}
+                                                        </TextField>
+                                                    </Grid>
+                                                    <Grid item xs={12} sm={6}>
+                                                        <TextField
+                                                            label="Depends On"
+                                                            select
+                                                            size="small"
+                                                            fullWidth
+                                                            value={event.dependOn || ""}
+                                                            onChange={(e) => handleEventChange(index, "dependOn", e.target.value || null)}
+                                                        >
+                                                            <MenuItem value="">None</MenuItem>
+                                                            {entities.map((entity, idx) => (
+                                                                <MenuItem key={idx} value={entity}>
+                                                                    {entity}
+                                                                </MenuItem>
+                                                            ))}
+                                                        </TextField>
+                                                    </Grid>
+                                                </Grid>
+                                                <TextField
+                                                    label="Distribution Type"
+                                                    select
+                                                    size="small"
+                                                    fullWidth
+                                                    value={event.probabilityDistribution.type}
+                                                    onChange={(e) => handleEventChange(index, "probabilityDistribution.type", e.target.value)}
+                                                >
+                                                    {distributionTypes.map((opt) => (
+                                                        <MenuItem key={opt.value} value={opt.value}>
+                                                            {opt.label}
+                                                        </MenuItem>
+                                                    ))}
+                                                </TextField>
+                                                {renderDistributionFields(event, index)}
+                                            </Stack>
+                                        </Paper>
+                                    ))}
+                                </Stack>
+                            </Paper>
+                        </Stack>
+                    )}
+                </DialogContent>
 
-
-                    <DialogActions>
-                        <Button onClick={() => setOpen(false)} color="inherit">
-                            Close
-                        </Button>
+                <DialogActions>
+                    <Button
+                        startIcon={<Upload />}
+                        component="label"
+                        sx={{ mr: "auto" }}
+                    >
+                        Import Config
+                        <input type="file" hidden accept=".json" onChange={handleFileUpload} />
+                    </Button>
+                    <Button
+                        onClick={handleReset}
+                        color="error"
+                        startIcon={<Refresh />}
+                    >
+                        Reset
+                    </Button>
+                    {!configPreview && (
                         <Button
-                            onClick={() => {
-                                if (window.confirm("Are you sure you want to reset all fields?")) {
-                                    handleReset();
-                                }
-                            }}
-                            color="warning"
-                            variant="outlined"
+                            onClick={handlePreview}
+                            color="info"
+                            startIcon={<Visibility />}
                         >
-                            Reset
-                        </Button>
-                        <Button onClick={handlePreview} color="info" variant="outlined">
                             Preview
                         </Button>
-                        <Button onClick={handleSubmit} color="primary" variant="contained">
-                            Submit
-                        </Button>
-                    </DialogActions>
-
-                </Dialog>
-            </div>
-        );
-    }
-;
+                    )}
+                    <Button
+                        onClick={handleSubmit}
+                        color="primary"
+                        variant="contained"
+                        startIcon={<Save />}
+                        disabled={!name || !duration || !aggregation || !numRuns}
+                    >
+                        Save Configuration
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        </>
+    );
+};
 
 export default SimulationConfiguratorModalForm;
