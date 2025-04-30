@@ -17,7 +17,8 @@ import CloseIcon from "@mui/icons-material/Close";
 interface Block {
     text: string;
     number: number;
-    option: string;
+    option: string; // distributionType
+    params: Record<string, string>; // distrib params
 }
 
 const durationOptions = [
@@ -58,8 +59,12 @@ const DynamicFormModal: React.FC = () => {
 
 
     const handleAddBlock = () => {
-        setBlocks([...blocks, {text: "", number: 0, option: ""}]);
+        setBlocks([
+            ...blocks,
+            { text: "", number: 0, option: "", params: {} },
+        ]);
     };
+
 
     const handleRemoveBlock = (index: number) => {
         const updated = blocks.filter((_, i) => i !== index);
@@ -79,6 +84,13 @@ const DynamicFormModal: React.FC = () => {
             setEntityInput("");
         }
     };
+
+    const handleParamChange = (index: number, param: string, value: any) => {
+        const updated = [...blocks];
+        updated[index].params[param] = value;
+        setBlocks(updated);
+    };
+
 
     const handleRemoveEntity = (index: number) => {
         setEntities((prev) => prev.filter((_, i) => i !== index));
@@ -248,6 +260,136 @@ const DynamicFormModal: React.FC = () => {
                                             </MenuItem>
                                         ))}
                                     </TextField>
+
+                                    {(() => {
+                                        const type = block.option;
+                                        switch (type) {
+                                            case "EXPONENTIAL":
+                                                return (
+                                                    <>
+                                                        <TextField
+                                                            label="Rate"
+                                                            type="number"
+                                                            value={block.params.rate || ""}
+                                                            onChange={(e) => handleParamChange(index, "rate", parseFloat(e.target.value))}
+                                                        />
+                                                        <TextField
+                                                            label="Scaling Factor"
+                                                            type="number"
+                                                            value={block.params.scalingFactor || ""}
+                                                            onChange={(e) => handleParamChange(index, "scalingFactor", parseFloat(e.target.value))}
+                                                        />
+                                                    </>
+                                                );
+                                            case "EXPONENTIAL_SCALED":
+                                                return (
+                                                    <>
+                                                        <TextField
+                                                            label="Rate"
+                                                            type="number"
+                                                            value={block.params.rate || ""}
+                                                            onChange={(e) => handleParamChange(index, "rate", parseFloat(e.target.value))}
+                                                        />
+                                                        <TextField
+                                                            label="Scaling Factor X"
+                                                            type="number"
+                                                            value={block.params.scalingFactorX || ""}
+                                                            onChange={(e) => handleParamChange(index, "scalingFactorX", parseFloat(e.target.value))}
+                                                        />
+                                                        <TextField
+                                                            label="Scaling Factor Y"
+                                                            type="number"
+                                                            value={block.params.scalingFactorY || ""}
+                                                            onChange={(e) => handleParamChange(index, "scalingFactorY", parseFloat(e.target.value))}
+                                                        />
+                                                    </>
+                                                );
+                                            case "NORMAL":
+                                            case "LOGNORMAL":
+                                                return (
+                                                    <>
+                                                        <TextField
+                                                            label="Mean"
+                                                            type="number"
+                                                            value={block.params.mean || ""}
+                                                            onChange={(e) => handleParamChange(index, "mean", parseFloat(e.target.value))}
+                                                        />
+                                                        <TextField
+                                                            label="Std Dev"
+                                                            type="number"
+                                                            value={block.params.std || ""}
+                                                            onChange={(e) => handleParamChange(index, "std", parseFloat(e.target.value))}
+                                                        />
+                                                        <TextField
+                                                            label="Scaling Factor"
+                                                            type="number"
+                                                            value={block.params.scalingFactor || ""}
+                                                            onChange={(e) => handleParamChange(index, "scalingFactor", parseFloat(e.target.value))}
+                                                        />
+                                                    </>
+                                                );
+                                            case "NORMAL_SCALED":
+                                            case "LOGNORMAL_SCALED":
+                                                return (
+                                                    <>
+                                                        <TextField
+                                                            label="Mean"
+                                                            type="number"
+                                                            value={block.params.mean || ""}
+                                                            onChange={(e) => handleParamChange(index, "mean", parseFloat(e.target.value))}
+                                                        />
+                                                        <TextField
+                                                            label="Std Dev"
+                                                            type="number"
+                                                            value={block.params.std || ""}
+                                                            onChange={(e) => handleParamChange(index, "std", parseFloat(e.target.value))}
+                                                        />
+                                                        <TextField
+                                                            label="Scaling Factor X"
+                                                            type="number"
+                                                            value={block.params.scalingFactorX || ""}
+                                                            onChange={(e) => handleParamChange(index, "scalingFactorX", parseFloat(e.target.value))}
+                                                        />
+                                                        <TextField
+                                                            label="Scaling Factor Y"
+                                                            type="number"
+                                                            value={block.params.scalingFactorY || ""}
+                                                            onChange={(e) => handleParamChange(index, "scalingFactorY", parseFloat(e.target.value))}
+                                                        />
+                                                    </>
+                                                );
+                                            case "FIXED":
+                                                return (
+                                                    <>
+                                                        <TextField
+                                                            label="Fixed Time"
+                                                            type="number"
+                                                            value={block.params.fixedTime || ""}
+                                                            onChange={(e) => handleParamChange(index, "fixedTime", parseFloat(e.target.value))}
+                                                        />
+                                                        <TextField
+                                                            label="Tolerance"
+                                                            type="number"
+                                                            value={block.params.tolerance || ""}
+                                                            onChange={(e) => handleParamChange(index, "tolerance", parseFloat(e.target.value))}
+                                                        />
+                                                    </>
+                                                );
+                                            case "UNIFORM":
+                                                return (
+                                                    <TextField
+                                                        label="Value"
+                                                        type="number"
+                                                        value={block.params.value || ""}
+                                                        onChange={(e) => handleParamChange(index, "value", parseFloat(e.target.value))}
+                                                    />
+                                                );
+                                            default:
+                                                return null;
+                                        }
+                                    })()}
+
+
 
                                     <Button
                                         color="error"
