@@ -1,13 +1,11 @@
 import {useState,} from 'react';
 import { Link} from 'react-router-dom';
 import {Container, Button, Stack} from '@mui/material';
-
 import bcLogo from '../assets/blockchain-10000.svg';
 import '../App.css';
 import axios from 'axios';
+import SimulationConfiguratorModalForm from "./SimulationConfiguratorModalForm.tsx";
 import SimulationFormModal from "./SimulationFormModal.tsx";
-import SimulatorFormModal from "./SimluatorFormModal.tsx";
-import DynamicFormModal from "./DynamicModalForm.tsx";
 
 function HomePage() {
     const [simulationStatus, setSimulationStatus] = useState<string | null>(null);
@@ -72,21 +70,12 @@ function HomePage() {
 
                     <div className="card">
                         <p>Launch your </p>
-                        {/*<Button variant="contained" color="primary" onClick={handleSimulationClick}>*/}
-                        {/*    Simulation*/}
-                        {/*</Button>*/}
                         <SimulationFormModal/>
-                        {/*{simulationStatus && (*/}
-                        {/*    <div>*/}
-                        {/*        <p>Status: {simulationStatus}</p>*/}
-                        {/*    </div>*/}
-                        {/*)}*/}
                     </div>
 
                     <div className="card">
                         <p>Launch your </p>
-                        {/*<SimulatorFormModal/>*/}
-                        <DynamicFormModal/>
+                        <SimulationConfiguratorModalForm/>
                         {job2Status && (
                             <div>
                                 <p>Status: {job2Status}</p>
