@@ -1,0 +1,279 @@
+import React, {useState} from "react";
+import {
+    Box,
+    TextField,
+    Button,
+    MenuItem,
+    Typography,
+    Stack,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    IconButton,
+} from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+
+interface Block {
+    text: string;
+    number: number;
+    option: string;
+}
+
+const durationOptions = [
+    {value: 86400, label: "ONE_DAY (86400)"},
+    {value: 604800, label: "SEVEN_DAYS (604800)"},
+    {value: 864000, label: "TEN_DAYS (864000)"},
+    {value: 1209600, label: "TWO_WEEKS (1209600)"},
+    {value: 2592000, label: "ONE_MONTH (2592000)"},
+];
+
+const aggregationOptions = [
+    {value: 1, label: "SECONDS (1)"},
+    {value: 60, label: "MINUTES (60)"},
+    {value: 3600, label: "HOURS (3600)"},
+];
+
+const distributionTypes = [
+    {value: "UNIFORM", label: "Uniform"},
+    {value: "NORMAL_SCALED", label: "Normal Scaled"},
+    {value: "NORMAL", label: "Normal"},
+    {value: "LOGNORMAL_SCALED", label: "LogNormal Scaled"},
+    {value: "LOGNORMAL", label: "LogNormal"},
+    {value: "EXPONENTIAL", label: "Exponential"},
+    {value: "EXPONENTIAL_SCALED", label: "Exponential Scaled"},
+];
+
+const DynamicFormModal: React.FC = () => {
+    const [open, setOpen] = useState(false);
+    const [blocks, setBlocks] = useState<Block[]>([]);
+    const [name, setName] = useState("");
+    const [dir, setDir] = useState("");
+    const [duration, setDuration] = useState<number | "">("");
+    const [aggregation, setAggregation] = useState<number | "">("");
+    const [entityInput, setEntityInput] = useState("");
+    const [entities, setEntities] = useState<string[]>([]);
+
+    const [numRuns, setNumRuns] = useState<number | "">("");
+
+
+    const handleAddBlock = () => {
+        setBlocks([...blocks, {text: "", number: 0, option: ""}]);
+    };
+
+    const handleRemoveBlock = (index: number) => {
+        const updated = blocks.filter((_, i) => i !== index);
+        setBlocks(updated);
+    };
+
+    const handleBlockChange = (index: number, field: keyof Block, value: any) => {
+        const updated = [...blocks];
+        updated[index][field] = value;
+        setBlocks(updated);
+    };
+
+    const handleAddEntity = () => {
+        const trimmed = entityInput.trim();
+        if (trimmed && !entities.includes(trimmed)) {
+            setEntities([...entities, trimmed]);
+            setEntityInput("");
+        }
+    };
+
+    const handleRemoveEntity = (index: number) => {
+        setEntities((prev) => prev.filter((_, i) => i !== index));
+    };
+
+
+    const handleSubmit = () => {
+        console.log("Simulation Name:", name);
+        console.log("Output Dir:", dir);
+        console.log("Duration:", duration);
+        console.log("Aggregation:", aggregation);
+        console.log("Blocchi:", blocks);
+        setOpen(false);
+    };
+
+    return (
+        <div>
+            <Button variant="contained" onClick={() => setOpen(true)}>
+                Apri Form
+            </Button>
+
+            <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="md">
+                <DialogTitle>
+                    Simulation configurator
+                    <IconButton
+                        aria-label="close"
+                        onClick={() => setOpen(false)}
+                        sx={{position: "absolute", right: 8, top: 8}}
+                    >
+                        <CloseIcon/>
+                    </IconButton>
+                </DialogTitle>
+
+                <DialogContent dividers>
+                    <Stack spacing={2}>
+                        <TextField
+                            label="Simulation name"
+                            fullWidth
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                        />
+
+                        <TextField
+                            label="Output directory"
+                            fullWidth
+                            value={dir}
+                            onChange={(e) => setDir(e.target.value)}
+                        />
+
+                        <TextField
+                            label="Duration"
+                            select
+                            fullWidth
+                            value={duration}
+                            onChange={(e) => setDuration(Number(e.target.value))}
+                        >
+                            {durationOptions.map((opt) => (
+                                <MenuItem key={opt.value} value={opt.value}>
+                                    {opt.label}
+                                </MenuItem>
+                            ))}
+                        </TextField>
+
+                        <TextField
+                            label="Numero di simulazioni (numRuns)"
+                            type="number"
+                            fullWidth
+                            value={numRuns}
+                            onChange={(e) => setNumRuns(Number(e.target.value))}
+                        />
+
+                        <TextField
+                            label="Aggregation"
+                            select
+                            fullWidth
+                            value={aggregation}
+                            onChange={(e) => setAggregation(Number(e.target.value))}
+                        >
+                            {aggregationOptions.map((opt) => (
+                                <MenuItem key={opt.value} value={opt.value}>
+                                    {opt.label}
+                                </MenuItem>
+                            ))}
+                        </TextField>
+
+                        <Typography variant="h6">Entities</Typography>
+                        <Stack direction="row" spacing={2} alignItems="center">
+                            <TextField
+                                label="Nuova entity"
+                                value={entityInput}
+                                fullWidth
+                                onChange={(e) => setEntityInput(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                        e.preventDefault();
+                                        handleAddEntity();
+                                    }
+                                }}
+                            />
+                            <Button onClick={handleAddEntity} variant="contained">
+                                Aggiungi
+                            </Button>
+                        </Stack>
+
+                        <Box display="flex" flexWrap="wrap" gap={1} mt={1}>
+                            {entities.map((entity, index) => (
+                                <Box
+                                    key={index}
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        bgcolor: "primary.light",
+                                        px: 1.5,
+                                        py: 0.5,
+                                        borderRadius: 2,
+                                    }}
+                                >
+                                    <Typography variant="body2" color="white" sx={{mr: 1}}>
+                                        {entity}
+                                    </Typography>
+                                    <IconButton size="small" onClick={() => handleRemoveEntity(index)}>
+                                        <CloseIcon fontSize="small" sx={{color: "white"}}/>
+                                    </IconButton>
+                                </Box>
+                            ))}
+                        </Box>
+
+
+                        {blocks.map((block, index) => (
+                            <Box
+                                key={index}
+                                p={2}
+                                border={1}
+                                borderColor="grey.300"
+                                borderRadius={2}
+                            >
+                                <Stack spacing={2}>
+                                    <TextField
+                                        label="Text"
+                                        fullWidth
+                                        value={block.text}
+                                        onChange={(e) =>
+                                            handleBlockChange(index, "text", e.target.value)
+                                        }
+                                    />
+                                    <TextField
+                                        label="Number"
+                                        type="number"
+                                        fullWidth
+                                        value={block.number}
+                                        onChange={(e) =>
+                                            handleBlockChange(index, "number", Number(e.target.value))
+                                        }
+                                    />
+                                    <TextField
+                                        label="Distribution Type"
+                                        select
+                                        fullWidth
+                                        value={block.option}
+                                        onChange={(e) =>
+                                            handleBlockChange(index, "option", e.target.value)
+                                        }
+                                    >
+                                        {distributionTypes.map((opt) => (
+                                            <MenuItem key={opt.value} value={opt.value}>
+                                                {opt.label}
+                                            </MenuItem>
+                                        ))}
+                                    </TextField>
+
+                                    <Button
+                                        color="error"
+                                        onClick={() => handleRemoveBlock(index)}
+                                    >
+                                        Rimuovi Blocco
+                                    </Button>
+                                </Stack>
+                            </Box>
+                        ))}
+
+                        <Button variant="outlined" onClick={handleAddBlock}>
+                            Aggiungi Blocco
+                        </Button>
+                    </Stack>
+                </DialogContent>
+
+                <DialogActions>
+                    <Button onClick={() => setOpen(false)}>Annulla</Button>
+                    <Button onClick={handleSubmit} variant="contained">
+                        Invia
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        </div>
+    );
+};
+
+export default DynamicFormModal;
