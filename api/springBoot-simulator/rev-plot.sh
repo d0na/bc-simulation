@@ -129,9 +129,9 @@ set yrange [0:3000000]
 set terminal $outff $font size $size
 plot \
   '$fileIn1.tsv' using 1:16 with lines title 'Total' smooth bezier lw 3 lc "medium-blue", \
-  '$fileIn1.tsv' using 1:18 with filledcurves smooth bezie title 'assetTransfer' lc "light-red", \
-  '$fileIn1.tsv' using 1:28 with filledcurves smooth bezie title 'attributeUpdate' lc "goldenrod", \
-  '$fileIn1.tsv' using 1:30 with filledcurves smooth bezie title 'holderPolicyUpdate' lc "dark-yellow",\
+  '$fileIn1.tsv' using 1:2 with filledcurves smooth bezie title 'assetTransfer' lc "light-red", \
+  '$fileIn1.tsv' using 1:12 with filledcurves smooth bezie title 'attributeUpdate' lc "goldenrod", \
+  '$fileIn1.tsv' using 1:4 with filledcurves smooth bezie title 'holderPolicyUpdate' lc "dark-yellow",\
   '$fileIn1.tsv' using 1:14 with filledcurves smooth bezie title 'newAssetCreation' lc "dark-orange",\
   '$fileIn1.tsv' using 1:6 with filledcurves smooth bezie title 'newCreatorCreation' lc "green"
 EOF
@@ -147,9 +147,9 @@ set yrange [0:105000000]
 set terminal $outff $font size $size
 plot \
   '$fileIn2.tsv' using 1:16 with lines title 'Total' smooth bezier lw 3 lc "medium-blue", \
-  '$fileIn2.tsv' using 1:18 with filledcurves smooth bezie title 'assetTransfer' lc "light-red", \
-  '$fileIn2.tsv' using 1:28 with filledcurves smooth bezie title 'attributeUpdate' lc "goldenrod", \
-  '$fileIn2.tsv' using 1:30 with filledcurves smooth bezie title 'holderPolicyUpdate' lc "dark-yellow",\
+  '$fileIn2.tsv' using 1:2 with filledcurves smooth bezie title 'assetTransfer' lc "light-red", \
+  '$fileIn2.tsv' using 1:12 with filledcurves smooth bezie title 'attributeUpdate' lc "goldenrod", \
+  '$fileIn2.tsv' using 1:4 with filledcurves smooth bezie title 'holderPolicyUpdate' lc "dark-yellow",\
   '$fileIn2.tsv' using 1:14 with filledcurves smooth bezie title 'newAssetCreation' lc "dark-orange",\
   '$fileIn2.tsv' using 1:6 with filledcurves smooth bezie title 'newCreatorCreation' lc "green"
 EOF
