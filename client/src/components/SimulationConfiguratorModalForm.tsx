@@ -13,6 +13,9 @@ import {
     IconButton,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import SaveIcon from "@mui/icons-material/Save";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import EditIcon from "@mui/icons-material/Edit";
 
 type ProbabilityDistribution = {
     type: string;
@@ -311,57 +314,70 @@ const SimulationConfiguratorModalForm: React.FC = () => {
 
                     <DialogContent dividers>
                         {configPreview ? (
+
+
                             <>
-                                <Typography variant="h6" gutterBottom>
-                                    Configuration Preview
-                                </Typography>
+                            <Typography variant="h6" gutterBottom>
+                            Configuration Preview
+                            </Typography>
 
-                                <pre
-                                    style={{
-                                        background: "#f5f5f5",
-                                        padding: "1rem",
-                                        borderRadius: "8px",
-                                        overflowX: "auto",
-                                        overflowY: "auto",
-                                        maxHeight: "400px",
-                                        marginTop: "1rem",
-                                    }}
-                                >
-    {JSON.stringify(configPreview, null, 2)}
-  </pre>
+                            <div style={{ position: "relative" }}>
+                        {/* Bottone copia in alto a destra */}
+                        <Button
+                            onClick={() => {
+                                navigator.clipboard.writeText(JSON.stringify(configPreview, null, 2));
+                            }}
+                            size="small"
+                            color="primary"
+                            variant="outlined"
+                            sx={{ position: "absolute", top: 8, right: 8 }}
+                            startIcon={<ContentCopyIcon />}
+                        >
+                            Copy
+                        </Button>
 
-                                <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
-                                    <Button
-                                        onClick={() => downloadConfig(configPreview)}
-                                        color="success"
-                                        variant="contained"
-                                    >
-                                        Save JSON
-                                    </Button>
+                        <pre
+                            style={{
+                                background: "#f5f5f5",
+                                padding: "1rem",
+                                borderRadius: "8px",
+                                overflowX: "auto",
+                                overflowY: "auto",
+                                maxHeight: "400px",
+                                marginTop: "1rem",
+                            }}
+                        >
+      {JSON.stringify(configPreview, null, 2)}
+    </pre>
+            </div>
 
-                                    <Button
-                                        onClick={() => {
-                                            navigator.clipboard.writeText(JSON.stringify(configPreview, null, 2));
-                                        }}
-                                        color="primary"
-                                        variant="outlined"
-                                    >
-                                        Copy JSON
-                                    </Button>
-
-                                    <Button
-                                        onClick={() => setConfigPreview(null)}
-                                        color="secondary"
-                                        variant="outlined"
-                                    >
-                                        Edit
-                                    </Button>
-                                </Stack>
-                            </>
+        <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
+            <Button
+                onClick={() => downloadConfig(configPreview)}
+                color="inherit"
+                variant="contained"
+                startIcon={<SaveIcon />}
+            >
+                Save JSON
+            </Button>
 
 
 
-                        ) : (
+            <Button
+                onClick={() => setConfigPreview(null)}
+                color="primary"
+                variant="outlined"
+                startIcon={<EditIcon />}
+            >
+                Edit
+            </Button>
+        </Stack>
+    </>
+
+
+
+
+    ) : (
                             <Stack spacing={2}>
                                 <TextField
                                     label="Simulation name"
