@@ -7,6 +7,7 @@ import '../App.css';
 import axios from 'axios';
 import SimulationFormModal from "./SimulationFormModal.tsx";
 import SimulatorFormModal from "./SimluatorFormModal.tsx";
+import DynamicFormModal from "./DynamicModalForm.tsx";
 
 function HomePage() {
     const [simulationStatus, setSimulationStatus] = useState<string | null>(null);
@@ -84,7 +85,8 @@ function HomePage() {
 
                     <div className="card">
                         <p>Launch your </p>
-                        <SimulatorFormModal/>
+                        {/*<SimulatorFormModal/>*/}
+                        <DynamicFormModal/>
                         {job2Status && (
                             <div>
                                 <p>Status: {job2Status}</p>
