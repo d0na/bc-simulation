@@ -1,4 +1,3 @@
-http POST http://localhost:8099/newsimulation Content-Type:application/json << EOF
 {
    "dir":"./output",
    "name":"singlePeak",
@@ -95,4 +94,3 @@ http POST http://localhost:8099/newsimulation Content-Type:application/json << E
    "numAggr":1,
    "numRuns":5
 }
-EOF

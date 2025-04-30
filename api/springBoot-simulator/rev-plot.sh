@@ -35,8 +35,8 @@ set key font 'Times-New-Roman,18 \n";
 
 #set yrange [0:6800000]
 
-fileIn1=./output/singlePeakt86400aggr1_20250429161215
-fileIn2=./output/BoomAndBust_t86400_aggr1_20250429165727
+fileIn1=./output/singlePeak_t86400_aggr1_20250430090447
+fileIn2=./output/BoomAndBust_t86400_aggr1_20250430090526
 
 fileOut="./output/simGraph1Variance"
 gnuplot --persist << EOF
