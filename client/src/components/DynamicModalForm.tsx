@@ -15,10 +15,14 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 
 interface Block {
-    text: string;
+    eventName: string;
+    description: string;
     number: number;
     option: string; // distributionType
     params: Record<string, string>; // distrib params
+    instanceOf: string;  //
+    dependOn: string;  //
+
 }
 
 const durationOptions = [
@@ -228,16 +232,34 @@ const DynamicFormModal: React.FC = () => {
                                 borderRadius={2}
                             >
                                 <Stack spacing={2}>
+                                    <Typography variant="h6" component="div" gutterBottom>
+                                        Event {index + 1} {block.eventName && `(${block.eventName})`}
+                                    </Typography>
+
+                                    {/* Input per il nome dell'evento */}
                                     <TextField
-                                        label="Text"
+                                        label="Event Name"
                                         fullWidth
-                                        value={block.text}
+                                        value={block.eventName}
                                         onChange={(e) =>
-                                            handleBlockChange(index, "text", e.target.value)
+                                            handleBlockChange(index, "eventName", e.target.value)
                                         }
                                     />
+
                                     <TextField
-                                        label="Number"
+                                        label="Descrizione"
+                                        fullWidth
+                                        multiline
+                                        rows={1}  // Puoi scegliere il numero di righe che preferisci
+                                        value={block.description}
+                                        onChange={(e) =>
+                                            handleBlockChange(index, "description", e.target.value)
+                                        }
+                                    />
+
+
+                                    <TextField
+                                        label="Gas cost"
                                         type="number"
                                         fullWidth
                                         value={block.number}
@@ -245,6 +267,52 @@ const DynamicFormModal: React.FC = () => {
                                             handleBlockChange(index, "number", Number(e.target.value))
                                         }
                                     />
+
+                                    <TextField
+                                        label="Instance Of"
+                                        select
+                                        fullWidth
+                                        value={block.instanceOf || ""}  // Gestisci il caso in cui sia null
+                                        onChange={(e) =>
+                                            handleBlockChange(index, "instanceOf", e.target.value || null)  // Imposta null se non selezionato nulla
+                                        }
+                                    >
+                                        {/* Aggiungi l'opzione "Nessuno" per il valore null */}
+                                        <MenuItem value={null}>
+                                            None
+                                        </MenuItem>
+
+                                        {/* Popola le entità dinamicamente */}
+                                        {entities.map((entity, idx) => (
+                                            <MenuItem key={idx} value={entity}>
+                                                {entity}
+                                            </MenuItem>
+                                        ))}
+                                    </TextField>
+
+                                    <TextField
+                                        label="Depend On"
+                                        select
+                                        fullWidth
+                                        value={block.dependOn || ""}  // Gestisci il caso in cui sia null
+                                        onChange={(e) =>
+                                            handleBlockChange(index, "dependOn", e.target.value || null)  // Imposta null se non selezionato nulla
+                                        }
+                                    >
+                                        {/* Aggiungi l'opzione "Nessuno" per il valore null */}
+                                        <MenuItem value={null}>
+                                            None
+                                        </MenuItem>
+
+                                        {/* Popola le entità dinamicamente */}
+                                        {entities.map((entity, idx) => (
+                                            <MenuItem key={idx} value={entity}>
+                                                {entity}
+                                            </MenuItem>
+                                        ))}
+                                    </TextField>
+
+
                                     <TextField
                                         label="Distribution Type"
                                         select
@@ -402,7 +470,7 @@ const DynamicFormModal: React.FC = () => {
                         ))}
 
                         <Button variant="outlined" onClick={handleAddBlock}>
-                            Aggiungi Blocco
+                            + Add Event
                         </Button>
                     </Stack>
                 </DialogContent>
