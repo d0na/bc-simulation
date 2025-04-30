@@ -110,19 +110,18 @@ public class ResultsAggregated {
         String eventName = event.getEventName();
         long gasCost = event.getGasCost();
 
-        // Caso: evento senza dipendenze né istanze (azione pura)
+        // Case: event with no instance and no dependOn
         if (instanceOf == null && dependOn == null && randomDouble <= baseProb) {
             addGas(run, eventName, gasCost);
         }
 
-        // Caso: evento indipendente da altro e con istanza
+        // Case: event with instance and no dependOn
         if (instanceOf != null && dependOn == null && randomDouble <= baseProb) {
             this.entities.get(toCamelCase(instanceOf))[run].add(timeInner);
             addGas(run, eventName, gasCost);
-            return;
         }
 
-        // Caso: evento dipendente da altro
+        // Case: event with dependOn
         if (dependOn != null) {
             LinkedList<Integer>[] instanceList = this.entities.get(toCamelCase(dependOn));
             if (instanceList != null) {
@@ -137,7 +136,6 @@ public class ResultsAggregated {
                     }
                 }
             }
-            return;
         }
     }
 
