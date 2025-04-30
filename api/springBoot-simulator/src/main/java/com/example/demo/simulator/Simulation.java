@@ -50,7 +50,7 @@ public class Simulation {
 //            }
 //        });
 //        System.out.println();
-        System.out.println("Count:"+resultsAggregated.count);
+//        System.out.println("Count:"+resultsAggregated.count);
         System.out.println("Ending sim of " + simParams.getNumRuns() + " runs.");
     }
 

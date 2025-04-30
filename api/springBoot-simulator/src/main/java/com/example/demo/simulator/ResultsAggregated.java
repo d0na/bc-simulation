@@ -15,8 +15,6 @@ public class ResultsAggregated {
     Map<String, long[]> counters;
     // Maps the event name to an array of linked lists, one for each run
     Map<String, LinkedList<Integer>[]> entities;
-    String seedEvent;
-    int count;
 
     final String gasTotal = "gasTotal";
 
@@ -28,8 +26,6 @@ public class ResultsAggregated {
         this.results.put(gasTotal, new long[simParams.getNumRuns()]);
         simParams.getEvents().forEach(this::initEventStructures);
         simParams.getEntities().forEach(this::initEntities);
-        count = 0;
-        this.seedEvent = "";
     }
 
     /**
@@ -103,7 +99,7 @@ public class ResultsAggregated {
 
     private void processEvent(EventDTO event, double randomDouble, int timeInner, int run) {
         AbstractDistributionDTO dist = event.getProbabilityDistribution();
-        double baseProb = (dist != null) ? dist.getProb(timeInner) : 0;
+        double baseProb =  dist.getProb(timeInner) ;
 
         String instanceOf = event.getInstanceOf();
         String dependOn = event.getDependOn();
@@ -123,10 +119,12 @@ public class ResultsAggregated {
 
         // Case: event with dependOn
         if (dependOn != null) {
-            LinkedList<Integer>[] instanceList = this.entities.get(toCamelCase(dependOn));
-            if (instanceList != null) {
-                for (Integer instanceTime : instanceList[run]) {
-                    double probTimeDep = (dist != null) ? dist.getProb(timeInner - instanceTime) : 0;
+            // retrieves the list of entities' time that depend on this event
+            LinkedList<Integer>[] entityList = this.entities.get(toCamelCase(dependOn));
+            if (entityList != null) {
+                for (Integer entityTime : entityList[run]) {
+                    // Calculates the probability of the event based on the time difference
+                    double probTimeDep =  dist.getProb(timeInner - entityTime);
                     if (randomDouble <= probTimeDep) {
                         // Se deve anche creare un'istanza nuova
                         if (instanceOf != null) {
