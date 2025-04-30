@@ -14,6 +14,21 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
+type ProbabilityDistribution = {
+    type: string;
+    [key: string]: any; // Parametri specifici per ogni tipo
+};
+
+type Event = {
+    eventName: string;
+    eventDescription: string;
+    instanceOf: string | null;
+    dependOn: string | null;
+    probabilityDistribution: ProbabilityDistribution;
+    gasCost: number;
+    relatedEvents: string[] | null;
+};
+
 type SimulationConfig = {
     entities: string[];
     events: Event[];
@@ -24,17 +39,6 @@ type SimulationConfig = {
     dir: string;
 };
 
-
-interface Event {
-    eventName: string;
-    description: string;
-    gasCost: number;
-    option: string; // distributionType
-    params: Record<string, string>; // distrib params
-    instanceOf: string;  //
-    dependOn: string;  //
-
-}
 
 const durationOptions = [
     {value: 86400, label: "ONE_DAY (86400)"},
@@ -60,39 +64,73 @@ const distributionTypes = [
     {value: "EXPONENTIAL_SCALED", label: "Exponential Scaled"},
 ];
 
-const getProbabilityDistribution = (block) => {
-    const type = block.option;
+const getProbabilityDistribution = (event: Event) => {
+    const type = event.probabilityDistribution.type;
 
     switch (type) {
         case "FIXED":
             return {
                 type: "FIXED",
-                fixedTime: block.params.fixedTime,
-                tolerance: block.params.tolerance
+                fixedTime: event.probabilityDistribution.fixedTime,
+                tolerance: event.probabilityDistribution.tolerance
             };
         case "UNIFORM":
             return {
                 type: "UNIFORM",
-                value: block.params.value
+                value: event.probabilityDistribution.value
             };
         case "NORMAL_SCALED":
             return {
                 type: "NORMAL_SCALED",
-                mean: block.params.mean,
-                std: block.params.std,
-                scalingFactorX: block.params.scalingFactorX,
-                scalingFactorY: block.params.scalingFactorY
+                mean: event.probabilityDistribution.mean,
+                std: event.probabilityDistribution.std,
+                scalingFactorX: event.probabilityDistribution.scalingFactorX,
+                scalingFactorY: event.probabilityDistribution.scalingFactorY
             };
-        // se vuoi aggiungere altri tipi qui
+        case "NORMAL":
+            return {
+                type: "NORMAL",
+                mean: event.probabilityDistribution.mean,
+                std: event.probabilityDistribution.std,
+                scalingFactor: event.probabilityDistribution.scalingFactor
+            };
+        case "LOGNORMAL_SCALED":
+            return {
+                type: "LOGNORMAL_SCALED",
+                mean: event.probabilityDistribution.mean,
+                std: event.probabilityDistribution.std,
+                scalingFactorX: event.probabilityDistribution.scalingFactorX,
+                scalingFactorY: event.probabilityDistribution.scalingFactorY
+            };
+        case "LOGNORMAL":
+            return {
+                type: "LOGNORMAL",
+                mean: event.probabilityDistribution.mean,
+                std: event.probabilityDistribution.std,
+                scalingFactor: event.probabilityDistribution.scalingFactor
+            };
+        case "EXPONENTIAL_SCALED":
+            return {
+                type: "EXPONENTIAL_SCALED",
+                rate: event.probabilityDistribution.rate,
+                scalingFactorX: event.probabilityDistribution.scalingFactorX,
+                scalingFactorY: event.probabilityDistribution.scalingFactorY
+            };
+        case "EXPONENTIAL":
+            return {
+                type: "EXPONENTIAL",
+                rate: event.probabilityDistribution.rate,
+                scalingFactor: event.probabilityDistribution.scalingFactor
+            };
         default:
-            return null;
+            return {};
     }
 };
 
 
 const DynamicFormModal: React.FC = () => {
         const [open, setOpen] = useState(false);
-        const [blocks, setBlocks] = useState<Event[]>([]);
+        const [events, setEvents] = useState<Event[]>([]);
         const [name, setName] = useState("");
         const [dir, setDir] = useState("");
         const [duration, setDuration] = useState<number | "">("");
@@ -104,47 +142,63 @@ const DynamicFormModal: React.FC = () => {
 
 
         const handleAddBlock = () => {
-            setBlocks([
-                ...blocks,
-                {text: "", number: 0, option: "", params: {}},
-            ]);
+            setEvents([
+                ...events, {
+                    eventName: "",
+                    eventDescription: "",
+                    instanceOf: null,
+                    dependOn: null,
+                    probabilityDistribution: {
+                        type: ""
+                    },
+                    gasCost: 0,
+                    relatedEvents: null
+                }]);
         };
 
-    const handleImportConfig = (config: SimulationConfig) => {
-        setName(config.name);
-        setDir(config.dir);
-        setDuration(config.maxTime);
-        setAggregation(config.numAggr);
-        setNumRuns(config.numRuns);
-        setEntities(config.entities);
-        setBlocks(config.events);
-    };
-
-
-    const handleRemoveBlock = (index: number) => {
-            const updated = blocks.filter((_, i) => i !== index);
-            setBlocks(updated);
+        const handleImportConfig = (config: SimulationConfig) => {
+            setName(config.name);
+            setDir(config.dir);
+            setDuration(config.maxTime);
+            setAggregation(config.numAggr);
+            setNumRuns(config.numRuns);
+            setEntities(config.entities);
+            setEvents(config.events);
         };
 
-    const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const text = e.target?.result as string;
-                const jsonConfig = JSON.parse(text) as SimulationConfig;
-                handleImportConfig(jsonConfig);
-            };
-            reader.readAsText(file);
-        }
-    };
 
-
-    const handleBlockChange = (index: number, field: keyof Event, value: any) => {
-            const updated = [...blocks];
-            updated[index][field] = value;
-            setBlocks(updated);
+        const handleRemoveBlock = (index: number) => {
+            const updated = events.filter((_, i) => i !== index);
+            setEvents(updated);
         };
+
+        const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+            const file = event.target.files?.[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const text = e.target?.result as string;
+                    const jsonConfig = JSON.parse(text) as SimulationConfig;
+                    handleImportConfig(jsonConfig);
+                };
+                reader.readAsText(file);
+            }
+        };
+
+
+        const handleBlockChange = (index: number, param: string, value: any) => {
+            const updated = [...events];
+            const updatedEvent = updated[index];
+
+            // Gestisci la modifica di un parametro dentro probabilityDistribution
+            if (param.startsWith("probabilityDistribution.")) {
+                const paramName = param.split(".")[1]; // Estrae il nome del parametro (ad esempio "type")
+                updatedEvent.probabilityDistribution[paramName] = value;
+            }
+
+            setEvents(updated); // Aggiorna lo stato
+        };
+
 
         const handleAddEntity = () => {
             const trimmed = entityInput.trim();
@@ -155,9 +209,13 @@ const DynamicFormModal: React.FC = () => {
         };
 
         const handleParamChange = (index: number, param: string, value: any) => {
-            const updated = [...blocks];
-            updated[index].params[param] = value;
-            setBlocks(updated);
+            const updated = [...events]; // Assicurati di aggiornare il giusto stato, in questo caso blocks
+            const updatedEvent = updated[index];
+
+            // Se param è un tipo di parametro in probabilityDistribution, aggiorna il campo corrispondente
+            updatedEvent.probabilityDistribution[param] = value;
+
+            setEvents(updated); // Aggiorna lo stato con il nuovo array
         };
 
 
@@ -174,13 +232,13 @@ const DynamicFormModal: React.FC = () => {
                 numRuns: numRuns,
                 configuration: {
                     entities: entities,
-                    events: blocks.map((block) => ({
-                        eventName: block.eventName,
-                        eventDescription: block.description,
-                        instanceOf: block.instanceOf || null,
-                        dependOn: block.dependOn || null,
-                        probabilityDistribution: getProbabilityDistribution(block),
-                        gasCost: block.gasCost,
+                    events: events.map((event) => ({
+                        eventName: event.eventName,
+                        eventDescription: event.eventDescription,
+                        instanceOf: event.instanceOf || null,
+                        dependOn: event.dependOn || null,
+                        probabilityDistribution: getProbabilityDistribution(event),
+                        gasCost: event.gasCost,
                     })),
                     name: name,
                 }
@@ -212,7 +270,7 @@ const DynamicFormModal: React.FC = () => {
 
                     <Button component="label">
                         Import Config
-                        <input type="file" hidden onChange={handleFileUpload} />
+                        <input type="file" hidden onChange={handleFileUpload}/>
                     </Button>
 
                     <DialogContent dividers>
@@ -310,7 +368,7 @@ const DynamicFormModal: React.FC = () => {
                             </Box>
 
 
-                            {blocks.map((block, index) => (
+                            {events.map((event, index) => (
                                 <Box
                                     key={index}
                                     p={2}
@@ -320,14 +378,14 @@ const DynamicFormModal: React.FC = () => {
                                 >
                                     <Stack spacing={2}>
                                         <Typography variant="h6" component="div" gutterBottom>
-                                            Event {index + 1} {block.eventName && `(${block.eventName})`}
+                                            Event {index + 1} {event.eventName && `(${event.eventName})`}
                                         </Typography>
 
                                         {/* Input per il nome dell'evento */}
                                         <TextField
                                             label="Event Name"
                                             fullWidth
-                                            value={block.eventName}
+                                            value={event.eventName}
                                             onChange={(e) =>
                                                 handleBlockChange(index, "eventName", e.target.value)
                                             }
@@ -338,9 +396,9 @@ const DynamicFormModal: React.FC = () => {
                                             fullWidth
                                             multiline
                                             rows={1}  // Puoi scegliere il numero di righe che preferisci
-                                            value={block.description}
+                                            value={event.eventDescription}
                                             onChange={(e) =>
-                                                handleBlockChange(index, "description", e.target.value)
+                                                handleBlockChange(index, "eventDescription", e.target.value)
                                             }
                                         />
 
@@ -349,7 +407,7 @@ const DynamicFormModal: React.FC = () => {
                                             label="Gas cost"
                                             type="number"
                                             fullWidth
-                                            value={block.gasCost}
+                                            value={event.gasCost}
                                             onChange={(e) =>
                                                 handleBlockChange(index, "gasCost", Number(e.target.value))
                                             }
@@ -359,7 +417,7 @@ const DynamicFormModal: React.FC = () => {
                                             label="Instance Of"
                                             select
                                             fullWidth
-                                            value={block.instanceOf || ""}  // Gestisci il caso in cui sia null
+                                            value={event.instanceOf || ""}  // Gestisci il caso in cui sia null
                                             onChange={(e) =>
                                                 handleBlockChange(index, "instanceOf", e.target.value || null)  // Imposta null se non selezionato nulla
                                             }
@@ -381,7 +439,7 @@ const DynamicFormModal: React.FC = () => {
                                             label="Depend On"
                                             select
                                             fullWidth
-                                            value={block.dependOn || ""}  // Gestisci il caso in cui sia null
+                                            value={event.dependOn || ""}  // Gestisci il caso in cui sia null
                                             onChange={(e) =>
                                                 handleBlockChange(index, "dependOn", e.target.value || null)  // Imposta null se non selezionato nulla
                                             }
@@ -404,9 +462,9 @@ const DynamicFormModal: React.FC = () => {
                                             label="Distribution Type"
                                             select
                                             fullWidth
-                                            value={block.option}
+                                            value={event?.probabilityDistribution?.type}
                                             onChange={(e) =>
-                                                handleBlockChange(index, "option", e.target.value)
+                                                handleBlockChange(index, "probabilityDistribution.type", e.target.value)
                                             }
                                         >
                                             {distributionTypes.map((opt) => (
@@ -417,7 +475,7 @@ const DynamicFormModal: React.FC = () => {
                                         </TextField>
 
                                         {(() => {
-                                            const type = block.option;
+                                            const type = event?.probabilityDistribution?.type;
                                             switch (type) {
                                                 case "EXPONENTIAL":
                                                     return (
@@ -425,13 +483,13 @@ const DynamicFormModal: React.FC = () => {
                                                             <TextField
                                                                 label="Rate"
                                                                 type="number"
-                                                                value={block.params.rate || ""}
+                                                                value={event?.probabilityDistribution?.rate || ""}
                                                                 onChange={(e) => handleParamChange(index, "rate", parseFloat(e.target.value))}
                                                             />
                                                             <TextField
                                                                 label="Scaling Factor"
                                                                 type="number"
-                                                                value={block.params.scalingFactor || ""}
+                                                                value={event?.probabilityDistribution?.scalingFactor || ""}
                                                                 onChange={(e) => handleParamChange(index, "scalingFactor", parseFloat(e.target.value))}
                                                             />
                                                         </>
@@ -442,19 +500,19 @@ const DynamicFormModal: React.FC = () => {
                                                             <TextField
                                                                 label="Rate"
                                                                 type="number"
-                                                                value={block.params.rate || ""}
+                                                                value={event?.probabilityDistribution?.rate || ""}
                                                                 onChange={(e) => handleParamChange(index, "rate", parseFloat(e.target.value))}
                                                             />
                                                             <TextField
                                                                 label="Scaling Factor X"
                                                                 type="number"
-                                                                value={block.params.scalingFactorX || ""}
+                                                                value={event?.probabilityDistribution?.scalingFactorX || ""}
                                                                 onChange={(e) => handleParamChange(index, "scalingFactorX", parseFloat(e.target.value))}
                                                             />
                                                             <TextField
                                                                 label="Scaling Factor Y"
                                                                 type="number"
-                                                                value={block.params.scalingFactorY || ""}
+                                                                value={event?.probabilityDistribution?.scalingFactorY || ""}
                                                                 onChange={(e) => handleParamChange(index, "scalingFactorY", parseFloat(e.target.value))}
                                                             />
                                                         </>
@@ -466,19 +524,19 @@ const DynamicFormModal: React.FC = () => {
                                                             <TextField
                                                                 label="Mean"
                                                                 type="number"
-                                                                value={block.params.mean || ""}
+                                                                value={event?.probabilityDistribution?.mean || ""}
                                                                 onChange={(e) => handleParamChange(index, "mean", parseFloat(e.target.value))}
                                                             />
                                                             <TextField
                                                                 label="Std Dev"
                                                                 type="number"
-                                                                value={block.params.std || ""}
+                                                                value={event?.probabilityDistribution?.std || ""}
                                                                 onChange={(e) => handleParamChange(index, "std", parseFloat(e.target.value))}
                                                             />
                                                             <TextField
                                                                 label="Scaling Factor"
                                                                 type="number"
-                                                                value={block.params.scalingFactor || ""}
+                                                                value={event?.probabilityDistribution?.scalingFactor || ""}
                                                                 onChange={(e) => handleParamChange(index, "scalingFactor", parseFloat(e.target.value))}
                                                             />
                                                         </>
@@ -490,25 +548,25 @@ const DynamicFormModal: React.FC = () => {
                                                             <TextField
                                                                 label="Mean"
                                                                 type="number"
-                                                                value={block.params.mean || ""}
+                                                                value={event?.probabilityDistribution?.mean || ""}
                                                                 onChange={(e) => handleParamChange(index, "mean", parseFloat(e.target.value))}
                                                             />
                                                             <TextField
                                                                 label="Std Dev"
                                                                 type="number"
-                                                                value={block.params.std || ""}
+                                                                value={event?.probabilityDistribution?.std || ""}
                                                                 onChange={(e) => handleParamChange(index, "std", parseFloat(e.target.value))}
                                                             />
                                                             <TextField
                                                                 label="Scaling Factor X"
                                                                 type="number"
-                                                                value={block.params.scalingFactorX || ""}
+                                                                value={event?.probabilityDistribution?.scalingFactorX || ""}
                                                                 onChange={(e) => handleParamChange(index, "scalingFactorX", parseFloat(e.target.value))}
                                                             />
                                                             <TextField
                                                                 label="Scaling Factor Y"
                                                                 type="number"
-                                                                value={block.params.scalingFactorY || ""}
+                                                                value={event?.probabilityDistribution?.scalingFactorY || ""}
                                                                 onChange={(e) => handleParamChange(index, "scalingFactorY", parseFloat(e.target.value))}
                                                             />
                                                         </>
@@ -519,13 +577,13 @@ const DynamicFormModal: React.FC = () => {
                                                             <TextField
                                                                 label="Fixed Time"
                                                                 type="number"
-                                                                value={block.params.fixedTime || ""}
+                                                                value={event?.probabilityDistribution?.fixedTime || ""}
                                                                 onChange={(e) => handleParamChange(index, "fixedTime", parseFloat(e.target.value))}
                                                             />
                                                             <TextField
                                                                 label="Tolerance"
                                                                 type="number"
-                                                                value={block.params.tolerance || ""}
+                                                                value={event?.probabilityDistribution?.tolerance || ""}
                                                                 onChange={(e) => handleParamChange(index, "tolerance", parseFloat(e.target.value))}
                                                             />
                                                         </>
@@ -535,7 +593,7 @@ const DynamicFormModal: React.FC = () => {
                                                         <TextField
                                                             label="Value"
                                                             type="number"
-                                                            value={block.params.value || ""}
+                                                            value={event?.probabilityDistribution?.value || ""}
                                                             onChange={(e) => handleParamChange(index, "value", parseFloat(e.target.value))}
                                                         />
                                                     );
