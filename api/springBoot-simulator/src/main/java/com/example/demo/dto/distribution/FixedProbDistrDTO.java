@@ -20,6 +20,6 @@ public class FixedProbDistrDTO extends AbstractDistributionDTO {
 
     @Override
     public double getProb(int time) {
-        return (Math.abs(time - fixedTime) <= 1) ? 1.0 : 0.0;
+        return (Math.abs(time - fixedTime) == 0) ? 1.0 : 0.0;
     }
 }
