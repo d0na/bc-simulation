@@ -1,39 +1,38 @@
-import React, { useState } from "react";
+import React, {useState} from "react";
 import {
     Box,
-    TextField,
     Button,
-    MenuItem,
-    Typography,
-    Stack,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    IconButton,
-    Grid,
-    Paper,
-    Divider,
     Chip,
-    Collapse,
-    Tooltip,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Divider,
+    Grid,
+    IconButton,
     InputAdornment,
+    MenuItem,
+    Paper,
+    Stack,
+    TextField,
+    Tooltip,
+    Typography,
 } from "@mui/material";
-import {
-    Close,
-    Save,
-    ContentCopy,
-    Edit,
-    Add,
-    Delete,
-    Refresh,
-    Visibility,
-    Upload,
-} from "@mui/icons-material";
+import {Add, Close, ContentCopy, Delete, Edit, Refresh, Save, Send, Upload, Visibility,} from "@mui/icons-material";
+import axios from "axios";
 
 type ProbabilityDistribution = {
     type: string;
     [key: string]: any;
+};
+
+type SimulationConfig = {
+    entities: string[];
+    events: Event[];
+    name: string;
+    numAggr: number;
+    maxTime: number;
+    numRuns: number;
 };
 
 type Event = {
@@ -46,43 +45,33 @@ type Event = {
     relatedEvents: string[] | null;
 };
 
-type SimulationConfig = {
-    entities: string[];
-    events: Event[];
-    name: string;
-    numAggr: number;
-    maxTime: number;
-    numRuns: number;
-    dir: string;
-};
-
 const durationOptions = [
-    { value: 86400, label: "1 Day" },
-    { value: 604800, label: "7 Days" },
-    { value: 864000, label: "10 Days" },
-    { value: 1209600, label: "14 Days" },
-    { value: 2592000, label: "30 Days" },
+    {value: 86400, label: "1 Day"},
+    {value: 604800, label: "7 Days"},
+    {value: 864000, label: "10 Days"},
+    {value: 1209600, label: "14 Days"},
+    {value: 2592000, label: "30 Days"},
 ];
 
 const aggregationOptions = [
-    { value: 1, label: "Seconds" },
-    { value: 60, label: "Minutes" },
-    { value: 3600, label: "Hours" },
+    {value: 1, label: "Seconds"},
+    {value: 60, label: "Minutes"},
+    {value: 3600, label: "Hours"},
 ];
 
 const distributionTypes = [
-    { value: "UNIFORM", label: "Uniform" },
-    { value: "NORMAL_SCALED", label: "Normal Scaled" },
-    { value: "NORMAL", label: "Normal" },
-    { value: "LOGNORMAL_SCALED", label: "LogNormal Scaled" },
-    { value: "LOGNORMAL", label: "LogNormal" },
-    { value: "EXPONENTIAL", label: "Exponential" },
-    { value: "EXPONENTIAL_SCALED", label: "Exponential Scaled" },
+    {value: "UNIFORM", label: "Uniform"},
+    {value: "NORMAL_SCALED", label: "Normal Scaled"},
+    {value: "NORMAL", label: "Normal"},
+    {value: "LOGNORMAL_SCALED", label: "LogNormal Scaled"},
+    {value: "LOGNORMAL", label: "LogNormal"},
+    {value: "EXPONENTIAL", label: "Exponential"},
+    {value: "EXPONENTIAL_SCALED", label: "Exponential Scaled"},
 ];
 
 const downloadConfig = (config: SimulationConfig) => {
     const element = document.createElement("a");
-    const file = new Blob([JSON.stringify(config, null, 2)], { type: "application/json" });
+    const file = new Blob([JSON.stringify(config, null, 2)], {type: "application/json"});
     element.href = URL.createObjectURL(file);
     element.download = `${config.name}_simulation_config.json`;
     document.body.appendChild(element);
@@ -95,19 +84,25 @@ const getProbabilityDistribution = (event: Event) => {
 
     switch (type) {
         case "FIXED":
-            return { type, fixedTime: dist.fixedTime, tolerance: dist.tolerance };
+            return {type, fixedTime: dist.fixedTime, tolerance: dist.tolerance};
         case "UNIFORM":
-            return { type, value: dist.value };
+            return {type, value: dist.value};
         case "NORMAL_SCALED":
         case "LOGNORMAL_SCALED":
-            return { type, mean: dist.mean, std: dist.std, scalingFactorX: dist.scalingFactorX, scalingFactorY: dist.scalingFactorY };
+            return {
+                type,
+                mean: dist.mean,
+                std: dist.std,
+                scalingFactorX: dist.scalingFactorX,
+                scalingFactorY: dist.scalingFactorY
+            };
         case "NORMAL":
         case "LOGNORMAL":
-            return { type, mean: dist.mean, std: dist.std, scalingFactor: dist.scalingFactor };
+            return {type, mean: dist.mean, std: dist.std, scalingFactor: dist.scalingFactor};
         case "EXPONENTIAL_SCALED":
-            return { type, rate: dist.rate, scalingFactorX: dist.scalingFactorX, scalingFactorY: dist.scalingFactorY };
+            return {type, rate: dist.rate, scalingFactorX: dist.scalingFactorX, scalingFactorY: dist.scalingFactorY};
         case "EXPONENTIAL":
-            return { type, rate: dist.rate, scalingFactor: dist.scalingFactor };
+            return {type, rate: dist.rate, scalingFactor: dist.scalingFactor};
         default:
             return {};
     }
@@ -116,8 +111,7 @@ const getProbabilityDistribution = (event: Event) => {
 const SimulationConfiguratorModalForm: React.FC = () => {
     const [open, setOpen] = useState(false);
     const [events, setEvents] = useState<Event[]>([]);
-    const [name, setName] = useState("");
-    const [dir, setDir] = useState("./output");
+    const [name, setName] = useState("Simulation");
 // Per cambiare la duration predefinita a 7 giorni (604800 secondi)
     const [duration, setDuration] = useState<number>(604800);
 
@@ -132,7 +126,6 @@ const SimulationConfiguratorModalForm: React.FC = () => {
     const handleReset = () => {
         if (window.confirm("Are you sure you want to reset all fields?")) {
             setName("");
-            setDir("");
             setDuration("");
             setAggregation("");
             setEntityInput("");
@@ -149,7 +142,7 @@ const SimulationConfiguratorModalForm: React.FC = () => {
             eventDescription: "",
             instanceOf: null,
             dependOn: null,
-            probabilityDistribution: { type: "" },
+            probabilityDistribution: {type: ""},
             gasCost: 0,
             relatedEvents: null
         };
@@ -159,7 +152,6 @@ const SimulationConfiguratorModalForm: React.FC = () => {
 
     const handleImportConfig = (config: SimulationConfig) => {
         setName(config.name);
-        setDir(config.dir);
         setDuration(config.maxTime);
         setAggregation(config.numAggr);
         setNumRuns(config.numRuns);
@@ -215,24 +207,32 @@ const SimulationConfiguratorModalForm: React.FC = () => {
         setEntities(prev => prev.filter((_, i) => i !== index));
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async (e?: React.FormEvent) => {
         const config = {
             maxTime: duration,
             numAggr: aggregation,
-            dir: dir,
             numRuns: numRuns,
-            configuration: {
-                entities: entities,
-                events: events.map(event => ({
-                    ...event,
-                    probabilityDistribution: getProbabilityDistribution(event),
-                })),
-                name: name,
-            }
+            name: name,
+            entities: entities,
+            events: events.map(event => ({
+                ...event,
+                probabilityDistribution: getProbabilityDistribution(event),
+            })),
         };
 
         console.log("Configuration ready:", config);
-        setOpen(false);
+        try {
+            const response = await axios.post('http://localhost:8099/newsimulation', config, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            console.log('Risposta dal server:', response.data);
+            setOpen(false);
+        } catch (error) {
+            console.error('Errore nella simulazione:', error);
+        }
     };
 
     const handlePreview = () => {
@@ -243,7 +243,6 @@ const SimulationConfiguratorModalForm: React.FC = () => {
             numAggr: aggregation as number,
             maxTime: duration as number,
             numRuns: numRuns as number,
-            dir
         };
         setConfigPreview(config);
     };
@@ -256,7 +255,7 @@ const SimulationConfiguratorModalForm: React.FC = () => {
         const commonProps = {
             size: "small" as const,
             fullWidth: true,
-            sx: { mb: 1 },
+            sx: {mb: 1},
             type: "number",
         };
 
@@ -409,8 +408,8 @@ const SimulationConfiguratorModalForm: React.FC = () => {
 
     return (
         <>
-            <Button variant="contained" onClick={() => setOpen(true)} startIcon={<Add />}>
-                Configure Simulation
+            <Button variant="contained" onClick={() => setOpen(true)}>
+                Simulation
             </Button>
 
             <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="md">
@@ -418,14 +417,14 @@ const SimulationConfiguratorModalForm: React.FC = () => {
                     <Stack direction="row" justifyContent="space-between" alignItems="center">
                         <Typography variant="h6">Simulation Configurator</Typography>
                         <IconButton onClick={() => setOpen(false)}>
-                            <Close />
+                            <Close/>
                         </IconButton>
                     </Stack>
                 </DialogTitle>
 
                 <DialogContent dividers>
                     {configPreview ? (
-                        <Paper elevation={0} sx={{ p: 2, position: "relative" }}>
+                        <Paper elevation={0} sx={{p: 2, position: "relative"}}>
                             <Stack spacing={2}>
                                 <Stack direction="row" justifyContent="space-between" alignItems="center">
                                     <Typography variant="h6">Configuration Preview</Typography>
@@ -434,28 +433,28 @@ const SimulationConfiguratorModalForm: React.FC = () => {
                                             <IconButton
                                                 onClick={() => navigator.clipboard.writeText(JSON.stringify(configPreview, null, 2))}
                                             >
-                                                <ContentCopy fontSize="small" />
+                                                <ContentCopy fontSize="small"/>
                                             </IconButton>
                                         </Tooltip>
                                         <Button
                                             onClick={() => downloadConfig(configPreview)}
                                             size="small"
-                                            startIcon={<Save />}
+                                            startIcon={<Save/>}
                                         >
                                             Save
                                         </Button>
                                         <Button
                                             onClick={() => setConfigPreview(null)}
                                             size="small"
-                                            startIcon={<Edit />}
+                                            startIcon={<Edit/>}
                                         >
                                             Edit
                                         </Button>
                                     </Stack>
                                 </Stack>
 
-                                <Paper variant="outlined" sx={{ p: 2, maxHeight: 400, overflow: "auto" }}>
-                                    <pre style={{ margin: 0 }}>
+                                <Paper variant="outlined" sx={{p: 2, maxHeight: 400, overflow: "auto"}}>
+                                    <pre style={{margin: 0}}>
                                         {JSON.stringify(configPreview, null, 2)}
                                     </pre>
                                 </Paper>
@@ -463,28 +462,22 @@ const SimulationConfiguratorModalForm: React.FC = () => {
                         </Paper>
                     ) : (
                         <Stack spacing={3}>
-                            <Paper elevation={0} sx={{ p: 2 }}>
+                            <Paper elevation={0} sx={{p: 2}}>
                                 <Typography variant="subtitle1" gutterBottom>
                                     Basic Configuration
                                 </Typography>
-                                <Divider sx={{ mb: 2 }} />
+                                <Divider sx={{mb: 2}}/>
                                 <Grid container spacing={2}>
                                     <Grid item xs={12} sm={6}>
                                         <TextField
                                             label="Simulation Name"
+
+
                                             fullWidth
                                             size="small"
                                             value={name}
                                             onChange={(e) => setName(e.target.value)}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12} sm={6}>
-                                        <TextField
-                                            label="Output Directory"
-                                            fullWidth
-                                            size="small"
-                                            value={dir}
-                                            onChange={(e) => setDir(e.target.value)}
+
                                         />
                                     </Grid>
 
@@ -493,6 +486,9 @@ const SimulationConfiguratorModalForm: React.FC = () => {
                                         <TextField
                                             label="Duration"
                                             select
+                                            required
+                                            error={!duration || duration <= 0}
+                                            helperText={(!duration || duration <= 0) ? "Duration is required" : " "}
                                             size="small"
                                             value={duration}
                                             onChange={(e) => setDuration(Number(e.target.value))}
@@ -509,6 +505,9 @@ const SimulationConfiguratorModalForm: React.FC = () => {
                                     <Grid item xs={12}>
                                         <TextField
                                             label="Aggregation"
+                                            required
+                                            error={!aggregation || aggregation <= 0}
+                                            helperText={(!aggregation || aggregation <= 0) ? "Aggregation is required" : " "}
                                             select
                                             fullWidth
                                             size="small"
@@ -528,6 +527,9 @@ const SimulationConfiguratorModalForm: React.FC = () => {
                                         <TextField
                                             label="Number of Runs"
                                             type="number"
+                                            required
+                                            error={!numRuns || numRuns <= 0}
+                                            helperText={(!numRuns || numRuns <= 0) ? "Number of Runs is required" : " "}
                                             fullWidth
                                             size="small"
                                             value={numRuns}
@@ -537,11 +539,11 @@ const SimulationConfiguratorModalForm: React.FC = () => {
                                 </Grid>
                             </Paper>
 
-                            <Paper elevation={0} sx={{ p: 2 }}>
+                            <Paper elevation={0} sx={{p: 2}}>
                                 <Typography variant="subtitle1" gutterBottom>
                                     Entities
                                 </Typography>
-                                <Divider sx={{ mb: 2 }} />
+                                <Divider sx={{mb: 2}}/>
                                 <Stack spacing={2}>
                                     <Stack direction="row" spacing={1}>
                                         <TextField
@@ -559,14 +561,14 @@ const SimulationConfiguratorModalForm: React.FC = () => {
                                                             onClick={handleAddEntity}
                                                             disabled={!entityInput.trim()}
                                                         >
-                                                            <Add />
+                                                            <Add/>
                                                         </IconButton>
                                                     </InputAdornment>
                                                 ),
                                             }}
                                         />
                                     </Stack>
-                                    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+                                    <Box sx={{display: "flex", flexWrap: "wrap", gap: 1}}>
                                         {entities.map((entity, index) => (
                                             <Chip
                                                 key={index}
@@ -579,24 +581,25 @@ const SimulationConfiguratorModalForm: React.FC = () => {
                                 </Stack>
                             </Paper>
 
-                            <Paper elevation={0} sx={{ p: 2 }}>
+                            <Paper elevation={0} sx={{p: 2}}>
                                 <Stack direction="row" justifyContent="space-between" alignItems="center">
                                     <Typography variant="subtitle1">Events</Typography>
                                     <Button
                                         variant="outlined"
                                         size="small"
-                                        startIcon={<Add />}
+                                        startIcon={<Add/>}
                                         onClick={handleAddEvent}
                                     >
                                         Add Event
                                     </Button>
                                 </Stack>
-                                <Divider sx={{ my: 2 }} />
+                                <Divider sx={{my: 2}}/>
                                 <Stack spacing={2}>
                                     {events.map((event, index) => (
-                                        <Paper key={index} variant="outlined" sx={{ p: 1 }}>
+                                        <Paper key={index} variant="outlined" sx={{p: 1}}>
                                             <Stack spacing={1}>
-                                                <Stack direction="row" justifyContent="space-between" alignItems="center">
+                                                <Stack direction="row" justifyContent="space-between"
+                                                       alignItems="center">
                                                     <Typography variant="subtitle2">
                                                         Event {index + 1}{event.eventName && `: ${event.eventName}`}
                                                     </Typography>
@@ -605,11 +608,14 @@ const SimulationConfiguratorModalForm: React.FC = () => {
                                                         onClick={() => handleRemoveEvent(index)}
                                                         color="error"
                                                     >
-                                                        <Delete fontSize="small" />
+                                                        <Delete fontSize="small"/>
                                                     </IconButton>
                                                 </Stack>
                                                 <TextField
                                                     label="Event Name"
+                                                    required
+                                                    error={!event.eventName}
+                                                    helperText={!event.eventName ? "Event name is required" : " "}
                                                     size="small"
                                                     fullWidth
                                                     value={event.eventName}
@@ -626,6 +632,9 @@ const SimulationConfiguratorModalForm: React.FC = () => {
                                                 />
                                                 <TextField
                                                     label="Gas Cost"
+                                                    required
+                                                    error={!event.gasCost || event.gasCost <= 0}
+                                                    helperText={(!event.gasCost || event.gasCost <= 0) ? "Gas Cost is required" : " "}
                                                     type="number"
                                                     size="small"
                                                     fullWidth
@@ -672,6 +681,9 @@ const SimulationConfiguratorModalForm: React.FC = () => {
                                                 <TextField
                                                     label="Distribution Type"
                                                     select
+                                                    required
+                                                    error={!event.probabilityDistribution.type}
+                                                    helperText={!event.probabilityDistribution.type ? "Distribution Type is required" : " "}
                                                     size="small"
                                                     fullWidth
                                                     value={event.probabilityDistribution.type}
@@ -695,17 +707,17 @@ const SimulationConfiguratorModalForm: React.FC = () => {
 
                 <DialogActions>
                     <Button
-                        startIcon={<Upload />}
+                        startIcon={<Upload/>}
                         component="label"
-                        sx={{ mr: "auto" }}
+                        sx={{mr: "auto"}}
                     >
                         Import Config
-                        <input type="file" hidden accept=".json" onChange={handleFileUpload} />
+                        <input type="file" hidden accept=".json" onChange={handleFileUpload}/>
                     </Button>
                     <Button
                         onClick={handleReset}
                         color="error"
-                        startIcon={<Refresh />}
+                        startIcon={<Refresh/>}
                     >
                         Reset
                     </Button>
@@ -713,7 +725,7 @@ const SimulationConfiguratorModalForm: React.FC = () => {
                         <Button
                             onClick={handlePreview}
                             color="info"
-                            startIcon={<Visibility />}
+                            startIcon={<Visibility/>}
                         >
                             Preview
                         </Button>
@@ -722,10 +734,10 @@ const SimulationConfiguratorModalForm: React.FC = () => {
                         onClick={handleSubmit}
                         color="primary"
                         variant="contained"
-                        startIcon={<Save />}
+                        startIcon={<Send/>}
                         disabled={!name || !duration || !aggregation || !numRuns}
                     >
-                        Save Configuration
+                        Submit simulation
                     </Button>
                 </DialogActions>
             </Dialog>
