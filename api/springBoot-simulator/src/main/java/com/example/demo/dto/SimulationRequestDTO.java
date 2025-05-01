@@ -3,6 +3,7 @@ package com.example.demo.dto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,11 +25,11 @@ import java.util.List;
 public class SimulationRequestDTO {
     List<String> entities;
     List<EventDTO> events;
+    @NotNull(message = "Simulation name is required")
     String name;
     int numAggr;
     int maxTime;
     int numRuns;
-    String dir;
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
 
@@ -57,8 +58,7 @@ public class SimulationRequestDTO {
                 .addString("name", this.name)
                 .addLong("maxTime", (long) this.maxTime)
                 .addLong("numRuns", (long) this.numRuns)
-                .addString("dir", this.dir)
-                .addString("outfile", buildOutFileName(this.dir, this.maxTime, this.numAggr,this.name))
+                .addString("outfile", buildOutFileName("./output",this.maxTime, this.numAggr,this.name))
                 .addString("events", OBJECT_MAPPER.writeValueAsString(this.events))
                 .addString("entities", OBJECT_MAPPER.writeValueAsString(this.entities))
                 .addString("uuid", java.util.UUID.randomUUID().toString())
@@ -80,7 +80,6 @@ public class SimulationRequestDTO {
         dto.setMaxTime(params.getLong("maxTime").intValue());
         dto.setNumRuns(params.getLong("numRuns").intValue());
         dto.setName(params.getString("name"));
-        dto.setDir(params.getString("dir"));
 
         // Per la lista events, se è serializzata come JSON, possiamo deserializzarla
         String eventsJson = params.getString("events");

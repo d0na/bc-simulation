@@ -30,9 +30,4 @@ public class EventDTO {
      * gas cost of the event
      */
     private long gasCost;
-    /**
-     * related events to this event
-     */
-    private List<EventDTO> relatedEvents;
-
 }

@@ -3,9 +3,9 @@ package com.example.demo.simulator;
 import com.example.demo.dto.AbstractDistributionDTO;
 import com.example.demo.dto.EventDTO;
 import com.example.demo.dto.SimulationRequestDTO;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
-
 
 public class ResultsAggregated {
     // Parameters of the simulation
@@ -17,6 +17,7 @@ public class ResultsAggregated {
     Map<String, LinkedList<Integer>[]> entities;
 
     final String gasTotal = "gasTotal";
+
 
     public ResultsAggregated(SimulationRequestDTO simParams) {
         this.simParams = simParams;

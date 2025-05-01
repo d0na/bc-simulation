@@ -27,7 +27,7 @@ public class Simulation {
 
             // Only print every 2000 steps for log reasons and update time every 2000 steps per aggregation
             if (t % (simParams.getNumAggr() * 2000) == 0) {
-                System.out.println("Sim run at time " + t + "/" + simParams.getMaxTime() + " in time " + (System.currentTimeMillis() - time) + " ms.");
+                log.info("Sim run at time " + t + "/" + simParams.getMaxTime() + " in time " + (System.currentTimeMillis() - time) + " ms.");
                 time = System.currentTimeMillis();
             }
 
@@ -51,7 +51,7 @@ public class Simulation {
 //        });
 //        System.out.println();
 //        System.out.println("Count:"+resultsAggregated.count);
-        System.out.println("Ending sim of " + simParams.getNumRuns() + " runs.");
+        log.info("Ending sim of " + simParams.getNumRuns() + " runs.");
     }
 
     /**
