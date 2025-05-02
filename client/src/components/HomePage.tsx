@@ -91,6 +91,11 @@ function HomePage() {
                         View Job Statuses
                     </Button>
                 </Link>
+                <Link to="/results" style={{ textDecoration: 'none' }}>
+                    <Button variant="contained" color="primary">
+                        Simulation Results
+                    </Button>
+                </Link>
             </Container>
     );
 }
