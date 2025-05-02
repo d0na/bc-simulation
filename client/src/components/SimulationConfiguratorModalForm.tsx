@@ -471,8 +471,9 @@ const SimulationConfiguratorModalForm: React.FC = () => {
                                     <Grid item xs={12} sm={6}>
                                         <TextField
                                             label="Simulation Name"
-
-
+                                            required
+                                            error={!name }
+                                            helperText={(!name ) ? "Name is required" : " "}
                                             fullWidth
                                             size="small"
                                             value={name}
