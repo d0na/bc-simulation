@@ -33,17 +33,6 @@ public class SimulationController {
     @Autowired
     private JobLauncher jobLauncher;
 
-    @Autowired
-    @Qualifier("importUserJob")
-    private Job importUserJob;
-
-    @Autowired
-    @Qualifier("jobHallo")
-    private Job jobHallo;
-
-    @Autowired
-    @Qualifier("jobSimulation")
-    private Job jobSimulation;
 
     @Autowired
     private SimulationJobService simulationJobService;
@@ -55,36 +44,6 @@ public class SimulationController {
     public ResponseEntity<List<JobStatusDTO>> getJobStatuses() {
         List<JobStatusDTO> statuses = jobMonitoringService.getJobStatuses();
         return ResponseEntity.ok(statuses); // restituisce 200 OK con il corpo JSON
-    }
-
-    @PostMapping("/jobs/hallo")
-    public String postHallo() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
-        jobLauncher.run(jobHallo, new JobParametersBuilder().toJobParameters());
-        return "Lanciato il job Hello World!";
-    }
-
-    @PostMapping("/jobs/import-user")
-    public String postImportUser() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
-        jobLauncher.run(importUserJob, new JobParametersBuilder().toJobParameters());
-        return "Lanciato il job Import User!";
-    }
-
-    @PostMapping("/jobs/simulation")
-    public String postSimulation() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
-        jobLauncher.run(jobSimulation, new JobParametersBuilder().toJobParameters());
-        return "Lanciato il job Import User!";
-    }
-
-    @PostMapping("/simulate-rev")
-    public ResponseEntity<?> runSimulation(@RequestBody SimTaskletJobRequestDTO request) throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
-
-        try {
-            Map<String, Object> response = simulationJobService.runSimulation(request);
-            return ResponseEntity.accepted().body(response);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred during simulation");
-        }
     }
 
 
