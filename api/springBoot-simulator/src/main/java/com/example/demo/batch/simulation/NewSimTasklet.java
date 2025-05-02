@@ -1,9 +1,11 @@
 package com.example.demo.batch.simulation;
 
 import com.example.demo.dto.SimulationRequestDTO;
+import com.example.demo.model.CsvFile;
 import com.example.demo.nmtsimulation.roundResults.SimRoundResults;
 import com.example.demo.nmtsimulation.roundResults.SimRoundResultsAggregated;
 import com.example.demo.nmtsimulation.simParam.SimParams;
+import com.example.demo.repository.CsvFileRepository;
 import com.example.demo.service.ProgressTracker;
 import com.example.demo.simulator.Simulation;
 import lombok.extern.slf4j.Slf4j;
@@ -20,9 +22,12 @@ import org.springframework.stereotype.Component;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 @Component
 @Slf4j
@@ -31,6 +36,9 @@ public class NewSimTasklet implements Tasklet {
     @Autowired
     private ProgressTracker tracker;
 
+    @Autowired
+    private CsvFileRepository csvFileRepository;
+
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
@@ -38,11 +46,13 @@ public class NewSimTasklet implements Tasklet {
         JobExecution jobExecution = chunkContext.getStepContext().getStepExecution().getJobExecution();
         Long jobExecutionId = jobExecution.getId();
         JobParameters params = chunkContext.getStepContext().getStepExecution().getJobParameters();
-
-        Simulation simulation = new Simulation(SimulationRequestDTO.fromJobParameters(params));
+        SimulationRequestDTO request = SimulationRequestDTO.fromJobParameters(params);
+        Simulation simulation = new Simulation(request);
 
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(Objects.requireNonNull(params.getString("outfile"))))) {
             simulation.run(bw);
+
+            CsvFile savedFile = registerCsvFile(request.getName(), params.getString("outfile"));
         } catch (IOException ex) {
             System.err.println("ERROR WHILE WRITING TO FILE.");
             ex.printStackTrace();
@@ -50,6 +60,29 @@ public class NewSimTasklet implements Tasklet {
 
 
         return RepeatStatus.FINISHED;
+    }
+    private CsvFile registerCsvFile(String name, String filePath) {
+        CsvFile file = new CsvFile();
+        file.setName(name);
+        file.setPath(filePath);
+        file.setCreatedAt(LocalDateTime.now());
+        file.setColumns(readCsvHeader(filePath));
+
+        CsvFile savedFile = csvFileRepository.save(file);
+
+        log.info("CsvFile saved in database with id: {}", savedFile.getId());
+
+        return savedFile;
+    }
+
+    private String readCsvHeader(String filePath) {
+        Path csvPath = Path.of(filePath);
+        try (Stream<String> lines = Files.lines(csvPath)) {
+            return lines.findFirst().orElse("");
+        } catch (IOException e) {
+            log.error("Errore nella lettura del file CSV: {}", e.getMessage(), e);
+            throw new RuntimeException("Errore nella lettura del file CSV", e);
+        }
     }
 
 

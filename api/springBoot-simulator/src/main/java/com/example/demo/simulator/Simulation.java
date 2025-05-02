@@ -36,6 +36,7 @@ public class Simulation {
             String s = resultsAggregated.generateCSVComputationStats(separator);
             bw.write(t + separator + s);
             bw.newLine();
+
             // total gas stats mean (average) and std (standard deviation)
 
 //            resultsAggregated.results.forEach((key, value) -> {
@@ -65,6 +66,7 @@ public class Simulation {
         double stdDev = ResultsAggregated.computeStd(result, mean);
         return sb.append(separator).append(mean).append(separator).append(stdDev).toString();
     }
+
 
 
 }
