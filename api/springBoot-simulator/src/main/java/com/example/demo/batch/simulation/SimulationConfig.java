@@ -166,9 +166,9 @@ public class SimulationConfig {
     }
 
     @Bean
-    public Step stepNewSimulation(JobRepository jobRepository, PlatformTransactionManager transactionManager, NewSimTasklet newSimTasklet) {
+    public Step stepNewSimulation(JobRepository jobRepository, PlatformTransactionManager transactionManager, SimulationTasklet newSimTasklet) {
         log.info("step simulation call");
-        return new StepBuilder("stepNewSimulation", jobRepository)
+        return new StepBuilder("newSimulation", jobRepository)
 //                .<User, User>chunk(10, transactionManager)
                 .tasklet(newSimTasklet, transactionManager)
                 .build();
