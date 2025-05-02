@@ -49,6 +49,9 @@ public class SimulationTasklet implements Tasklet {
 
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(Objects.requireNonNull(params.getString("outfile"))))) {
 
+            bw.write(resultsAggregated.generateCSVHeader(separator));
+            bw.newLine();
+
             for (int t = 0; t < simParams.getMaxTime(); t = t + simParams.getNumAggr()) {
 
                 // Only print every 2000 steps for log reasons and update time every 2000 steps per aggregation
