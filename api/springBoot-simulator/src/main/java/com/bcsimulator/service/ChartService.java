@@ -23,7 +23,7 @@ public class ChartService {
     @Autowired
     private CsvFileRepository repository;
 
-    public ChartDataResponseDTO generateChartData(ChartRequestDTO request) {
+    public ChartDataResponseDTO getData(ChartRequestDTO request) {
         List<String> labels = new ArrayList<>();
         List<ChartSeries> seriesList = new ArrayList<>();
 
@@ -96,5 +96,8 @@ public class ChartService {
 
         return new ChartDataResponseDTO(seriesList);
     }
+
+
+
 
 }

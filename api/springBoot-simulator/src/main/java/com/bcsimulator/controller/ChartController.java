@@ -18,6 +18,6 @@ public class ChartController {
 
     @PostMapping("/preview")
     public ChartDataResponseDTO generateChart(@RequestBody ChartRequestDTO request) {
-        return service.generateChartData(request);
+        return service.getData(request);
     }
 }
