@@ -1,4 +1,4 @@
-package com.bcsimulator.simulator;
+package com.bcsimulator.logic;
 
 import com.bcsimulator.dto.AbstractDistributionDTO;
 import com.bcsimulator.dto.SimulationRequestDTO;

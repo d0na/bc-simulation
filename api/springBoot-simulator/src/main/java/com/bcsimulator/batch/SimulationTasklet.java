@@ -4,7 +4,7 @@ import com.bcsimulator.model.CsvFile;
 import com.bcsimulator.service.ProgressTracker;
 import com.bcsimulator.dto.SimulationRequestDTO;
 import com.bcsimulator.repository.CsvFileRepository;
-import com.bcsimulator.simulator.ResultsAggregated;
+import com.bcsimulator.logic.ResultsAggregated;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParameters;

@@ -19,20 +19,14 @@ import org.springframework.transaction.PlatformTransactionManager;
 public class SimulationConfig {
 
     @Bean
-    public Job jobSimulation(JobRepository jobRepository, Step stepSimulation) {
-        return new JobBuilder("jobSimulation", jobRepository).start(stepSimulation).build();
+    public Job jobSimulation(JobRepository jobRepository, Step stepNewSimulation) {
+        return new JobBuilder("jobSimulation", jobRepository).start(stepNewSimulation).build();
     }
 
     @Bean
-    public Job jobNewSimulation(JobRepository jobRepository, Step stepNewSimulation) {
-        return new JobBuilder("jobNewSimulation", jobRepository).start(stepNewSimulation).build();
-    }
-
-    @Bean
-    public Step stepNewSimulation(JobRepository jobRepository, PlatformTransactionManager transactionManager, SimulationTasklet newSimTasklet) {
+    public Step stepSimulation(JobRepository jobRepository, PlatformTransactionManager transactionManager, SimulationTasklet newSimTasklet) {
         log.info("step simulation call");
-        return new StepBuilder("newSimulation", jobRepository)
-//                .<User, User>chunk(10, transactionManager)
+        return new StepBuilder("simulation", jobRepository)
                 .tasklet(newSimTasklet, transactionManager)
                 .build();
     }
