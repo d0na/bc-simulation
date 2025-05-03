@@ -1,10 +1,10 @@
 package com.bcsimulator.controller;
 
+import com.bcsimulator.dto.CsvFileDTO;
+import com.bcsimulator.dto.CsvFileMapper;
 import com.bcsimulator.model.CsvFile;
 import com.bcsimulator.repository.CsvFileRepository;
 import com.bcsimulator.service.CsvFileService;
-import com.bcsimulator.dto.CsvFileDTO;
-import com.bcsimulator.dto.CsvFileMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -34,14 +34,25 @@ public class CsvFileController {
         return service.getAllCsvFiles();
     }
 
+    @GetMapping("/results/csv/files")
+    public List<CsvFileDTO> getAllCsvFiles() {
+        List<CsvFile> files = cvsFileRepository.findAll();
+        return files.stream()
+                .map(CsvFileMapper::toDto)
+                .toList();
+    }
+
     @GetMapping("/{id}/columns")
     public List<String> getColumns(@PathVariable Long id) throws IOException {
         return service.getColumnsForFile(id);
     }
 
+    private CsvFile getCsvFileById(Long id) {
+        return cvsFileRepository.findById(id).orElseThrow(() -> new RuntimeException("File not found"));
+    }
+
     @GetMapping("/{id}/download")
     public ResponseEntity<byte[]> downloadCsvFile(@PathVariable Long id) throws IOException {
-        // Trova il CSV in base all'ID (da un database o da un repository)
         CsvFile csvFile = getCsvFileById(id);
 
         // Carica il file dal disco
@@ -59,21 +70,6 @@ public class CsvFileController {
         headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE);
 
         return new ResponseEntity<>(fileContent, headers, HttpStatus.OK);
-    }
-
-    private CsvFile getCsvFileById(Long id) {
-        // Questo metodo è un esempio. In un'applicazione reale,
-        // dovresti recuperare il CsvFileDTO dal tuo database o repository.
-        return cvsFileRepository.findById(id).orElseThrow(() -> new RuntimeException("File not found"));
-    }
-
-
-    @GetMapping("/results/csv/files")
-    public List<CsvFileDTO> getAllCsvFiles() {
-        List<CsvFile> files = cvsFileRepository.findAll();
-        return files.stream()
-                .map(CsvFileMapper::toDto)
-                .toList();
     }
 }
 

@@ -18,9 +18,6 @@ public class CsvFile {
     private String path;
     private LocalDateTime createdAt;
 
-    // Salvo come JSON array in Postgres o stringa con separatore
     @Column(columnDefinition = "TEXT")
     private String columns; // es: "time,value1,value2,value3"
-
-    // Costruttori, getter e setter
 }
