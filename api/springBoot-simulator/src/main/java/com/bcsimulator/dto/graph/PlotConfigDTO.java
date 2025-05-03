@@ -10,7 +10,7 @@ public class PlotConfigDTO {
     private PlotType type;
     private String title;
     private String color;
-    private boolean smooth;
+    private String smooth;
     private double lineWidth;
     private FillConfigDTO fill;
 }

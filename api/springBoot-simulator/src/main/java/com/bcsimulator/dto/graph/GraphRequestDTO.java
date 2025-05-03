@@ -13,6 +13,7 @@ public class GraphRequestDTO {
     private String ylabel;
     private String xRange;
     private String yRange;
+    private String extraOptions;
     private boolean logscaleY;
     private List<DataFileDTO> dataFiles;
     private List<PlotConfigDTO> plots;

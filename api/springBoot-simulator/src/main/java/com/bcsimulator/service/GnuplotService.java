@@ -46,7 +46,7 @@ public class GnuplotService {
 
             writer.write("set key inside top left\n");
             writer.write("set style data lines\n\n");
-
+            writer.write(request.getExtraOptions()+"\n");
             // Mappa alias -> path
             for (DataFileDTO file : request.getDataFiles()) {
                 writer.write("# data file alias: " + file.getAlias() + " = " + file.getPath() + "\n");
@@ -84,8 +84,8 @@ public class GnuplotService {
                 if (plot.getType() != PlotType.LINE) {
                     writer.write(" linecolor rgb '" + plot.getColor() + "'");
                     writer.write(" linewidth " + plot.getLineWidth());
-                    if (plot.isSmooth())
-                        writer.write(" smooth bezier");
+                    if (plot.getSmooth() != null && !plot.getSmooth().isEmpty() )
+                        writer.write(" smooth "+plot.getSmooth());
                     if (plot.getFill() != null && plot.getType() == PlotType.FILLEDCURVES) {
                         writer.write(" fill solid " + plot.getFill().getSolid());
                         if (plot.getFill().isTransparent())
