@@ -40,7 +40,7 @@ interface PlotConfigDTO {
     type: string;
     title: string;
     color: string;
-    smooth: boolean;
+    smooth: string;
     lineWidth: number;
     fill?: FillConfigDTO;
 }
@@ -54,6 +54,7 @@ interface GraphRequestDTO {
     xRange: string;
     yRange: string;
     logscaleY: boolean;
+    extraOptions?: string;
     dataFiles: {
         alias: string;
         path: string;
@@ -73,6 +74,7 @@ const GraphRequestForm: React.FC = () => {
         xRange: '',
         yRange: '',
         logscaleY: false,
+        extraOptions: '',  // <-- Inizializza il nuovo campo
         dataFiles: [],
         plots: []
     });
@@ -86,6 +88,62 @@ const GraphRequestForm: React.FC = () => {
             .then(response => setCsvFiles(response.data))
             .catch(error => console.error('Error fetching files:', error));
     }, []);
+
+    const handleExportJson = () => {
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(request, null, 2));
+        const downloadAnchorNode = document.createElement('a');
+        downloadAnchorNode.setAttribute("href", dataStr);
+        downloadAnchorNode.setAttribute("download", "graph_config.json");
+        document.body.appendChild(downloadAnchorNode);
+        downloadAnchorNode.click();
+        downloadAnchorNode.remove();
+    };
+
+    const handleImportJson = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const jsonData = JSON.parse(e.target?.result as string);
+
+                    // Inizializza i valori nei campi della form
+                    setRequest(prev => ({
+                        ...prev,
+                        title: jsonData.title || '',
+                        outputFormat: jsonData.outputFormat || 'png',
+                        size: jsonData.size || '800,600',
+                        xlabel: jsonData.xlabel || '',
+                        ylabel: jsonData.ylabel || '',
+                        xRange: jsonData.xRange || '',
+                        yRange: jsonData.yRange || '',
+                        logscaleY: jsonData.logscaleY || false,
+                        dataFiles: jsonData.dataFiles || [],
+                        plots: jsonData.plots || []
+                    }));
+
+                    // Inizializza i file selezionati
+                    const files = jsonData.dataFiles.reduce((acc: { [key: string]: CsvFileDTO }, file: {
+                        alias: string,
+                        path: string
+                    }) => {
+                        const fileAlias = file.alias;
+                        acc[fileAlias] = {
+                            name: fileAlias,
+                            path: file.path,
+                            columns: [] // Assicurati di riempire anche la lista delle colonne
+                        };
+                        return acc;
+                    }, {});
+
+                    setSelectedFiles(files);
+                } catch (error) {
+                    alert("Invalid JSON file");
+                }
+            };
+            reader.readAsText(file);
+        }
+    };
 
 
     const handleGenerateChart = async () => {
@@ -133,14 +191,24 @@ const GraphRequestForm: React.FC = () => {
         }));
     };
 
-    const formatUsingExpression = (expr: string, columns: string[]) => {
+    const formatUsingExpression = (expr: string) => {
         // Se è una semplice coppia di numeri (es. "1:2") lascia invariato
         if (/^\d+:\d+$/.test(expr)) return expr;
 
-        // Altrimenti aggiunge $ agli indici (es. "1:($16-$17)"")
-        return expr.replace(/(\$\d+|\d+)/g, match =>
-            match.startsWith('$') ? match : `$${match}`
-        );
+        // Altrimenti formatta come "1:($16-$17):($16+$17)"
+        return expr.split(':').map((part, index) => {
+            // Il primo elemento (indice 0) non deve avere $ nei numeri
+            if (index === 0) return part;
+
+            // Per gli altri elementi, aggiungi $ ai numeri dentro parentesi
+            return part.replace(/(\d+)/g, (match) => {
+                // Se il numero è già preceduto da $ o è dentro una formula matematica
+                if (part.includes('(') && part.includes(')')) {
+                    return `$${match}`;
+                }
+                return match;
+            });
+        }).join(':');
     };
 
     const addPlot = () => {
@@ -154,7 +222,7 @@ const GraphRequestForm: React.FC = () => {
                     type: 'line',
                     title: '',
                     color: '#000000',
-                    smooth: false,
+                    smooth: '',
                     lineWidth: 1,
                     fill: {
                         transparent: false,
@@ -224,11 +292,16 @@ const GraphRequestForm: React.FC = () => {
 
     return (
         <Box sx={{p: 3}}>
-            <Button component={Link} to="/" variant="contained" sx={{ mb: 2 }}>
+            <Button component={Link} to="/" variant="contained" sx={{mb: 2}}>
                 Back to Home
             </Button>
             <Typography variant="h4" gutterBottom>Graph Configuration</Typography>
-
+            <Box sx={{display: 'flex', gap: 2, mb: 3}}>
+                <Button variant="outlined" component="label">
+                    Import Config JSON
+                    <input type="file" hidden accept="application/json" onChange={handleImportJson}/>
+                </Button>
+            </Box>
             <Paper sx={{p: 3, mb: 3}}>
                 <Typography variant="h6" gutterBottom>General Settings</Typography>
                 <Grid container spacing={2}>
@@ -305,6 +378,18 @@ const GraphRequestForm: React.FC = () => {
                                 />
                             }
                             label="Logarithmic Y Scale"
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <TextField
+                            fullWidth
+                            label="Extra GNUplot Options"
+                            value={request.extraOptions || ''}
+                            onChange={(e) => setRequest({...request, extraOptions: e.target.value})}
+                            multiline
+                            rows={4}
+                            helperText="Enter additional GNUplot commands (e.g., set xrange [0:86400], set ytics font 'Times-New-Roman,15')"
+                            placeholder={`set xrange [0:86400]\nset yrange [0:*]\nset xtics font 'Times-New-Roman,15'\nset ytics font 'Times-New-Roman,15'`}
                         />
                     </Grid>
                 </Grid>
@@ -443,15 +528,22 @@ const GraphRequestForm: React.FC = () => {
                                     />
                                 </Grid>
                                 <Grid item xs={12} sm={6}>
-                                    <FormControlLabel
-                                        control={
-                                            <Checkbox
-                                                checked={plot.smooth}
-                                                onChange={(e) => updatePlot(index, 'smooth', e.target.checked)}
-                                            />
-                                        }
-                                        label="Smooth Line"
-                                    />
+                                    <FormControl fullWidth>
+                                        <InputLabel>Smooth Type</InputLabel>
+                                        <Select
+                                            value={plot.smooth || ''}
+                                            onChange={(e) => updatePlot(index, 'smooth', e.target.value || undefined)}
+                                            label="Smooth Type"
+                                        >
+                                            <MenuItem value="">None</MenuItem>
+                                            <MenuItem value="bezier">Bezier</MenuItem>
+                                            <MenuItem value="sbezier">Super Bezier</MenuItem>
+                                            <MenuItem value="csplines">Cubic Splines</MenuItem>
+                                            <MenuItem value="acsplines">Weighted Cubic Splines</MenuItem>
+                                            <MenuItem value="unique">Unique</MenuItem>
+                                            <MenuItem value="frequency">Frequency</MenuItem>
+                                        </Select>
+                                    </FormControl>
                                 </Grid>
                                 {(plot.type === 'filledcurves' || plot.type === 'line') && (
                                     <>
@@ -512,6 +604,12 @@ const GraphRequestForm: React.FC = () => {
                         {JSON.stringify(request, null, 2)}
                     </pre>
                 </Paper>
+                <Box sx={{display: 'flex', gap: 2, mb: 3}}>
+                    <Button variant="outlined" onClick={handleExportJson}>
+                        Export Config JSON
+                    </Button>
+
+                </Box>
             </Box>
 
 
