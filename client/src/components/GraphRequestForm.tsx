@@ -19,7 +19,8 @@ import {
     Typography
 } from '@mui/material';
 import {Add, ExpandLess, ExpandMore, Remove, Send} from '@mui/icons-material';
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 interface CsvFileDTO {
     id: number;
@@ -51,8 +52,8 @@ interface GraphRequestDTO {
     size: string;
     xlabel: string;
     ylabel: string;
-    xRange: string;
-    yRange: string;
+    xrange: string;
+    yrange: string;
     logscaleY: boolean;
     extraOptions?: string;
     dataFiles: {
@@ -71,8 +72,8 @@ const GraphRequestForm: React.FC = () => {
         size: '800,600',
         xlabel: '',
         ylabel: '',
-        xRange: '',
-        yRange: '',
+        xrange: '',
+        yrange: '',
         logscaleY: false,
         extraOptions: '',  // <-- Inizializza il nuovo campo
         dataFiles: [],
@@ -82,6 +83,7 @@ const GraphRequestForm: React.FC = () => {
     const [expandedPlot, setExpandedPlot] = useState<number | null>(null);
     const [isGenerating, setIsGenerating] = useState(false);
     const [generationResult, setGenerationResult] = useState<any>(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         axios.get('http://localhost:8099/results/csv/files')
@@ -115,8 +117,8 @@ const GraphRequestForm: React.FC = () => {
                         size: jsonData.size || '800,600',
                         xlabel: jsonData.xlabel || '',
                         ylabel: jsonData.ylabel || '',
-                        xRange: jsonData.xRange || '',
-                        yRange: jsonData.yRange || '',
+                        xrange: jsonData.xRange || '',
+                        yrange: jsonData.yRange || '',
                         logscaleY: jsonData.logscaleY || false,
                         dataFiles: jsonData.dataFiles || [],
                         plots: jsonData.plots || []
@@ -292,8 +294,14 @@ const GraphRequestForm: React.FC = () => {
 
     return (
         <Box sx={{p: 3}}>
-            <Button component={Link} to="/" variant="contained" sx={{mb: 2}}>
-                Back to Home
+            <Button
+                variant="contained"
+                color="primary"
+                startIcon={<ArrowBackIcon />}
+                onClick={() => navigate('/')}
+                sx={{ marginTop: 3 }}
+            >
+                Home
             </Button>
             <Typography variant="h4" gutterBottom>Graph Configuration</Typography>
             <Box sx={{display: 'flex', gap: 2, mb: 3}}>
@@ -315,16 +323,21 @@ const GraphRequestForm: React.FC = () => {
                     </Grid>
                     <Grid item xs={12} sm={6}>
                         <FormControl fullWidth>
-                            <InputLabel>Output Format</InputLabel>
+                            <InputLabel id="output-format-label" sx={{ backgroundColor: 'white', px: 0.5 }}>
+                                Format
+                            </InputLabel>
                             <Select
+                                labelId="output-format-label"
                                 value={request.outputFormat}
-                                onChange={(e) => setRequest({...request, outputFormat: e.target.value})}
+                                label="Output Format"
+                                onChange={(e) => setRequest({ ...request, outputFormat: e.target.value })}
                             >
                                 <MenuItem value="png">PNG</MenuItem>
                                 <MenuItem value="svg">SVG</MenuItem>
                                 <MenuItem value="jpg">JPG</MenuItem>
                             </Select>
                         </FormControl>
+
                     </Grid>
                     <Grid item xs={12} sm={6}>
                         <TextField
@@ -355,8 +368,8 @@ const GraphRequestForm: React.FC = () => {
                         <TextField
                             fullWidth
                             label="X Range (min:max)"
-                            value={request.xRange}
-                            onChange={(e) => setRequest({...request, xRange: e.target.value})}
+                            value={request.xrange}
+                            onChange={(e) => setRequest({...request, xrange: e.target.value})}
                             helperText="Example: 0:100"
                         />
                     </Grid>
@@ -364,8 +377,8 @@ const GraphRequestForm: React.FC = () => {
                         <TextField
                             fullWidth
                             label="Y Range (min:max)"
-                            value={request.yRange}
-                            onChange={(e) => setRequest({...request, yRange: e.target.value})}
+                            value={request.yrange}
+                            onChange={(e) => setRequest({...request, yrange: e.target.value})}
                             helperText="Example: 0:100"
                         />
                     </Grid>
@@ -589,7 +602,6 @@ const GraphRequestForm: React.FC = () => {
                 </Button>
             </Box>
             <Box sx={{mt: 4}}>
-                // Aggiungi questo componente dove vuoi mostrare il risultato
                 {generationResult && (
                     <Paper sx={{p: 2, mt: 2}}>
                         <Typography variant="h6">Generation Result</Typography>
