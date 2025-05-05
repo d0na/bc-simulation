@@ -24,7 +24,6 @@
       "type": "filledcurves",
       "title": "std",
       "color": "skyblue",
-      "smooth": false,
       "lineWidth": 1,
       "fill": {
         "transparent": true,
@@ -37,7 +36,6 @@
       "type": "points",
       "title": "mean",
       "color": "skyblue",
-      "smooth": false,
       "lineWidth": 1
     },
     {
@@ -46,7 +44,7 @@
       "type": "line",
       "title": "bezier",
       "color": "medium-blue",
-      "smooth": true,
+      "smooth": "bezier",
       "lineWidth": 3
     }
   ]

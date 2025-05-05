@@ -1,6 +1,7 @@
 package com.bcsimulator.dto.graph;
 
 import com.bcsimulator.enums.PlotType;
+import com.bcsimulator.enums.SmoothType;
 import lombok.Data;
 
 @Data
@@ -10,7 +11,7 @@ public class PlotConfigDTO {
     private PlotType type;
     private String title;
     private String color;
-    private String smooth;
+    private SmoothType smooth;
     private double lineWidth;
     private FillConfigDTO fill;
 }
