@@ -1,16 +1,21 @@
-import {useState,} from 'react';
+import React, {useState,} from 'react';
 import {Link} from 'react-router-dom';
-import {Button, Container, Stack} from '@mui/material';
+import {Box, Button, Collapse, Container, Stack} from '@mui/material';
 import bcLogo from '../assets/blockchain-10000.svg';
 import '../App.css';
 import axios from 'axios';
 import SimulationConfiguratorModalForm from "./SimulationConfiguratorModalForm.tsx";
+import { ExpandMore, ExpandLess } from '@mui/icons-material';
 
 function HomePage() {
     const [simulationStatus, setSimulationStatus] = useState<string | null>(null);
     const [job1Status, setJob1Status] = useState<string | null>(null);
     const [job2Status, setJob2Status] = useState<string | null>(null);
+    const [expanded, setExpanded] = useState(false);
 
+    const toggleExpand = () => {
+        setExpanded(!expanded);
+    };
     const handleSimulationClick = async () => {
         try {
             // Invia la richiesta al server Spring Boot
@@ -46,46 +51,41 @@ function HomePage() {
     };
 
 
+
     return (
         <Container>
-            <div>
-                <a href="https://" target="_blank">
-                    <img src={bcLogo} className="logo" alt="Blockchain logo"/>
+            <Box textAlign="center" mb={4}>
+                <a href="https://" target="_blank" rel="noopener noreferrer">
+                    <img src={bcLogo} className="logo" alt="Blockchain logo" style={{ maxWidth: '150px' }} />
                 </a>
-            </div>
-            <h1>Blockchain Simulation Engine</h1>
-            <Stack direction="row" spacing={3} justifyContent="center" alignItems="flex-start" sx={{marginTop: 2}}>
-                {/*<div className="card">*/}
-                {/*    <p>Launch your </p>*/}
-                {/*    <Button variant="contained" color="primary" onClick={handleJob1Click}>*/}
-                {/*        Job1*/}
-                {/*    </Button>*/}
-                {/*    {job1Status && (*/}
-                {/*        <div>*/}
-                {/*            <p>Status: {job1Status}</p>*/}
-                {/*        </div>*/}
-                {/*    )}*/}
-                {/*</div>*/}
+                <h1>BESE</h1>
+                <h1>(Blockchain Event Simulation Engine)</h1>
+            </Box>
 
-                {/*<div className="card">*/}
-                {/*    <p>Launch your </p>*/}
-                {/*    <SimulationFormModal/>*/}
-                {/*</div>*/}
-
+            <Stack direction="row" spacing={3} justifyContent="center" alignItems="flex-start" sx={{ marginTop: 2 }}>
                 <div className="card">
-                    <p>Launch your </p>
-                    <SimulationConfiguratorModalForm/>
+                    <p>Launch your simulation</p>
+                    <SimulationConfiguratorModalForm />
                     {job2Status && (
                         <div>
                             <p>Status: {job2Status}</p>
                         </div>
                     )}
                 </div>
-
             </Stack>
-
-
-            <Stack direction="row" spacing={3} justifyContent="center" alignItems="flex-start" sx={{marginTop: 2}}>
+            <Stack
+                direction="row"
+                spacing={3}
+                justifyContent="center"
+                alignItems="flex-start"
+                sx={{
+                    marginTop: 2,
+                    padding: 2,
+                    backgroundColor: 'background.paper',
+                    borderRadius: 1,
+                    flexWrap: 'wrap'
+                }}
+            >
                 <Link to="/jobs">
                     <Button variant="contained" color="secondary">
                         View Job Statuses
@@ -102,42 +102,70 @@ function HomePage() {
                     </Button>
                 </Link>
             </Stack>
-            <Stack direction="row" spacing={3} justifyContent="center" alignItems="flex-start" sx={{marginTop: 2}}>
-                <Link to="/charts2">
-                    <Button variant="contained" color="primary">
-                        Charts 2
-                    </Button>
-                </Link>
-                <Link to="/charts">
-                    <Button variant="contained" color="primary">
-                        Create Charts
-                    </Button>
-                </Link>
 
-                <Link to="/test">
-                    <Button variant="contained" color="primary">
-                        TEst
-                    </Button>
-                </Link>
-                <Link to="/test1">
-                    <Button variant="contained" color="primary">
-                        TEst1
-                    </Button>
-                </Link>
-                <Link to="/test2">
-                    <Button variant="contained" color="primary">
-                        TEst2
-                    </Button>
-                </Link>
-                <Link to="/test3">
-                    <Button variant="contained" color="primary">
-                        TEst3
-                    </Button>
-                </Link>
+            <Box textAlign="center" mt={4}>
+                <Button
+                    variant="outlined"
+                    onClick={toggleExpand}
+                    endIcon={expanded ? <ExpandLess /> : <ExpandMore />}
+                >
+                    {expanded ? 'Hide Options' : 'Show More Options'}
+                </Button>
+            </Box>
 
-            </Stack>
+            <Collapse in={expanded}>
+                <Stack
+                    direction="row"
+                    spacing={3}
+                    justifyContent="center"
+                    alignItems="flex-start"
+                    sx={{
+                        marginTop: 2,
+                        padding: 2,
+                        backgroundColor: 'background.paper',
+                        borderRadius: 1,
+                        flexWrap: 'wrap'
+                    }}
+                >
+                    <Link to="/charts2">
+                        <Button variant="contained" color="primary">
+                            Charts 2
+                        </Button>
+                    </Link>
+                    <Link to="/charts">
+                        <Button variant="contained" color="primary">
+                            Create Charts
+                        </Button>
+                    </Link>
+                    <Link to="/test">
+                        <Button variant="contained" color="primary">
+                            Test
+                        </Button>
+                    </Link>
+                    <Link to="/test1">
+                        <Button variant="contained" color="primary">
+                            Test1
+                        </Button>
+                    </Link>
+                    <Link to="/test2">
+                        <Button variant="contained" color="primary">
+                            Test2
+                        </Button>
+                    </Link>
+                    <Link to="/test3">
+                        <Button variant="contained" color="primary">
+                            Test3
+                        </Button>
+                    </Link>
+                    <Link to="/test4">
+                        <Button variant="contained" color="primary">
+                            Test4
+                        </Button>
+                    </Link>
+                </Stack>
+            </Collapse>
         </Container>
     );
-}
+};
 
 export default HomePage;

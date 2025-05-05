@@ -63,7 +63,7 @@ interface GraphRequestDTO {
     plots: PlotConfigDTO[];
 }
 
-const GraphRequestForm: React.FC = () => {
+const GraphRequestOldForm: React.FC = () => {
     const [csvFiles, setCsvFiles] = useState<CsvFileDTO[]>([]);
     const [selectedFiles, setSelectedFiles] = useState<{ [key: string]: CsvFileDTO }>({});
     const [request, setRequest] = useState<GraphRequestDTO>({
@@ -324,7 +324,7 @@ const GraphRequestForm: React.FC = () => {
                     <Grid item xs={12} sm={6}>
                         <FormControl fullWidth>
                             <InputLabel id="output-format-label" sx={{ backgroundColor: 'white', px: 0.5 }}>
-                                Format
+                                Form
                             </InputLabel>
                             <Select
                                 labelId="output-format-label"
@@ -433,6 +433,7 @@ const GraphRequestForm: React.FC = () => {
                     })}
                 </Grid>
             </Paper>
+
 
             <Paper sx={{p: 3, mb: 3}}>
                 <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2}}>
@@ -630,4 +631,4 @@ const GraphRequestForm: React.FC = () => {
     );
 };
 
-export default GraphRequestForm;
+export default GraphRequestOldForm;

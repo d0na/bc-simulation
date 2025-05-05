@@ -10,7 +10,8 @@ import SimulationColumnSelector from "./components/SimulationColumnSelector.tsx"
 import ChartPreviewContainer from "./components/ChartPreviewContainer.tsx";
 import DynamicChartConfigurator from "./components/DynamicChartConfigurator.tsx";
 import AdvancedChartConfigurator from "./components/AdvancedChartConfigurator.tsx";
-import GraphRequestForm from "./components/GraphRequestForm.tsx";
+import GraphRequestForm from "./components/Graph/GraphRequestForm.tsx";
+import GraphRequestOldForm from "./components/GraphRequestForm.tsx";
 
 function App() {
     return (
@@ -25,7 +26,8 @@ function App() {
                 <Route path="/test1" element={<SimulationColumnSelector />} /> {/* Rotta per la pagina dei jobs */}
                 <Route path="/test2" element={<DynamicChartConfigurator />} /> {/* Rotta per la pagina dei jobs */}
                 <Route path="/test3" element={<AdvancedChartConfigurator />} /> {/* Rotta per la pagina dei jobs */}
-                <Route path="/graph" element={<GraphRequestForm />} /> {/* Rotta per la pagina dei jobs */}
+                <Route path="/graph" element={<GraphRequestForm/>} /> {/* Rotta per la pagina dei jobs */}
+                <Route path="/test4" element={<GraphRequestOldForm/>} /> {/* Rotta per la pagina dei jobs */}
             </Routes>
         </Router>
     )
