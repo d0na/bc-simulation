@@ -7,6 +7,9 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 /**
+ *
+ * Return the probability of an event happening at time in relation to an exponential distribution.
+ *
  * Best fits are 0.1 and 0.01
  *
  *
