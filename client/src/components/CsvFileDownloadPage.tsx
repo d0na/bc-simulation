@@ -11,8 +11,10 @@ import {
     TableHead,
     TableRow,
     Typography,
+    IconButton,
 } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/Download";
+import DeleteIcon from "@mui/icons-material/Delete";
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -30,9 +32,14 @@ const CsvFileDownloadPage: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const [downloadingId, setDownloadingId] = useState<number | null>(null);
+    const [deletingId, setDeletingId] = useState<number | null>(null);
     const navigate = useNavigate();
 
     useEffect(() => {
+        fetchCsvFiles();
+    }, []);
+
+    const fetchCsvFiles = () => {
         setLoading(true);
         axios
             .get("http://localhost:8099/results/csv/files")
@@ -44,16 +51,15 @@ const CsvFileDownloadPage: React.FC = () => {
                 setError("Errore nel recuperare i file CSV.");
                 setLoading(false);
             });
-    }, []);
+    };
 
     const handleDownload = (fileId: number, fileName: string) => {
         setDownloadingId(fileId);
         axios
             .get(`http://localhost:8099/results/csv/${fileId}/download`, {
-                responseType: "text", // Ricevi come testo per elaborazione
+                responseType: "text",
             })
             .then((response) => {
-                // Converti CSV in TSV (sostituisci virgole con tab)
                 const tsvData = response.data.replace(/,/g, "\t");
                 const blob = new Blob([tsvData], {type: "text/tab-separated-values"});
                 const url = window.URL.createObjectURL(blob);
@@ -68,6 +74,24 @@ const CsvFileDownloadPage: React.FC = () => {
             .catch(() => {
                 alert("Errore durante il download.");
                 setDownloadingId(null);
+            });
+    };
+
+    const handleDelete = (fileId: number) => {
+        if (!window.confirm("Sei sicuro di voler eliminare questo file?")) return;
+
+        setDeletingId(fileId);
+        axios
+            .delete(`http://localhost:8099/results/csv/${fileId}`)
+            .then(() => {
+                // Ricarica la lista dei file dopo l'eliminazione
+                fetchCsvFiles();
+            })
+            .catch(() => {
+                alert("Errore durante l'eliminazione del file.");
+            })
+            .finally(() => {
+                setDeletingId(null);
             });
     };
 
@@ -113,7 +137,7 @@ const CsvFileDownloadPage: React.FC = () => {
                                         <TableCell>
                                             {new Date(file.createdAt).toLocaleString()}
                                         </TableCell>
-                                        <TableCell align="right">
+                                        <TableCell align="left" sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
                                             <Button
                                                 variant="contained"
                                                 color="primary"
@@ -125,26 +149,37 @@ const CsvFileDownloadPage: React.FC = () => {
                                                 {downloadingId === file.id ? (
                                                     <CircularProgress size={16} color="inherit"/>
                                                 ) : (
-                                                    "Scarica"
+                                                    "Download"
                                                 )}
                                             </Button>
-
+                                            <IconButton
+                                                color="error"
+                                                disabled={deletingId === file.id}
+                                                onClick={() => handleDelete(file.id)}
+                                            >
+                                                {deletingId === file.id ? (
+                                                    <CircularProgress size={16} color="inherit"/>
+                                                ) : (
+                                                    <DeleteIcon />
+                                                )}
+                                            </IconButton>
                                         </TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
                         </Table>
                     </TableContainer>
-
-                )}<Button
-                variant="contained"
-                color="primary"
-                startIcon={<ArrowBackIcon/>}
-                onClick={() => navigate('/')}
-                sx={{marginTop: 3}}
-            >
-                Home
-            </Button></div>
+                )}
+                <Button
+                    variant="contained"
+                    color="primary"
+                    startIcon={<ArrowBackIcon/>}
+                    onClick={() => navigate('/')}
+                    sx={{marginTop: 3}}
+                >
+                    Home
+                </Button>
+            </div>
         </Container>
     );
 };

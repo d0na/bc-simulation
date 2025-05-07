@@ -60,6 +60,7 @@ const aggregationOptions = [
 ];
 
 const distributionTypes = [
+    {value: "FIXED", label: "Fixed"},
     {value: "UNIFORM", label: "Uniform"},
     {value: "NORMAL_SCALED", label: "Normal Scaled"},
     {value: "NORMAL", label: "Normal"},
