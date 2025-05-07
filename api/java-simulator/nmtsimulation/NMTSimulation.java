@@ -28,10 +28,10 @@ public class NMTSimulation {
      */
     public static void main(String[] args) {
         
-        int NUMRUNS = 10;//100;
-        int MAXTIME = 1209600;//86400; one day//2592000; one month//864000; ten days//604800 seven days  //  1209600 two weeks
+        int NUMRUNS = 5;//100;
+        int MAXTIME = 86400;//86400; one day//2592000; one month//864000; ten days//604800 seven days  //  1209600 two weeks
         //int AGGR = 60;
-        int NUMAGGR = 60;//1 seconds granularity / 60 minutes granularity / 3600 hours granularity
+        int NUMAGGR = 1;//1 seconds granularity / 60 minutes granularity / 3600 hours granularity
         //String outFile = "/home/brodo/Universita/TrustSense2024/simResults/simResultsTest1.tsv";
         //String dir = "/home/brodo/Universita/TrustSense2024/simResults/";
         String dir = "./";
