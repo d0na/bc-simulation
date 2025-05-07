@@ -1,0 +1,51 @@
+{
+  "title": "Simulation Charts",
+  "outputFormat": "png",
+  "size": "600,400",
+  "xlabel": "seconds",
+  "ylabel": "gas",
+  "xRange": "0:86400",
+  "yRange": "0:*",
+  "logscaleY": false,
+  "dataFiles": [
+    {
+      "alias": "singlePeak",
+      "path": "./output/singlePeak_t86400_aggr1_20250502165527.tsv"
+    },
+    {
+      "alias": "boomAndBust",
+      "path": "./output/BoomAndBust_t86400_aggr1_20250502153343.tsv"
+    }
+  ],
+  "plots": [
+    {
+      "dataFileAlias": "boomAndBust",
+      "using": "1:($16-$17):($16+$17)",
+      "type": "filledcurves",
+      "title": "std",
+      "color": "skyblue",
+      "lineWidth": 1,
+      "fill": {
+        "transparent": true,
+        "solid": 0.35
+      }
+    },
+    {
+      "dataFileAlias": "boomAndBust",
+      "using": "1:16",
+      "type": "points",
+      "title": "mean",
+      "color": "skyblue",
+      "lineWidth": 1
+    },
+    {
+      "dataFileAlias": "boomAndBust",
+      "using": "1:16",
+      "type": "line",
+      "title": "bezier",
+      "color": "medium-blue",
+      "smooth": "bezier",
+      "lineWidth": 3
+    }
+  ]
+  }
