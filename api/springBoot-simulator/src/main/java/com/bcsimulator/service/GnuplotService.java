@@ -346,6 +346,9 @@ public class GnuplotService {
                 case SBEZIER:
                     writer.write(" smooth sbezier");
                     break;
+                case NONE:
+                    writer.write("");
+                    break;
                 default:
                     // Default a lines se non specificato
                     writer.write(" ");
@@ -360,23 +363,23 @@ public class GnuplotService {
      */
     private void writePlotStyles(BufferedWriter writer, PlotConfigDTO plot) throws IOException {
 //        if (plot.getType() != PlotType.LINE) {
-            if (plot.getColor() != null && !plot.getColor().isEmpty()) {
-                writer.write(" lc rgb '" + plot.getColor() + "'");
-            }
+        if (plot.getColor() != null && !plot.getColor().isEmpty()) {
+            writer.write(" lc rgb '" + plot.getColor() + "'");
+        }
 
-            if (plot.getLineWidth() > 0) {
-                writer.write(" linewidth " + plot.getLineWidth());
-            }
+        if (plot.getLineWidth() > 0) {
+            writer.write(" linewidth " + plot.getLineWidth());
+        }
 
-            // Configura il tipo di plot
-            writeSmoothType(writer, plot);
+        // Configura il tipo di plot
+        writeSmoothType(writer, plot);
 
-            if (plot.getFill() != null && plot.getType() == PlotType.FILLEDCURVES) {
-                writer.write(" fill solid " + plot.getFill().getSolid());
-                if (plot.getFill().isTransparent()) {
-                    writer.write(" noborder");
-                }
+        if (plot.getFill() != null && plot.getType() == PlotType.FILLEDCURVES) {
+            writer.write(" fill solid " + plot.getFill().getSolid());
+            if (plot.getFill().isTransparent()) {
+                writer.write(" noborder");
             }
+        }
 //        }
     }
 
