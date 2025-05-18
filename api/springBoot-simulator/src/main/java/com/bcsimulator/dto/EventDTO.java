@@ -19,6 +19,7 @@ public class EventDTO {
     private String eventDescription;
     private String instanceOf;
     private String dependOn;
+    private Integer maxProbabilityMatches;
     /**
      * probability distribution of the event
      */

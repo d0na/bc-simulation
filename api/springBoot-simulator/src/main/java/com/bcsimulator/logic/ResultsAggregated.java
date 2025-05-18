@@ -1,8 +1,8 @@
 package com.bcsimulator.logic;
 
 import com.bcsimulator.dto.AbstractDistributionDTO;
-import com.bcsimulator.dto.SimulationRequestDTO;
 import com.bcsimulator.dto.EventDTO;
+import com.bcsimulator.dto.SimulationRequestDTO;
 
 import java.util.*;
 
@@ -99,12 +99,19 @@ public class ResultsAggregated {
 
     private void processEvent(EventDTO event, double randomDouble, int timeInner, int run) {
         AbstractDistributionDTO dist = event.getProbabilityDistribution();
-        double baseProb =  dist.getProb(timeInner) ;
+        double baseProb = dist.getProb(timeInner);
 
         String instanceOf = event.getInstanceOf();
         String dependOn = event.getDependOn();
         String eventName = event.getEventName();
+        Integer maxProbabilityMatches = event.getMaxProbabilityMatches();
+        boolean isBelowMaxProbabilityMatches =
+                maxProbabilityMatches == null || maxProbabilityMatches <= 0 || counters.get(toCamelCase(eventName))[run] < maxProbabilityMatches;
         long gasCost = event.getGasCost();
+
+        if (!isBelowMaxProbabilityMatches) {
+            return;
+        }
 
         // Case: event with no instance and no dependOn
         if (instanceOf == null && dependOn == null && randomDouble <= baseProb) {
@@ -124,7 +131,7 @@ public class ResultsAggregated {
             if (entityList != null) {
                 for (Integer entityTime : entityList[run]) {
                     // Calculates the probability of the event based on the time difference
-                    double probTimeDep =  dist.getProb(timeInner - entityTime);
+                    double probTimeDep = dist.getProb(timeInner - entityTime);
                     if (randomDouble <= probTimeDep) {
                         // Se deve anche creare un'istanza nuova
                         if (instanceOf != null) {
@@ -141,6 +148,7 @@ public class ResultsAggregated {
     private void addGas(int runIndex, String eventName, long gasValue) {
         this.results.get(gasTotal)[runIndex] += gasValue;
         this.results.get(toCamelCase("gas_" + eventName))[runIndex] += gasValue;
+        // counts the number of times the event has been triggered
         this.counters.get(toCamelCase(eventName))[runIndex]++;
     }
 
@@ -250,15 +258,15 @@ public class ResultsAggregated {
         }
         // Per ogni chiave di instances genero le 4 intestazioni
         for (String key : instances.keySet()) {
-            headers.add(toCamelCase("tot_" + key+"(" + count + ")"));
+            headers.add(toCamelCase("tot_" + key + "(" + count + ")"));
             count++;
-            headers.add(toCamelCase("avg_" + key+"(" + count + ")"));
+            headers.add(toCamelCase("avg_" + key + "(" + count + ")"));
             count++;
-            headers.add(toCamelCase("min_" + key+"(" + count + ")"));
+            headers.add(toCamelCase("min_" + key + "(" + count + ")"));
             count++;
-            headers.add(toCamelCase("max_" + key+"(" + count + ")"));
+            headers.add(toCamelCase("max_" + key + "(" + count + ")"));
             count++;
-            headers.add(toCamelCase("std_" + key+"(" + count + ")"));
+            headers.add(toCamelCase("std_" + key + "(" + count + ")"));
             count++;
         }
 
