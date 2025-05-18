@@ -14,6 +14,8 @@ public class ResultsAggregated {
     Map<String, long[]> counters;
     // Maps the event name to an array of linked lists, one for each run
     Map<String, LinkedList<Integer>[]> entities;
+    // Counter for event E -> run -> entityTime of I (instance) -> how many times event E has been triggered
+    private final Map<String, Map<Integer, Map<Integer, Integer>>> dependencyTriggerCounts = new HashMap<>();
 
     final String gasTotal = "gasTotal";
 
@@ -98,51 +100,57 @@ public class ResultsAggregated {
      */
 
     private void processEvent(EventDTO event, double randomDouble, int timeInner, int run) {
+        initEventStructures(event); // init structures
+
         AbstractDistributionDTO dist = event.getProbabilityDistribution();
         double baseProb = dist.getProb(timeInner);
 
         String instanceOf = event.getInstanceOf();
         String dependOn = event.getDependOn();
         String eventName = event.getEventName();
+        String eventKey = toCamelCase(eventName);
         Integer maxProbabilityMatches = event.getMaxProbabilityMatches();
-        boolean isBelowMaxProbabilityMatches =
-                maxProbabilityMatches == null || maxProbabilityMatches <= 0 || counters.get(toCamelCase(eventName))[run] < maxProbabilityMatches;
+
         long gasCost = event.getGasCost();
 
-        if (!isBelowMaxProbabilityMatches) {
-            return;
-        }
+        if (dependOn == null) {
+            // event without dependency, use global counter for run
+            boolean isBelowMax =
+                    maxProbabilityMatches == null || maxProbabilityMatches <= 0 ||
+                            counters.get(eventKey)[run] < maxProbabilityMatches;
 
-        // Case: event with no instance and no dependOn
-        if (instanceOf == null && dependOn == null && randomDouble <= baseProb) {
-            addGas(run, eventName, gasCost);
-        }
+            if (!isBelowMax) return;
 
-        // Case: event with instance and no dependOn
-        if (instanceOf != null && dependOn == null && randomDouble <= baseProb) {
-            this.entities.get(toCamelCase(instanceOf))[run].add(timeInner);
-            addGas(run, eventName, gasCost);
-        }
-
-        // Case: event with dependOn
-        if (dependOn != null) {
-            // retrieves the list of entities' time that depend on this event
+            if (randomDouble <= baseProb) {
+                if (instanceOf != null) {
+                    this.entities.get(toCamelCase(instanceOf))[run].add(timeInner);
+                }
+                addGas(run, eventName, gasCost);
+                counters.get(eventKey)[run]++;
+            }
+        } else {
+            // event with dependency: check for each instance
             LinkedList<Integer>[] entityList = this.entities.get(toCamelCase(dependOn));
             if (entityList != null) {
                 for (Integer entityTime : entityList[run]) {
-                    // Calculates the probability of the event based on the time difference
                     double probTimeDep = dist.getProb(timeInner - entityTime);
                     if (randomDouble <= probTimeDep) {
-                        // Se deve anche creare un'istanza nuova
+                        boolean isBelowLimit = maxProbabilityMatches == null || maxProbabilityMatches <= 0 ||
+                                isBelowPerEntityLimit(eventKey, run, entityTime, maxProbabilityMatches);
+
+                        if (!isBelowLimit) continue;
+
                         if (instanceOf != null) {
                             this.entities.get(toCamelCase(instanceOf))[run].add(timeInner);
                         }
                         addGas(run, eventName, gasCost);
+                        incrementEntityCount(eventKey, run, entityTime);
                     }
                 }
             }
         }
     }
+
 
 
     private void addGas(int runIndex, String eventName, long gasValue) {
@@ -334,5 +342,17 @@ public class ResultsAggregated {
         }
 
         return result.toString();
+    }
+
+    private boolean isBelowPerEntityLimit(String eventKey, int run, int entityTime, int maxProbabilityMatches) {
+        Map<Integer, Map<Integer, Integer>> runMap = dependencyTriggerCounts
+                .computeIfAbsent(eventKey, k -> new HashMap<>());
+        Map<Integer, Integer> entityMap = runMap.computeIfAbsent(run, k -> new HashMap<>());
+        int current = entityMap.getOrDefault(entityTime, 0);
+        return current < maxProbabilityMatches;
+    }
+
+    private void incrementEntityCount(String eventKey, int run, int entityTime) {
+        dependencyTriggerCounts.get(eventKey).get(run).merge(entityTime, 1, Integer::sum);
     }
 }
