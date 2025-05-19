@@ -1,0 +1,54 @@
+{
+  "entities": [
+    "kitty",
+    "pregnant"
+  ],
+  "events": [
+    {
+      "eventName": "CreateKitty",
+      "eventDescription": "mint of new Kitty",
+      "instanceOf": "kitty",
+      "dependOn": null,
+      "probabilityDistribution": {
+        "type": "UNIFORM",
+        "value": 0.0001
+      },
+      "gasCost": 60000,
+      "relatedEvents": null
+    },
+    {
+      "eventName": "GetPregnant",
+      "eventDescription": "",
+      "instanceOf": "pregnant",
+      "dependOn": "kitty",
+      "probabilityDistribution": {
+        "type": "NORMAL",
+        "mean": 100,
+        "std": 10,
+        "scalingFactor": 0.01
+      },
+      "gasCost": 545555,
+      "relatedEvents": null,
+      "maxProbabilityMatches": 1
+    },
+    {
+      "eventName": "born",
+      "eventDescription": "",
+      "instanceOf": "kitty",
+      "dependOn": "pregnant",
+      "probabilityDistribution": {
+        "type": "NORMAL",
+        "mean": 100,
+        "std": 10,
+        "scalingFactor": 0.01
+      },
+      "gasCost": 4,
+      "relatedEvents": null,
+      "maxProbabilityMatches": 1
+    }
+  ],
+  "name": "CryptoKitties_v1-normal-born",
+  "numAggr": 1,
+  "maxTime": 86400,
+  "numRuns": "5"
+}

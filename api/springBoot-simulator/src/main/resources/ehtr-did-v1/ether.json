@@ -1,0 +1,77 @@
+{
+  "name": "ether-did-lifecycle-simulation",
+  "entities": ["did", "delegate", "attribute"],
+  "numRuns": 5,
+  "maxTime": 86400,
+  "numAggr": 1,
+  "events": [
+    {
+      "eventName": "did_created",
+      "gasCost": 30000,
+      "instanceOf": "did",
+      "probabilityDistribution": {
+        "type": "UNIFORM",
+        "value": 0.0001
+      }
+    },
+    {
+      "eventName": "add_delegate",
+      "gasCost": 45000,
+      "instanceOf": "delegate",
+      "dependOn": "did",
+      "maxProbabilityMatches": 3,
+      "probabilityDistribution": {
+        "type": "LOGNORMAL",
+        "mean": 3.4,
+        "std": 1,
+        "scalingFactor": 0.01
+      }
+    },
+    {
+      "eventName": "set_attribute",
+      "gasCost": 50000,
+      "instanceOf": "attribute",
+      "dependOn": "did",
+      "maxProbabilityMatches": 2,
+      "probabilityDistribution": {
+        "type": "EXPONENTIAL",
+        "rate": 0.01,
+        "scalingFactor": 0.01
+      }
+    },
+    {
+      "eventName": "revoke_attribute",
+      "gasCost": 30000,
+      "dependOn": "attribute",
+      "maxProbabilityMatches": 1,
+      "probabilityDistribution": {
+        "type": "NORMAL",
+        "mean": 100,
+        "std": 10,
+        "scalingFactor": 0.01
+      }
+    },
+    {
+      "eventName": "change_owner",
+      "gasCost": 25000,
+      "dependOn": "did",
+      "maxProbabilityMatches": 1,
+      "probabilityDistribution": {
+        "type": "FIXED",
+        "fixedTime": 43200
+      }
+    },
+    {
+      "eventName": "revoke_delegate",
+      "gasCost": 35000,
+      "dependOn": "delegate",
+      "maxProbabilityMatches": 1,
+      "probabilityDistribution": {
+        "type": "LOGNORMAL",
+        "mean": 3.4,
+        "std": 1,
+        "scalingFactor": 0.01
+      }
+    }
+  ]
+}
