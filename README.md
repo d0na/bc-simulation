@@ -17,6 +17,7 @@ The default backend port is `8099`.
 - `apps/web`: React frontend
 - `apps/api`: Spring Boot backend
 - `mcp-server`: MCP server
+- `legacy/api`: archived pre-current backend material
 - `artifacts/final-results`: curated output files and reference assets kept in the repository
 
 The repository root is intentionally named `sesame`. The active application folders now live under `apps/`, while legacy material remains outside that area until it is retired.
@@ -90,11 +91,11 @@ This configuration dates back to July 5, 2025 and is one of the newest examples 
 
 ### Important backend notes
 
-- Main entry point: [BCSimulatorApplication.java](/Users/francesco/workspace/git/PHD/bc-simulation/apps/api/src/main/java/com/bcsimulator/BCSimulatorApplication.java)
+- Main entry point: [BCSimulatorApplication.java](/Users/francesco/workspace/git/PHD/sesame/apps/api/src/main/java/com/bcsimulator/BCSimulatorApplication.java)
 - Main simulation endpoint: `POST /newsimulation`
 - Chart endpoints are exposed under `/results/charts`
 - CSV result endpoints are exposed under `/results/csv`
-- DAO archive plotting script: [dao-archive-plot.sh](/Users/francesco/workspace/git/PHD/bc-simulation/apps/api/dao-archive-plot.sh)
+- DAO archive plotting script: [dao-archive-plot.sh](/Users/francesco/workspace/git/PHD/sesame/apps/api/dao-archive-plot.sh)
 - Example simulation JSON files are stored under [examples/simulations](/Users/francesco/workspace/git/PHD/bc-simulation/examples/simulations)
 
 ### Important frontend notes

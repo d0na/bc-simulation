@@ -26,7 +26,7 @@ To use the API, you can make a GET request to the `/simulation` endpoint
 To run the API, you can use the following command:
 
 ```bash
-node api/server.js
+node legacy/api/server.js
 ```
 
 This will start the API server on port 3000.

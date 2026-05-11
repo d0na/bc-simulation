@@ -6,8 +6,8 @@ node_modules
 **/.DS_Store
 
 # Local simulator scratch/output folders
-api/java-simulator/nmtsimulation/out/
-api/java-simulator/tmp/
+legacy/api/java-simulator/nmtsimulation/out/
+legacy/api/java-simulator/tmp/
 apps/api/output/
 apps/api/data/
 apps/api/BESE.code-workspace
