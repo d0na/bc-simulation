@@ -11,5 +11,6 @@ Do not put temporary runs, IDE output, or bulk intermediate exports here.
 
 Suggested structure:
 - `springBoot-simulator/` for final simulator outputs and reference charts
-- `client/` for UI images worth preserving
+- `client/` for legacy UI images already archived
+- `web/` for current UI images worth preserving
 - `examples/` for ad hoc example JSON files that should be kept but are not runtime resources

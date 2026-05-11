@@ -1,6 +1,6 @@
 # Output Archive
 
-This folder contains the historical output archive that was originally stored under `api/springBoot-simulator/output`.
+This folder contains the historical output archive that was originally stored under `apps/api/output`.
 
 It is kept here as a repository asset archive, not as the default runtime output directory.
 
@@ -18,7 +18,7 @@ If you need an existing dataset as input for analysis or plotting, pick the requ
 If you need to regenerate the DAO comparison plots, use:
 
 ```bash
-./api/springBoot-simulator/dao-archive-plot.sh
+./apps/api/dao-archive-plot.sh
 ```
 
 The script:

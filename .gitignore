@@ -8,12 +8,12 @@ node_modules
 # Local simulator scratch/output folders
 api/java-simulator/nmtsimulation/out/
 api/java-simulator/tmp/
-api/springBoot-simulator/output/
-api/springBoot-simulator/data/
-api/springBoot-simulator/BESE.code-workspace
-api/springBoot-simulator/src/main/resources/PhD_Thesis___Alessandro_Marcelletti_XXXV_Cycle.zip
-api/springBoot-simulator/src/main/resources/PhD_Thesis___Alessandro_Marcelletti_XXXV_Cycle/
-api/springBoot-simulator/src/main/resources/thesis morena barboni def..pdf
+apps/api/output/
+apps/api/data/
+apps/api/BESE.code-workspace
+apps/api/src/main/resources/PhD_Thesis___Alessandro_Marcelletti_XXXV_Cycle.zip
+apps/api/src/main/resources/PhD_Thesis___Alessandro_Marcelletti_XXXV_Cycle/
+apps/api/src/main/resources/thesis morena barboni def..pdf
 
 # Keep curated final artifacts versioned
 !artifacts/
