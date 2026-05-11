@@ -11,6 +11,7 @@ SESAME is the root product repository for configuring, running, and analyzing bl
 - The MCP server is a dedicated Spring-based service that exposes backend capabilities through the Model Context Protocol.
 
 The default backend port is `8099`.
+The default frontend dev server is Vite on `5173`.
 
 ## Project Structure
 
@@ -29,36 +30,60 @@ The repository root is intentionally named `sesame`. The active application fold
 - Java 17+
 - Node.js 20+ and npm
 
-### Start the backend
+### Install the frontend dependencies
 
-From [apps/api](/Users/francesco/workspace/git/PHD/bc-simulation/apps/api):
+From the repository root:
 
 ```bash
-./mvnw spring-boot:run
+npm run install:web
 ```
 
-The service will be available at `http://localhost:8099`.
+### Start the main application
 
-### Start the frontend
-
-From [apps/web](/Users/francesco/workspace/git/PHD/bc-simulation/apps/web):
+From the repository root:
 
 ```bash
-npm install
 npm run dev
 ```
 
-The frontend will connect to the backend on port `8099`.
+This starts:
+- `apps/api` on `http://localhost:8099`
+- `apps/web` on the default Vite port, typically `http://localhost:5173`
 
-### Start the MCP server
+The frontend connects to the backend on port `8099`.
 
-From [mcp-server](/Users/francesco/workspace/git/PHD/bc-simulation/mcp-server):
+### Start all services, including MCP
+
+From the repository root:
+
+```bash
+npm run dev:all
+```
+
+This starts:
+- `apps/api`
+- `apps/web`
+- `mcp-server`
+
+### Start services individually
+
+Backend, from [apps/api](/Users/francesco/workspace/git/PHD/sesame/apps/api):
 
 ```bash
 ./mvnw spring-boot:run
 ```
 
-Use this service only when you need MCP integration on top of the existing backend flow.
+Frontend, from [apps/web](/Users/francesco/workspace/git/PHD/sesame/apps/web):
+
+```bash
+npm run dev
+```
+
+MCP, from [mcp-server](/Users/francesco/workspace/git/PHD/sesame/mcp-server):
+
+```bash
+./mvnw spring-boot:run
+```
 
 ### Typical workflow
 
@@ -78,8 +103,8 @@ This configuration dates back to July 5, 2025 and is one of the newest examples 
 ### Stored outputs
 
 - Runtime simulation outputs may be generated locally by the backend during execution.
-- The historical output archive currently tracked in the repository is stored in [artifacts/final-results/output-archive](/Users/francesco/workspace/git/PHD/bc-simulation/artifacts/final-results/output-archive).
-- Curated assets and hand-picked examples are stored in [artifacts/final-results](/Users/francesco/workspace/git/PHD/bc-simulation/artifacts/final-results).
+- The historical output archive currently tracked in the repository is stored in [artifacts/final-results/output-archive](/Users/francesco/workspace/git/PHD/sesame/artifacts/final-results/output-archive).
+- Curated assets and hand-picked examples are stored in [artifacts/final-results](/Users/francesco/workspace/git/PHD/sesame/artifacts/final-results).
 
 ## Development
 
@@ -96,30 +121,33 @@ This configuration dates back to July 5, 2025 and is one of the newest examples 
 - Chart endpoints are exposed under `/results/charts`
 - CSV result endpoints are exposed under `/results/csv`
 - DAO archive plotting script: [dao-archive-plot.sh](/Users/francesco/workspace/git/PHD/sesame/apps/api/dao-archive-plot.sh)
-- Example simulation JSON files are stored under [examples/simulations](/Users/francesco/workspace/git/PHD/bc-simulation/examples/simulations)
+- Example simulation JSON files are stored under [examples/simulations](/Users/francesco/workspace/git/PHD/sesame/examples/simulations)
 
 ### Important frontend notes
 
 - The frontend currently uses direct calls to `http://localhost:8099`
-- Production build is validated with:
-
-```bash
-npm run build
-```
+- Production build is validated with `npm run build`
 
 ### Validation commands
 
-Backend:
+From the repository root:
 
 ```bash
-./mvnw test
-./mvnw -DskipTests package
+npm run test:api
+npm run build:api
+npm run build:web
+npm run test:mcp
+npm run build:mcp
 ```
 
-Frontend:
+Or individually:
 
 ```bash
-npm run build
+cd apps/api && ./mvnw test
+cd apps/api && ./mvnw -DskipTests package
+cd apps/web && npm run build
+cd mcp-server && ./mvnw test
+cd mcp-server && ./mvnw -DskipTests package
 ```
 
 ### Repository hygiene
