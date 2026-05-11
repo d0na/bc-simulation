@@ -3,6 +3,7 @@ package com.bcsimulator.controller;
 import com.bcsimulator.dto.AbstractDistributionDTO;
 import com.bcsimulator.dto.EventDTO;
 import com.bcsimulator.dto.JobStatusDTO;
+import com.bcsimulator.dto.SimulationLaunchResponseDTO;
 import com.bcsimulator.dto.SimulationRequestDTO;
 import com.bcsimulator.service.JobMonitoringService;
 import com.bcsimulator.service.SimulationJobService;
@@ -18,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 
 @RestController
@@ -95,7 +95,7 @@ public class SimulationController {
         }
         try {
             System.out.println("Events: " + request.getEvents()); // <-- per debug
-            Map<String, Object> response = simulationJobService.runSimulation(request);
+            SimulationLaunchResponseDTO response = simulationJobService.runSimulation(request);
             System.out.println("Response: " + response); // <-- per debug
             return ResponseEntity.accepted().body(response);
         } catch (Exception e) {

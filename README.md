@@ -65,6 +65,20 @@ This starts:
 - `apps/web`
 - `mcp-server`
 
+### Connect the MCP server to Codex
+
+After the backend and `mcp-server` are running locally, add the server to Codex with:
+
+```bash
+codex mcp add sesame --url http://localhost:8080/mcp
+```
+
+Then verify the configuration with:
+
+```bash
+codex mcp list
+```
+
 ### Start services individually
 
 Backend, from [apps/api](/Users/francesco/workspace/git/PHD/sesame/apps/api):

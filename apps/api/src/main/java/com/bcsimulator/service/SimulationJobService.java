@@ -1,5 +1,6 @@
 package com.bcsimulator.service;
 
+import com.bcsimulator.dto.SimulationLaunchResponseDTO;
 import com.bcsimulator.dto.SimulationRequestDTO;
 import org.springframework.batch.core.*;
 import org.springframework.batch.core.explore.JobExplorer;
@@ -8,7 +9,8 @@ import org.springframework.batch.core.launch.JobOperator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -66,7 +68,7 @@ public class SimulationJobService {
     }
 
 
-    public Map<String, Object> runSimulation(SimulationRequestDTO request) throws Exception {
+    public SimulationLaunchResponseDTO runSimulation(SimulationRequestDTO request) throws Exception {
 
         // Params retrieval from request
         JobParameters jobParameters = request.toJobParameters();
@@ -80,16 +82,16 @@ public class SimulationJobService {
             }
         });
 
-        // Puoi eventualmente restituire l'output come risultato del metodo
-        Map<String, Object> response = new HashMap<>();
-        response.put("message", "Launching simulation");
-        response.put("numAggr", request.getNumAggr());
-        response.put("maxTime", request.getMaxTime());
-        response.put("numRuns",request.getNumRuns());
-        response.put("outFile", jobParameters.getString("outfile"));
-        response.put("configuration", request);
-
-        return response;
+        return SimulationLaunchResponseDTO.builder()
+                .status("ACCEPTED")
+                .message("Launching simulation")
+                .simulationName(request.getName())
+                .numAggr(request.getNumAggr())
+                .maxTime(request.getMaxTime())
+                .numRuns(request.getNumRuns())
+                .outFile(jobParameters.getString("outfile"))
+                .configuration(request)
+                .build();
     }
 
 }
