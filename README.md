@@ -4,18 +4,22 @@
   <img src="Sesame-ico.png" alt="SESAME logo" width="140" />
 </p>
 
-SESAME is a two-part application for configuring, running, and analyzing blockchain-oriented simulation scenarios.
+SESAME is the root product repository for configuring, running, and analyzing blockchain-oriented simulation scenarios.
 
 - The backend is a Spring Boot service that executes simulations, stores generated CSV metadata, and exposes chart and result endpoints.
 - The frontend is a React + TypeScript application used to configure scenarios, inspect generated data, and build charts.
+- The MCP server is a dedicated Spring-based service that exposes backend capabilities through the Model Context Protocol.
 
 The default backend port is `8099`.
 
 ## Project Structure
 
-- `api/springBoot-simulator`: Spring Boot backend
 - `client`: React frontend
+- `api/springBoot-simulator`: Spring Boot backend
+- `mcp-server`: MCP server
 - `artifacts/final-results`: curated output files and reference assets kept in the repository
+
+The repository root is intentionally named `sesame`. Internal folders keep their current names for now to avoid unnecessary breakage while the project evolves.
 
 ## Usage
 
@@ -45,6 +49,16 @@ npm run dev
 
 The frontend will connect to the backend on port `8099`.
 
+### Start the MCP server
+
+From [mcp-server](/Users/francesco/workspace/git/PHD/bc-simulation/mcp-server):
+
+```bash
+./mvnw spring-boot:run
+```
+
+Use this service only when you need MCP integration on top of the existing backend flow.
+
 ### Typical workflow
 
 1. Open the frontend and create or import a simulation configuration.
@@ -72,6 +86,7 @@ This configuration dates back to July 5, 2025 and is one of the newest examples 
 
 - Backend: Spring Boot, Spring Batch, Spring Data JPA, H2
 - Frontend: React, TypeScript, Vite, MUI, Recharts, Chart.js
+- MCP: Spring Boot, Spring AI MCP Server, OpenFeign
 
 ### Important backend notes
 

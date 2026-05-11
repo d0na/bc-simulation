@@ -1,15 +1,20 @@
 {
-  "name": "Sesame Client",
+  "name": "sesame",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "private": true,
+  "description": "Root helper package for the Sesame repository",
   "keywords": [],
   "author": "Francesco Donini",
-  "license": "ISC", 
+  "license": "ISC",
   "scripts": {
-  	"start": "run-p start:api start:client",
-  	"start:api": "cd api && node server.js",
-  	"start:client": "cd client && yarn run dev "
+    "dev": "run-p dev:api dev:web",
+    "dev:all": "run-p dev:api dev:web dev:mcp",
+    "dev:api": "cd api/springBoot-simulator && ./mvnw spring-boot:run",
+    "dev:web": "cd client && npm run dev",
+    "dev:mcp": "cd mcp-server && ./mvnw spring-boot:run",
+    "build:web": "cd client && npm run build",
+    "test:api": "cd api/springBoot-simulator && ./mvnw test",
+    "test:mcp": "cd mcp-server && ./mvnw test"
   },
   "devDependencies": {
     "npm-run-all": "^4.1.5"
