@@ -12,10 +12,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
 
+import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Data
 @Builder
@@ -43,24 +46,17 @@ public class SimulationRequestDTO {
     }
 
     public JobParameters toJobParameters() throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        String eventsJson;
-
-        try {
-            eventsJson = objectMapper.writeValueAsString(this.events);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("Failed to serialize events list", e);
-        }
+        normalize();
+        String outputFile = buildOutFileName("./output", this.maxTime, this.numAggr, this.name);
 
         return new JobParametersBuilder()
                 .addLong("timestamp", System.currentTimeMillis()) // per unicità
                 .addLong("numAggr", (long) this.numAggr)
                 .addLong("maxTime", (long) this.maxTime)
-                .addString("name", this.name)
-                .addString("description", this.description)
-                .addLong("maxTime", (long) this.maxTime)
+                .addString("name", Objects.requireNonNullElse(this.name, "Simulation"))
+                .addString("description", Objects.requireNonNullElse(this.description, ""))
                 .addLong("numRuns", (long) this.numRuns)
-                .addString("outfile", buildOutFileName("./output",this.maxTime, this.numAggr,this.name))
+                .addString("outfile", outputFile)
                 .addString("events", OBJECT_MAPPER.writeValueAsString(this.events))
                 .addString("entities", OBJECT_MAPPER.writeValueAsString(this.entities))
                 .addString("uuid", java.util.UUID.randomUUID().toString())
@@ -69,9 +65,24 @@ public class SimulationRequestDTO {
 
 
     private String buildOutFileName(String dir, int maxTime, int numAggr, String name) {
+        File outputDir = new File(dir);
+        if (!outputDir.exists() && !outputDir.mkdirs()) {
+            throw new IllegalStateException("Failed to create output directory: " + outputDir.getAbsolutePath());
+        }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
         String timestamp = LocalDateTime.now().format(formatter);
-        return dir + "/" + name + "_t" + maxTime + "_aggr" + numAggr + "_" + timestamp + ".tsv";
+        String safeName = Objects.requireNonNullElse(name, "Simulation").trim().replaceAll("[^a-zA-Z0-9._-]", "_");
+        return dir + "/" + safeName + "_t" + maxTime + "_aggr" + numAggr + "_" + timestamp + ".tsv";
+    }
+
+    public void normalize() {
+        if (entities == null) {
+            entities = new ArrayList<>();
+        }
+        if (events == null) {
+            events = new ArrayList<>();
+        }
+        events.forEach(EventDTO::normalize);
     }
 
     public static SimulationRequestDTO fromJobParameters(JobParameters params) {
@@ -112,6 +123,7 @@ public class SimulationRequestDTO {
             }
         }
 
+        dto.normalize();
         return dto;
     }
 

@@ -68,6 +68,14 @@ public class SimulationController {
 
     @PostMapping("/newsimulation")
     public ResponseEntity<?> runNewSimulation(@RequestBody SimulationRequestDTO request) throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
+        if (request == null) {
+            return ResponseEntity.badRequest().body("Simulation request body is required");
+        }
+        request.normalize();
+        if (request.getEvents().isEmpty()) {
+            return ResponseEntity.badRequest().body("At least one event is required");
+        }
+
         System.out.println("[DEBUG] Received SimulationRequest:");
         System.out.println("  name: " + request.getName());
         System.out.println("  numRuns: " + request.getNumRuns());
