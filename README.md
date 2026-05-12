@@ -27,7 +27,7 @@ The repository root is intentionally named `sesame`. The active application fold
 
 ### Prerequisites
 
-- Java 17+
+- Java 21+
 - Node.js 20+ and npm
 
 ### Install the frontend dependencies
