@@ -2,8 +2,12 @@
   "experiment_id": "dao-vote-costs-v1",
   "run_id": "dao-vote-costs-v1-local-example-001",
   "status": "planned",
-  "code_version": "git:640eda414646acb13d5132a0e361292ad3e6d157",
+  "code_version": "git:e5ef01e11f3a9897c1dbbd5cdebe0f43f5726c42",
   "artifact_hashes": {
+    "retrieval_request": {
+      "path": "experiments/dao-vote-costs-v1/retrieval-request.json",
+      "sha256": "sha256:b63daafb3ee78ff9cf3bbc2b17534f731f43f05a17a553ccbcbd797c36181102"
+    },
     "retrieval_evidence": {
       "path": "experiments/dao-vote-costs-v1/retrieval-evidence.json",
       "sha256": "sha256:7b735c785062482d041998fa1ebe97a85f23b2d48f8cf31de9a25ea8e2cf6182"
@@ -34,9 +38,13 @@
     }
   },
   "generation": {
-    "generated_at": "2026-05-13T12:02:25.131Z",
+    "generated_at": "2026-05-13T12:06:33.974Z",
     "generator": "scripts/generate-simulation-input.js",
     "source_artifacts": {
+      "retrieval_request": {
+        "path": "experiments/dao-vote-costs-v1/retrieval-request.json",
+        "sha256": "sha256:b63daafb3ee78ff9cf3bbc2b17534f731f43f05a17a553ccbcbd797c36181102"
+      },
       "med_proposal": {
         "path": "experiments/dao-vote-costs-v1/med-proposal.json",
         "sha256": "sha256:0cca9f90a08e9c6cb7e90d049d584405828bd7680de842b2cac8f57121b86c9b"
@@ -62,6 +70,7 @@
   "launch": null,
   "inputs": {
     "experiment_descriptor": "experiment.json",
+    "retrieval_request": "retrieval-request.json",
     "retrieval_evidence": "retrieval-evidence.json",
     "med_proposal": "med-proposal.json",
     "probability_model_proposal": "probability-model-proposal.json",
@@ -74,7 +83,7 @@
   },
   "notes": "This file is a placeholder manifest that a future launcher should populate automatically.",
   "validation": {
-    "validated_at": "2026-05-13T12:02:13.546Z",
+    "validated_at": "2026-05-13T12:06:51.441Z",
     "validator": "scripts/validate-experiment.js",
     "result": "pass"
   }

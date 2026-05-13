@@ -111,3 +111,4 @@ It also updates the run manifest with a validation timestamp when validation suc
 ## Example
 
 See [dao-vote-costs-v1](</Users/francesco/workspace/git/research/sesame/experiments/dao-vote-costs-v1>) for a minimal end-to-end example.
+See [docs/experiment-tooling.md](/Users/francesco/workspace/git/research/sesame/docs/experiment-tooling.md) for the command-level usage guide.

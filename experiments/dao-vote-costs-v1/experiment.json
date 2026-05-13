@@ -9,6 +9,7 @@
     "probability_model_proposal": "prompts/agent/propose-probability-models.v1.md"
   },
   "artifacts": {
+    "retrieval_request": "retrieval-request.json",
     "retrieval_evidence": "retrieval-evidence.json",
     "med_proposal": "med-proposal.json",
     "probability_model_proposal": "probability-model-proposal.json",

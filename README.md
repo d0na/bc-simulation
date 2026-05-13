@@ -39,6 +39,7 @@ The repository now includes an initial scaffold for a reproducible MCP-assisted 
 - local validator and launcher scripts in `scripts/`
 
 See [experiments/README.md](/Users/francesco/workspace/git/research/sesame/experiments/README.md) for the workflow and artifact model.
+See [docs/experiment-tooling.md](/Users/francesco/workspace/git/research/sesame/docs/experiment-tooling.md) for the operational tooling guide.
 
 ## Usage
 

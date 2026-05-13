@@ -20,6 +20,7 @@
     "test:api": "cd apps/api && ./mvnw test",
     "test:mcp": "cd mcp-server && ./mvnw test",
     "install:web": "cd apps/web && npm install",
+    "prepare:retrieval-request": "node scripts/prepare-retrieval-request.js",
     "validate:experiment": "node scripts/validate-experiment.js",
     "generate:simulation-input": "node scripts/generate-simulation-input.js",
     "update:run-manifest": "node scripts/update-run-manifest.js",

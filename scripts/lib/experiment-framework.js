@@ -106,6 +106,7 @@ function validateExperimentBundle(bundle, repoRoot) {
   }
 
   const requiredArtifacts = [
+    "retrieval_request",
     "retrieval_evidence",
     "med_proposal",
     "probability_model_proposal",
@@ -127,6 +128,7 @@ function validateExperimentBundle(bundle, repoRoot) {
   }
 
   const experimentId = descriptor.experiment_id;
+  const retrievalRequest = artifacts.retrieval_request;
   const retrieval = artifacts.retrieval_evidence;
   const medProposal = artifacts.med_proposal;
   const probabilityProposal = artifacts.probability_model_proposal;
@@ -135,6 +137,15 @@ function validateExperimentBundle(bundle, repoRoot) {
   const simulationInput = artifacts.simulation_input;
   const runManifest = artifacts.run_manifest;
   const validationReport = artifacts.validation_report;
+
+  if (retrievalRequest) {
+    if (retrievalRequest.experiment_id !== experimentId) {
+      issues.push("retrieval-request.json experiment_id does not match experiment.json");
+    }
+    if (!retrievalRequest.target?.chain || !retrievalRequest.target?.contract_address) {
+      issues.push("retrieval-request.json must include target.chain and target.contract_address");
+    }
+  }
 
   if (retrieval) {
     if (retrieval.experiment_id !== experimentId) {
