@@ -1,0 +1,30 @@
+{
+  "experiment_id": "nft-BAYC-real",
+  "reviewer": "human",
+  "status": "approved_with_edits",
+  "approved_artifacts": {
+    "retrieval_evidence": "40-normalized-evidence/40-retrieval-evidence.json",
+    "med_proposal": "50-generated-proposals/50-med-proposal.json",
+    "probability_model_proposal": "50-generated-proposals/51-probability-model-proposal.json"
+  },
+  "approved_artifact_hashes": {
+    "retrieval_evidence": "sha256:8e469294fcc12b2199f06bc6474502d4ed0d82718915dabaeeeb0c06fd2dc0d3",
+    "med_proposal": "sha256:466ef497428f0c4249c0c48d6f6ca98935f2f83f6b54457c4419c21f5581a22e",
+    "probability_model_proposal": "sha256:d83ae41f174ac65e4280d557f353dd19b25885cbf9a33ae9d0df14b3bd919b5e"
+  },
+  "edits": [
+    {
+      "target": "meds[voting_interaction].cost_model.representative_gas",
+      "old": 95000,
+      "new": 100000,
+      "reason": "Adjusted to the benchmark used for the existing DAO simulation examples."
+    },
+    {
+      "target": "models[vote_activity_normal_scaled].parameters.scalingFactorY",
+      "old": 0.35,
+      "new": 0.3,
+      "reason": "Reduced peak intensity to keep the voting burst conservative."
+    }
+  ],
+  "notes": "The MED mapping is accepted. Voting cost and probability parameters require conservative calibration."
+}

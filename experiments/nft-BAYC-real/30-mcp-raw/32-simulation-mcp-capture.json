@@ -1,0 +1,14 @@
+{
+  "experiment_id": "nft-BAYC-real",
+  "simulation_blueprint": {
+    "name": "dao-vote-costs-v1",
+    "description": "Human-reviewed governance simulation input derived from MCP evidence and MED proposals.",
+    "entities": [
+      "user",
+      "proposal",
+      "vote"
+    ],
+    "notes": "Simulation MCP capture can be used in future to persist blueprint proposals or execution previews."
+  },
+  "notes": "This example capture is a placeholder until the simulation MCP server returns a structured blueprint or dry-run artifact."
+}

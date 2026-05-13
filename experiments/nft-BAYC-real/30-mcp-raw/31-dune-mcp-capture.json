@@ -1,0 +1,24 @@
+{
+  "experiment_id": "nft-BAYC-real",
+  "contract": {
+    "chain": "ethereum",
+    "address": "0x1234...abcd",
+    "label": "ExampleGovernor"
+  },
+  "metrics": [
+    {
+      "metric_name": "daily_proposals",
+      "granularity": "day",
+      "trend_hint": "stable_low",
+      "notes": "Proposal creation remains infrequent and steady over the observed window.",
+      "source_ref": "dune://query/example-governance-daily-proposals"
+    },
+    {
+      "metric_name": "daily_votes",
+      "granularity": "day",
+      "trend_hint": "bursty_around_proposals",
+      "notes": "Voting activity clusters around proposal publication windows.",
+      "source_ref": "dune://query/example-governance-daily-votes"
+    }
+  ]
+}

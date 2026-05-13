@@ -1,0 +1,54 @@
+{
+  "experiment_id": "nft-BAYC-real",
+  "status": "proposed",
+  "meds": [
+    {
+      "med_id": "proposal_lifecycle",
+      "label": "Proposal lifecycle",
+      "maps_to": {
+        "functions": [
+          "propose"
+        ],
+        "events": [
+          "ProposalCreated"
+        ]
+      },
+      "cost_model": {
+        "representative_gas": 210000
+      },
+      "rationale": "Aggregate governance proposal creation into one simulation-relevant macro event.",
+      "evidence_refs": [
+        "etherscan.functions.propose",
+        "etherscan.events.ProposalCreated",
+        "dune.metrics.daily_proposals"
+      ],
+      "observed_metrics": [
+        "daily_proposals"
+      ]
+    },
+    {
+      "med_id": "voting_interaction",
+      "label": "Voting interaction",
+      "maps_to": {
+        "functions": [
+          "castVote"
+        ],
+        "events": [
+          "VoteCast"
+        ]
+      },
+      "cost_model": {
+        "representative_gas": 95000
+      },
+      "rationale": "Aggregate recurring user voting activity into one governance participation MED.",
+      "evidence_refs": [
+        "etherscan.functions.castVote",
+        "etherscan.events.VoteCast",
+        "dune.metrics.daily_votes"
+      ],
+      "observed_metrics": [
+        "daily_votes"
+      ]
+    }
+  ]
+}

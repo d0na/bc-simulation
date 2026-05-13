@@ -1,0 +1,21 @@
+{
+  "experiment_id": "nft-BAYC-real",
+  "status": "draft",
+  "checks": [
+    {
+      "name": "schema_validation",
+      "result": "not_run",
+      "notes": "The repository does not yet include an automated schema validator."
+    },
+    {
+      "name": "human_review_gate",
+      "result": "pass",
+      "notes": "A review decision exists and is marked approved_with_edits."
+    },
+    {
+      "name": "simulation_compatibility",
+      "result": "pending",
+      "notes": "The simulation input still requires a launcher and backend-side compatibility validation."
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "experiment_id": "nft-BAYC-real",
+  "rules": [
+    {
+      "model_id": "proposal_creation_uniform",
+      "target_med": "proposal_lifecycle",
+      "distribution_type": "UNIFORM",
+      "parameters": {
+        "value": 0.0008
+      },
+      "metric_names": [
+        "daily_proposals"
+      ],
+      "confidence": "medium",
+      "notes": "A uniform rate is used as a minimal baseline because proposal creation appears low and stable."
+    },
+    {
+      "model_id": "vote_activity_normal_scaled",
+      "target_med": "voting_interaction",
+      "distribution_type": "NORMAL_SCALED",
+      "parameters": {
+        "mean": 24,
+        "std": 12,
+        "scalingFactorX": 0.1,
+        "scalingFactorY": 0.35
+      },
+      "heuristic_parameters": [
+        "mean",
+        "std",
+        "scalingFactorX",
+        "scalingFactorY"
+      ],
+      "metric_names": [
+        "daily_votes",
+        "daily_proposals"
+      ],
+      "confidence": "low",
+      "notes": "A normal scaled profile approximates the concentration of votes around active proposal windows, but the parameters remain heuristic until human review."
+    }
+  ]
+}

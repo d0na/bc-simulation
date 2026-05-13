@@ -1,0 +1,27 @@
+{
+  "experiment_id": "nft-BAYC-real",
+  "objective": "Estimate NFT workflow costs and adoption trends for long term sustainability costs.",
+  "target": {
+    "chain": "ethereum",
+    "contract_address": "0x1234...abcd",
+    "contract_label": "ExampleGovernor"
+  },
+  "etherscan_request": {
+    "template": "prompts/etherscan/retrieve-contract-evidence.v1.md",
+    "required_outputs": [
+      "abi_or_interface_metadata",
+      "simulation_relevant_functions",
+      "simulation_relevant_events",
+      "available_gas_or_cost_signals"
+    ]
+  },
+  "dune_request": {
+    "template": "prompts/dune/retrieve-adoption-trends.v1.md",
+    "analysis_window": "last_180_days",
+    "target_metrics": [
+      "daily_proposals",
+      "daily_votes",
+      "active_voters"
+    ]
+  }
+}
