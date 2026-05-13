@@ -108,6 +108,9 @@ function validateExperimentBundle(bundle, repoRoot) {
   const requiredArtifacts = [
     "retrieval_request",
     "rendered_retrieval_prompts",
+    "etherscan_mcp_capture",
+    "dune_mcp_capture",
+    "simulation_mcp_capture",
     "raw_mcp_retrieval",
     "retrieval_evidence",
     "med_aggregation_rules",
@@ -134,6 +137,9 @@ function validateExperimentBundle(bundle, repoRoot) {
   const experimentId = descriptor.experiment_id;
   const retrievalRequest = artifacts.retrieval_request;
   const renderedRetrievalPrompts = artifacts.rendered_retrieval_prompts;
+  const etherscanCapture = artifacts.etherscan_mcp_capture;
+  const duneCapture = artifacts.dune_mcp_capture;
+  const simulationCapture = artifacts.simulation_mcp_capture;
   const rawMcpRetrieval = artifacts.raw_mcp_retrieval;
   const retrieval = artifacts.retrieval_evidence;
   const medAggregationRules = artifacts.med_aggregation_rules;
@@ -164,6 +170,30 @@ function validateExperimentBundle(bundle, repoRoot) {
     }
     if (!renderedRetrievalPrompts.dune_prompt?.rendered_text) {
       issues.push("rendered-retrieval-prompts.json must include dune_prompt.rendered_text");
+    }
+  }
+
+  if (etherscanCapture) {
+    if (etherscanCapture.experiment_id !== experimentId) {
+      issues.push("etherscan-mcp-capture.json experiment_id does not match experiment.json");
+    }
+    if (!etherscanCapture.contract?.chain || !etherscanCapture.contract?.address) {
+      issues.push("etherscan-mcp-capture.json must include contract.chain and contract.address");
+    }
+  }
+
+  if (duneCapture) {
+    if (duneCapture.experiment_id !== experimentId) {
+      issues.push("dune-mcp-capture.json experiment_id does not match experiment.json");
+    }
+    if (!ensureArray(duneCapture.metrics).length) {
+      issues.push("dune-mcp-capture.json must include at least one metric");
+    }
+  }
+
+  if (simulationCapture) {
+    if (simulationCapture.experiment_id !== experimentId) {
+      issues.push("simulation-mcp-capture.json experiment_id does not match experiment.json");
     }
   }
 

@@ -70,6 +70,9 @@ function updateRunManifest(experimentDir, stage, options = {}) {
       source_artifacts: {
         retrieval_request: artifactHashes.retrieval_request,
         rendered_retrieval_prompts: artifactHashes.rendered_retrieval_prompts,
+        etherscan_mcp_capture: artifactHashes.etherscan_mcp_capture,
+        dune_mcp_capture: artifactHashes.dune_mcp_capture,
+        simulation_mcp_capture: artifactHashes.simulation_mcp_capture,
         raw_mcp_retrieval: artifactHashes.raw_mcp_retrieval,
         med_aggregation_rules: artifactHashes.med_aggregation_rules,
         med_proposal: artifactHashes.med_proposal,

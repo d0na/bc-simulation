@@ -52,6 +52,9 @@
       "required": [
         "retrieval_request",
         "rendered_retrieval_prompts",
+        "etherscan_mcp_capture",
+        "dune_mcp_capture",
+        "simulation_mcp_capture",
         "raw_mcp_retrieval",
         "retrieval_evidence",
         "med_aggregation_rules",
@@ -69,6 +72,15 @@
           "type": "string"
         },
         "rendered_retrieval_prompts": {
+          "type": "string"
+        },
+        "etherscan_mcp_capture": {
+          "type": "string"
+        },
+        "dune_mcp_capture": {
+          "type": "string"
+        },
+        "simulation_mcp_capture": {
           "type": "string"
         },
         "raw_mcp_retrieval": {

@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sesame.local/schemas/simulation-mcp-capture.schema.json",
+  "title": "Simulation MCP Capture",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "experiment_id",
+    "simulation_blueprint"
+  ],
+  "properties": {
+    "experiment_id": {
+      "type": "string"
+    },
+    "simulation_blueprint": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "notes": {
+      "type": "string"
+    }
+  }
+}

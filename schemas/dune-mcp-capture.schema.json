@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sesame.local/schemas/dune-mcp-capture.schema.json",
+  "title": "Dune MCP Capture",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "experiment_id",
+    "contract",
+    "metrics"
+  ],
+  "properties": {
+    "experiment_id": {
+      "type": "string"
+    },
+    "contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "chain",
+        "address",
+        "label"
+      ],
+      "properties": {
+        "chain": {
+          "type": "string"
+        },
+        "address": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        }
+      }
+    },
+    "metrics": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    }
+  }
+}

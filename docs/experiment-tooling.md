@@ -8,6 +8,7 @@ The current tooling covers the local orchestration layer around an experiment:
 
 - retrieval request preparation
 - retrieval prompt rendering
+- raw MCP assembly from server-specific captures
 - retrieval evidence normalization
 - MED proposal generation
 - probability model proposal generation
@@ -34,6 +35,9 @@ An experiment directory should contain at least these files:
 - `experiment.json`
 - `retrieval-request.json`
 - `rendered-retrieval-prompts.json`
+- `etherscan-mcp-capture.json`
+- `dune-mcp-capture.json`
+- `simulation-mcp-capture.json`
 - `raw-mcp-retrieval.json`
 - `retrieval-evidence.json`
 - `med-aggregation-rules.json`
@@ -79,6 +83,22 @@ Purpose:
 - writes them to `rendered-retrieval-prompts.json`
 
 This artifact is the last local step before using the MCP tools for live retrieval.
+
+### `assemble:raw-mcp-retrieval`
+
+Command:
+
+```bash
+npm run assemble:raw-mcp-retrieval -- experiments/dao-vote-costs-v1
+```
+
+Purpose:
+
+- reads the server-specific capture files
+- assembles them into the repository-wide `raw-mcp-retrieval.json`
+- updates `run-manifest.json` with refreshed hashes
+
+This step makes the raw ingestion contract explicit for Etherscan, Dune, and the simulation MCP server.
 
 ### `normalize:retrieval-evidence`
 
@@ -265,22 +285,24 @@ Notes:
 1. Prepare or update the experiment artifacts.
 2. Prepare or refresh the retrieval request.
 3. Render retrieval prompts.
-4. Capture MCP retrieval output into `raw-mcp-retrieval.json`.
-5. Normalize the retrieval evidence.
-6. Generate the MED proposal.
-7. Generate the probability model proposal.
-8. Prepare or refresh the review decision.
-9. Run the review consistency check.
-10. Validate the experiment.
-11. Generate the simulation input from approved artifacts.
-12. Validate again if the simulation payload changed.
-13. Launch the experiment against the backend.
+4. Capture MCP outputs into the server-specific capture files.
+5. Assemble `raw-mcp-retrieval.json`.
+6. Normalize the retrieval evidence.
+7. Generate the MED proposal.
+8. Generate the probability model proposal.
+9. Prepare or refresh the review decision.
+10. Run the review consistency check.
+11. Validate the experiment.
+12. Generate the simulation input from approved artifacts.
+13. Validate again if the simulation payload changed.
+14. Launch the experiment against the backend.
 
 Example:
 
 ```bash
 npm run prepare:retrieval-request -- experiments/dao-vote-costs-v1
 npm run render:retrieval-prompts -- experiments/dao-vote-costs-v1
+npm run assemble:raw-mcp-retrieval -- experiments/dao-vote-costs-v1
 npm run normalize:retrieval-evidence -- experiments/dao-vote-costs-v1
 npm run generate:med-proposal -- experiments/dao-vote-costs-v1
 npm run generate:probability-model-proposal -- experiments/dao-vote-costs-v1

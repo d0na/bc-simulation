@@ -11,6 +11,9 @@
   "artifacts": {
     "retrieval_request": "retrieval-request.json",
     "rendered_retrieval_prompts": "rendered-retrieval-prompts.json",
+    "etherscan_mcp_capture": "etherscan-mcp-capture.json",
+    "dune_mcp_capture": "dune-mcp-capture.json",
+    "simulation_mcp_capture": "simulation-mcp-capture.json",
     "raw_mcp_retrieval": "raw-mcp-retrieval.json",
     "retrieval_evidence": "retrieval-evidence.json",
     "med_aggregation_rules": "med-aggregation-rules.json",

@@ -22,6 +22,7 @@
     "install:web": "cd apps/web && npm install",
     "prepare:retrieval-request": "node scripts/prepare-retrieval-request.js",
     "render:retrieval-prompts": "node scripts/render-retrieval-prompts.js",
+    "assemble:raw-mcp-retrieval": "node scripts/assemble-raw-mcp-retrieval.js",
     "normalize:retrieval-evidence": "node scripts/normalize-retrieval-evidence.js",
     "generate:med-proposal": "node scripts/generate-med-proposal.js",
     "generate:probability-model-proposal": "node scripts/generate-probability-model-proposal.js",
