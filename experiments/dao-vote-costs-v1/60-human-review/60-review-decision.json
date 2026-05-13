@@ -3,9 +3,9 @@
   "reviewer": "human",
   "status": "approved_with_edits",
   "approved_artifacts": {
-    "retrieval_evidence": "retrieval-evidence.json",
-    "med_proposal": "med-proposal.json",
-    "probability_model_proposal": "probability-model-proposal.json"
+    "retrieval_evidence": "40-normalized-evidence/40-retrieval-evidence.json",
+    "med_proposal": "50-generated-proposals/50-med-proposal.json",
+    "probability_model_proposal": "50-generated-proposals/51-probability-model-proposal.json"
   },
   "approved_artifact_hashes": {
     "retrieval_evidence": "sha256:7b735c785062482d041998fa1ebe97a85f23b2d48f8cf31de9a25ea8e2cf6182",

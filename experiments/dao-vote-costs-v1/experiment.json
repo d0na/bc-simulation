@@ -9,22 +9,22 @@
     "probability_model_proposal": "prompts/agent/propose-probability-models.v1.md"
   },
   "artifacts": {
-    "retrieval_request": "retrieval-request.json",
-    "rendered_retrieval_prompts": "rendered-retrieval-prompts.json",
-    "etherscan_mcp_capture": "etherscan-mcp-capture.json",
-    "dune_mcp_capture": "dune-mcp-capture.json",
-    "simulation_mcp_capture": "simulation-mcp-capture.json",
-    "raw_mcp_retrieval": "raw-mcp-retrieval.json",
-    "retrieval_evidence": "retrieval-evidence.json",
-    "med_aggregation_rules": "med-aggregation-rules.json",
-    "med_proposal": "med-proposal.json",
-    "probability_model_rules": "probability-model-rules.json",
-    "probability_model_proposal": "probability-model-proposal.json",
-    "review_decision": "review-decision.json",
-    "simulation_blueprint": "simulation-blueprint.json",
-    "simulation_input": "simulation-input.json",
-    "run_manifest": "run-manifest.json",
-    "validation_report": "validation-report.json"
+    "retrieval_request": "10-human-input/10-retrieval-request.json",
+    "rendered_retrieval_prompts": "20-rendered-prompts/20-rendered-retrieval-prompts.json",
+    "etherscan_mcp_capture": "30-mcp-raw/30-etherscan-mcp-capture.json",
+    "dune_mcp_capture": "30-mcp-raw/31-dune-mcp-capture.json",
+    "simulation_mcp_capture": "30-mcp-raw/32-simulation-mcp-capture.json",
+    "raw_mcp_retrieval": "30-mcp-raw/39-raw-mcp-retrieval.json",
+    "retrieval_evidence": "40-normalized-evidence/40-retrieval-evidence.json",
+    "med_aggregation_rules": "10-human-input/11-med-aggregation-rules.json",
+    "med_proposal": "50-generated-proposals/50-med-proposal.json",
+    "probability_model_rules": "10-human-input/12-probability-model-rules.json",
+    "probability_model_proposal": "50-generated-proposals/51-probability-model-proposal.json",
+    "review_decision": "60-human-review/60-review-decision.json",
+    "simulation_blueprint": "10-human-input/13-simulation-blueprint.json",
+    "simulation_input": "70-execution/70-simulation-input.json",
+    "run_manifest": "70-execution/71-run-manifest.json",
+    "validation_report": "70-execution/72-validation-report.json"
   },
   "status": "reviewed"
 }

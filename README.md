@@ -40,6 +40,8 @@ The repository now includes an initial scaffold for a reproducible MCP-assisted 
 
 See [experiments/README.md](/Users/francesco/workspace/git/research/sesame/experiments/README.md) for the workflow and artifact model.
 See [docs/experiment-tooling.md](/Users/francesco/workspace/git/research/sesame/docs/experiment-tooling.md) for the operational tooling guide.
+See [docs/how-to-create-and-run-an-experiment.en.md](/Users/francesco/workspace/git/research/sesame/docs/how-to-create-and-run-an-experiment.en.md) for the full English step-by-step guide.
+See [docs/come-creare-e-pilotare-un-esperimento.it.md](/Users/francesco/workspace/git/research/sesame/docs/come-creare-e-pilotare-un-esperimento.it.md) for the full Italian step-by-step guide.
 
 ## Usage
 

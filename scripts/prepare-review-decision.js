@@ -21,9 +21,9 @@ function buildApprovedArtifactHashes(bundle) {
 function buildReviewDecision(bundle) {
   const existing = bundle.artifacts.review_decision || {};
   const approvedArtifacts = {
-    retrieval_evidence: "retrieval-evidence.json",
-    med_proposal: "med-proposal.json",
-    probability_model_proposal: "probability-model-proposal.json",
+    retrieval_evidence: bundle.descriptor.artifacts.retrieval_evidence,
+    med_proposal: bundle.descriptor.artifacts.med_proposal,
+    probability_model_proposal: bundle.descriptor.artifacts.probability_model_proposal,
   };
 
   const status =

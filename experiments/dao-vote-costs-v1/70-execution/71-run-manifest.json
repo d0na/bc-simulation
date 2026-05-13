@@ -1,0 +1,153 @@
+{
+  "experiment_id": "dao-vote-costs-v1",
+  "run_id": "dao-vote-costs-v1-local-example-001",
+  "status": "planned",
+  "code_version": "git:6b7bff36dc1673e90f23b6a5e57d9c837046f8a5",
+  "artifact_hashes": {
+    "retrieval_request": {
+      "path": "experiments/dao-vote-costs-v1/10-human-input/10-retrieval-request.json",
+      "sha256": "sha256:b63daafb3ee78ff9cf3bbc2b17534f731f43f05a17a553ccbcbd797c36181102"
+    },
+    "rendered_retrieval_prompts": {
+      "path": "experiments/dao-vote-costs-v1/20-rendered-prompts/20-rendered-retrieval-prompts.json",
+      "sha256": "sha256:7025676f275428b16159a287cf58bc030c3535f6e61fe586edeb6ee7d0522be9"
+    },
+    "etherscan_mcp_capture": {
+      "path": "experiments/dao-vote-costs-v1/30-mcp-raw/30-etherscan-mcp-capture.json",
+      "sha256": "sha256:79afd9d504d5c842f5e7638255744d123c1ee8a528a21b2b6cd5c26fed867840"
+    },
+    "dune_mcp_capture": {
+      "path": "experiments/dao-vote-costs-v1/30-mcp-raw/31-dune-mcp-capture.json",
+      "sha256": "sha256:20e98194c182421877df40aad2d900be05ae2ac8152429a6e9023200dce0ad81"
+    },
+    "simulation_mcp_capture": {
+      "path": "experiments/dao-vote-costs-v1/30-mcp-raw/32-simulation-mcp-capture.json",
+      "sha256": "sha256:eb54f0082a94065ab3e9b12d2938f128dc7111321dc4b11aaf500396bcb46c04"
+    },
+    "raw_mcp_retrieval": {
+      "path": "experiments/dao-vote-costs-v1/30-mcp-raw/39-raw-mcp-retrieval.json",
+      "sha256": "sha256:aee5650bdea0fec66e5c19d705cad9d93a1376a001fa499e4075000f3e3105a8"
+    },
+    "retrieval_evidence": {
+      "path": "experiments/dao-vote-costs-v1/40-normalized-evidence/40-retrieval-evidence.json",
+      "sha256": "sha256:7b735c785062482d041998fa1ebe97a85f23b2d48f8cf31de9a25ea8e2cf6182"
+    },
+    "med_aggregation_rules": {
+      "path": "experiments/dao-vote-costs-v1/10-human-input/11-med-aggregation-rules.json",
+      "sha256": "sha256:05d5146544dbcfcf3084c35129de2cfa0d63fd637237cd7fe8e8f64f55abcb1c"
+    },
+    "med_proposal": {
+      "path": "experiments/dao-vote-costs-v1/50-generated-proposals/50-med-proposal.json",
+      "sha256": "sha256:7ee3be3e15864fa9b2647b85eafa9f3b0ac4cdb9534c9a5aec0d35954c6d6438"
+    },
+    "probability_model_rules": {
+      "path": "experiments/dao-vote-costs-v1/10-human-input/12-probability-model-rules.json",
+      "sha256": "sha256:a8a7282fc424906c47640a4e8530b643327f94e79ea43d70379707ed971ac6cb"
+    },
+    "probability_model_proposal": {
+      "path": "experiments/dao-vote-costs-v1/50-generated-proposals/51-probability-model-proposal.json",
+      "sha256": "sha256:84390c5670018cb900b726851291af28e3516dcc7c86d3f5eff273e617ed3827"
+    },
+    "review_decision": {
+      "path": "experiments/dao-vote-costs-v1/60-human-review/60-review-decision.json",
+      "sha256": "sha256:c5fcff387a22cd1d62662b840581892f2892cd7d18b9327f364c12f2a75d77b4"
+    },
+    "simulation_blueprint": {
+      "path": "experiments/dao-vote-costs-v1/10-human-input/13-simulation-blueprint.json",
+      "sha256": "sha256:3f872a27475c334bb17ec7228e2f70ab6179baa5c0df5dee2672c30c86d0681d"
+    },
+    "simulation_input": {
+      "path": "experiments/dao-vote-costs-v1/70-execution/70-simulation-input.json",
+      "sha256": "sha256:009ecc08ab189349dded07ad9f366116914d131eceafe09f657bd53d9f0f260c"
+    },
+    "validation_report": {
+      "path": "experiments/dao-vote-costs-v1/70-execution/72-validation-report.json",
+      "sha256": "sha256:c0228a81c956d38cbf125229a32b90f85ad04e05ba80a746456d0d1dde66e056"
+    }
+  },
+  "generation": {
+    "generated_at": "2026-05-13T12:42:40.724Z",
+    "generator": "scripts/generate-simulation-input.js",
+    "source_artifacts": {
+      "retrieval_request": {
+        "path": "experiments/dao-vote-costs-v1/10-human-input/10-retrieval-request.json",
+        "sha256": "sha256:b63daafb3ee78ff9cf3bbc2b17534f731f43f05a17a553ccbcbd797c36181102"
+      },
+      "rendered_retrieval_prompts": {
+        "path": "experiments/dao-vote-costs-v1/20-rendered-prompts/20-rendered-retrieval-prompts.json",
+        "sha256": "sha256:7025676f275428b16159a287cf58bc030c3535f6e61fe586edeb6ee7d0522be9"
+      },
+      "etherscan_mcp_capture": {
+        "path": "experiments/dao-vote-costs-v1/30-mcp-raw/30-etherscan-mcp-capture.json",
+        "sha256": "sha256:79afd9d504d5c842f5e7638255744d123c1ee8a528a21b2b6cd5c26fed867840"
+      },
+      "dune_mcp_capture": {
+        "path": "experiments/dao-vote-costs-v1/30-mcp-raw/31-dune-mcp-capture.json",
+        "sha256": "sha256:20e98194c182421877df40aad2d900be05ae2ac8152429a6e9023200dce0ad81"
+      },
+      "simulation_mcp_capture": {
+        "path": "experiments/dao-vote-costs-v1/30-mcp-raw/32-simulation-mcp-capture.json",
+        "sha256": "sha256:eb54f0082a94065ab3e9b12d2938f128dc7111321dc4b11aaf500396bcb46c04"
+      },
+      "raw_mcp_retrieval": {
+        "path": "experiments/dao-vote-costs-v1/30-mcp-raw/39-raw-mcp-retrieval.json",
+        "sha256": "sha256:aee5650bdea0fec66e5c19d705cad9d93a1376a001fa499e4075000f3e3105a8"
+      },
+      "med_aggregation_rules": {
+        "path": "experiments/dao-vote-costs-v1/10-human-input/11-med-aggregation-rules.json",
+        "sha256": "sha256:05d5146544dbcfcf3084c35129de2cfa0d63fd637237cd7fe8e8f64f55abcb1c"
+      },
+      "med_proposal": {
+        "path": "experiments/dao-vote-costs-v1/50-generated-proposals/50-med-proposal.json",
+        "sha256": "sha256:7ee3be3e15864fa9b2647b85eafa9f3b0ac4cdb9534c9a5aec0d35954c6d6438"
+      },
+      "probability_model_rules": {
+        "path": "experiments/dao-vote-costs-v1/10-human-input/12-probability-model-rules.json",
+        "sha256": "sha256:a8a7282fc424906c47640a4e8530b643327f94e79ea43d70379707ed971ac6cb"
+      },
+      "probability_model_proposal": {
+        "path": "experiments/dao-vote-costs-v1/50-generated-proposals/51-probability-model-proposal.json",
+        "sha256": "sha256:84390c5670018cb900b726851291af28e3516dcc7c86d3f5eff273e617ed3827"
+      },
+      "review_decision": {
+        "path": "experiments/dao-vote-costs-v1/60-human-review/60-review-decision.json",
+        "sha256": "sha256:c5fcff387a22cd1d62662b840581892f2892cd7d18b9327f364c12f2a75d77b4"
+      },
+      "simulation_blueprint": {
+        "path": "experiments/dao-vote-costs-v1/10-human-input/13-simulation-blueprint.json",
+        "sha256": "sha256:3f872a27475c334bb17ec7228e2f70ab6179baa5c0df5dee2672c30c86d0681d"
+      }
+    },
+    "output_artifact": {
+      "path": "experiments/dao-vote-costs-v1/70-execution/70-simulation-input.json",
+      "sha256": "sha256:009ecc08ab189349dded07ad9f366116914d131eceafe09f657bd53d9f0f260c"
+    }
+  },
+  "launch": null,
+  "inputs": {
+    "experiment_descriptor": "experiment.json",
+    "retrieval_request": "10-human-input/10-retrieval-request.json",
+    "rendered_retrieval_prompts": "20-rendered-prompts/20-rendered-retrieval-prompts.json",
+    "etherscan_mcp_capture": "30-mcp-raw/30-etherscan-mcp-capture.json",
+    "dune_mcp_capture": "30-mcp-raw/31-dune-mcp-capture.json",
+    "simulation_mcp_capture": "30-mcp-raw/32-simulation-mcp-capture.json",
+    "raw_mcp_retrieval": "30-mcp-raw/39-raw-mcp-retrieval.json",
+    "retrieval_evidence": "40-normalized-evidence/40-retrieval-evidence.json",
+    "med_aggregation_rules": "10-human-input/11-med-aggregation-rules.json",
+    "med_proposal": "50-generated-proposals/50-med-proposal.json",
+    "probability_model_rules": "10-human-input/12-probability-model-rules.json",
+    "probability_model_proposal": "50-generated-proposals/51-probability-model-proposal.json",
+    "review_decision": "60-human-review/60-review-decision.json",
+    "simulation_blueprint": "10-human-input/13-simulation-blueprint.json",
+    "simulation_input": "70-execution/70-simulation-input.json"
+  },
+  "outputs": {
+    "simulation_tsv": "artifacts/runs/dao-vote-costs-v1/output.tsv"
+  },
+  "notes": "This file is a placeholder manifest that a future launcher should populate automatically.",
+  "validation": {
+    "validated_at": "2026-05-13T12:45:46.339Z",
+    "validator": "scripts/validate-experiment.js",
+    "result": "pass"
+  }
+}
