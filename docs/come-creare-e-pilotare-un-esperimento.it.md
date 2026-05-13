@@ -85,7 +85,7 @@ I file minimi da controllare subito sono:
 - `experiment.json`
 - `00-overview/00-objective.md`
 - `00-overview/01-status-and-notes.md`
-- `10-human-input/10-retrieval-request.json`
+- `10-human-input/10-retrieval-request.json` dopo aver eseguito lo step di preparazione
 - `10-human-input/11-med-aggregation-rules.json`
 - `10-human-input/12-probability-model-rules.json`
 - `10-human-input/13-simulation-blueprint.json`
@@ -108,7 +108,7 @@ Ogni file dentro la cartella esperimento ha un ruolo diverso.
   E' il descrittore principale. Definisce l'identita' dell'esperimento e i path degli artifact.
 
 - `10-retrieval-request.json`
-  Descrive cosa deve essere recuperato da Etherscan e Dune.
+  Viene prima preparato da script, poi rivisto ed eventualmente modificato dall'utente. Descrive cosa deve essere recuperato da Etherscan e Dune.
 
 - `11-med-aggregation-rules.json`
   Regole deterministiche che definiscono come l'evidenza low-level diventa MED.
@@ -154,7 +154,7 @@ Ogni file dentro la cartella esperimento ha un ruolo diverso.
 ### `60-human-review/`
 
 - `60-review-decision.json`
-  Record di approvazione umana, con edit e hash degli artifact approvati.
+  Record di review preparato da script e poi completato e approvato dal reviewer umano.
 
 ### `70-execution/`
 

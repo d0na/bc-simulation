@@ -33,15 +33,20 @@ Before looking at the step-by-step flow, distinguish three categories of files.
 
 ### Human-authored source files
 
-These are the files that define the experiment and should be treated as source of truth:
+These are the files that are normally authored directly by the user and should be treated as source of truth:
 
 - `experiment.json`
 - `00-overview/00-objective.md`
 - `00-overview/01-status-and-notes.md`
-- `10-human-input/10-retrieval-request.json`
 - `10-human-input/11-med-aggregation-rules.json`
 - `10-human-input/12-probability-model-rules.json`
 - `10-human-input/13-simulation-blueprint.json`
+
+### Script-prepared, then human-reviewed files
+
+These are initialized or refreshed by scripts, but they still require human review and may be manually edited afterward:
+
+- `10-human-input/10-retrieval-request.json`
 - `60-human-review/60-review-decision.json`
 
 ### Generated or derived files
@@ -115,7 +120,7 @@ Files to define:
 
 Notes:
 
-- `10-retrieval-request.json` may be prepared by script, but it is still a human-owned input
+- `10-retrieval-request.json` is script-prepared first, then reviewed and possibly edited by the human
 - `11`, `12`, and `13` are direct modeling files
 
 ## Step 3: Prepare The Retrieval Request
@@ -129,6 +134,12 @@ npm run prepare:retrieval-request -- experiments/my-new-experiment
 Produced or refreshed file:
 
 - `10-human-input/10-retrieval-request.json`
+
+Lifecycle of this file:
+
+1. the script prepares or refreshes it
+2. the user reviews it
+3. the user edits it when needed
 
 You then review:
 
@@ -290,6 +301,12 @@ This file records:
 - human edits
 - reviewer notes
 
+Lifecycle of this file:
+
+1. the script prepares or refreshes the review scaffold
+2. the user decides review status
+3. the user records edits, notes, and approval intent
+
 This is where the human modeler turns generated proposals into approved assumptions.
 
 ## Step 11: Perform The Human Modeling Review
@@ -445,6 +462,14 @@ The tooling owns:
 - proposal generation
 - payload generation
 - traceability metadata
+
+The mixed-responsibility files are:
+
+- `10-human-input/10-retrieval-request.json`
+- `60-human-review/60-review-decision.json`
+
+They are not purely generated, and they are not purely authored from scratch.
+They are prepared by scripts and then finalized by the human.
 
 ## Recommended Mental Rule
 

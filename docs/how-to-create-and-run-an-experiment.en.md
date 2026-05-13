@@ -85,7 +85,7 @@ At minimum, inspect these files first:
 - `experiment.json`
 - `00-overview/00-objective.md`
 - `00-overview/01-status-and-notes.md`
-- `10-human-input/10-retrieval-request.json`
+- `10-human-input/10-retrieval-request.json` after running its preparation step
 - `10-human-input/11-med-aggregation-rules.json`
 - `10-human-input/12-probability-model-rules.json`
 - `10-human-input/13-simulation-blueprint.json`
@@ -108,7 +108,7 @@ Inside an experiment directory, each file has a different role.
   This is the top-level descriptor. It defines the experiment identity and the artifact paths.
 
 - `10-retrieval-request.json`
-  This describes what should be retrieved from Etherscan and Dune.
+  This is script-prepared first, then reviewed and optionally edited by the user. It describes what should be retrieved from Etherscan and Dune.
 
 - `11-med-aggregation-rules.json`
   Deterministic rules that define how low-level evidence becomes MEDs.
@@ -154,7 +154,7 @@ Inside an experiment directory, each file has a different role.
 ### `60-human-review/`
 
 - `60-review-decision.json`
-  Human approval record, including edit instructions and proposal hashes.
+  Script-prepared review record that is then completed and approved by the human reviewer.
 
 ### `70-execution/`
 

@@ -33,15 +33,20 @@ Prima del flusso step-by-step, distingui tre categorie di file.
 
 ### File sorgente umani
 
-Questi sono i file che definiscono l'esperimento e vanno trattati come source of truth:
+Questi sono i file normalmente scritti direttamente dall'utente e vanno trattati come source of truth:
 
 - `experiment.json`
 - `00-overview/00-objective.md`
 - `00-overview/01-status-and-notes.md`
-- `10-human-input/10-retrieval-request.json`
 - `10-human-input/11-med-aggregation-rules.json`
 - `10-human-input/12-probability-model-rules.json`
 - `10-human-input/13-simulation-blueprint.json`
+
+### File preparati da script e poi rivisti dall'umano
+
+Questi vengono inizializzati o aggiornati dagli script, ma richiedono comunque review umana e possono essere modificati manualmente dopo:
+
+- `10-human-input/10-retrieval-request.json`
 - `60-human-review/60-review-decision.json`
 
 ### File generati o derivati
@@ -115,7 +120,7 @@ File da definire:
 
 Note:
 
-- `10-retrieval-request.json` puo' essere preparato da script, ma resta un input sotto responsabilita' umana
+- `10-retrieval-request.json` viene prima preparato da script, poi rivisto ed eventualmente modificato dall'umano
 - `11`, `12` e `13` sono file di modellazione diretta
 
 ## Step 3: Preparare La Retrieval Request
@@ -129,6 +134,12 @@ npm run prepare:retrieval-request -- experiments/mio-nuovo-esperimento
 File prodotto o aggiornato:
 
 - `10-human-input/10-retrieval-request.json`
+
+Ciclo di vita di questo file:
+
+1. lo script lo prepara o aggiorna
+2. l'utente lo rivede
+3. l'utente lo modifica se necessario
 
 Poi rivedi:
 
@@ -290,6 +301,12 @@ Questo file registra:
 - edit umani
 - note del reviewer
 
+Ciclo di vita di questo file:
+
+1. lo script prepara o aggiorna lo scaffold di review
+2. l'utente decide lo stato della review
+3. l'utente registra edit, note e intenzione di approvazione
+
 Qui il modeler umano trasforma proposal generate in assunzioni approvate.
 
 ## Step 11: Eseguire La Review Umana Di Modellazione
@@ -445,6 +462,14 @@ Il tooling possiede:
 - generazione delle proposal
 - generazione del payload
 - metadati di tracciabilita'
+
+I file a responsabilita' mista sono:
+
+- `10-human-input/10-retrieval-request.json`
+- `60-human-review/60-review-decision.json`
+
+Non sono puramente generati e non sono nemmeno puramente scritti da zero.
+Vengono preparati dagli script e poi finalizzati dall'umano.
 
 ## Regola Mentale Consigliata
 

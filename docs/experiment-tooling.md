@@ -59,6 +59,13 @@ An experiment directory should contain at least these phase-separated files:
 - `70-execution/71-run-manifest.json`
 - `70-execution/72-validation-report.json`
 
+Responsibility note:
+
+- human-authored files: `experiment.json`, `00-overview/*`, `10-human-input/11-*`, `10-human-input/12-*`, `10-human-input/13-*`
+- script-prepared then human-reviewed files: `10-human-input/10-retrieval-request.json`, `60-human-review/60-review-decision.json`
+- raw capture files: `30-mcp-raw/30-*`, `30-mcp-raw/31-*`, `30-mcp-raw/32-*`
+- fully generated files: `20-rendered-prompts/*`, `30-mcp-raw/39-*`, `40-normalized-evidence/*`, `50-generated-proposals/*`, `70-execution/*`
+
 ## Tooling Overview
 
 ### `prepare:retrieval-request`
@@ -76,6 +83,7 @@ Purpose:
 - materializes the contract target and requested metrics in one auditable file
 
 This file is intended to become the stable handoff between the repository workflow and the live MCP retrieval stage.
+It is script-prepared first, but it should still be treated as a human-reviewed input file.
 
 ### `render:retrieval-prompts`
 
@@ -173,6 +181,7 @@ Purpose:
 - preserves existing review notes and edits when possible
 
 Use this after regenerating MED or probability proposals and before a human reviewer signs off again.
+This file is script-prepared first and then completed by the human reviewer.
 
 ### `check:review-consistency`
 
