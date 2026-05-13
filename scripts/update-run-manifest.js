@@ -25,7 +25,22 @@ function buildArtifactHashes(bundle, repoRoot) {
   return hashes;
 }
 
-function updateRunManifest(experimentDir, stage) {
+function buildManifestInputs(descriptor) {
+  const inputs = {
+    experiment_descriptor: "experiment.json",
+  };
+
+  for (const [key, relativePath] of Object.entries(descriptor.artifacts || {})) {
+    if (key === "run_manifest" || key === "validation_report") {
+      continue;
+    }
+    inputs[key] = relativePath;
+  }
+
+  return inputs;
+}
+
+function updateRunManifest(experimentDir, stage, options = {}) {
   const repoRoot = path.resolve(__dirname, "..");
   const resolvedExperimentDir = resolveExperimentDir(experimentDir);
   const bundle = loadExperimentBundle(resolvedExperimentDir);
@@ -45,15 +60,17 @@ function updateRunManifest(experimentDir, stage) {
     ...runManifest,
     code_version: gitHead ? `git:${gitHead}` : runManifest.code_version || "git:unresolved",
     artifact_hashes: artifactHashes,
+    inputs: buildManifestInputs(bundle.descriptor),
   };
 
   if (stage === "generation") {
     nextManifest.generation = {
       generated_at: now,
-      generator: "scripts/generate-simulation-input.js",
+      generator: options.generator || "scripts/generate-simulation-input.js",
       source_artifacts: {
         retrieval_request: artifactHashes.retrieval_request,
         rendered_retrieval_prompts: artifactHashes.rendered_retrieval_prompts,
+        raw_mcp_retrieval: artifactHashes.raw_mcp_retrieval,
         med_proposal: artifactHashes.med_proposal,
         probability_model_proposal: artifactHashes.probability_model_proposal,
         review_decision: artifactHashes.review_decision,

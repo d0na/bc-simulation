@@ -22,6 +22,7 @@
     "install:web": "cd apps/web && npm install",
     "prepare:retrieval-request": "node scripts/prepare-retrieval-request.js",
     "render:retrieval-prompts": "node scripts/render-retrieval-prompts.js",
+    "normalize:retrieval-evidence": "node scripts/normalize-retrieval-evidence.js",
     "validate:experiment": "node scripts/validate-experiment.js",
     "generate:simulation-input": "node scripts/generate-simulation-input.js",
     "update:run-manifest": "node scripts/update-run-manifest.js",

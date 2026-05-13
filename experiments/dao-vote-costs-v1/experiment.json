@@ -11,6 +11,7 @@
   "artifacts": {
     "retrieval_request": "retrieval-request.json",
     "rendered_retrieval_prompts": "rendered-retrieval-prompts.json",
+    "raw_mcp_retrieval": "raw-mcp-retrieval.json",
     "retrieval_evidence": "retrieval-evidence.json",
     "med_proposal": "med-proposal.json",
     "probability_model_proposal": "probability-model-proposal.json",

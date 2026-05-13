@@ -183,7 +183,9 @@ function main() {
   const simulationInput = buildSimulationInput(bundle);
   const outputPath = bundle.artifactPaths.simulation_input;
   fs.writeFileSync(outputPath, `${JSON.stringify(simulationInput, null, 2)}\n`);
-  updateRunManifest(experimentDir, "generation");
+  updateRunManifest(experimentDir, "generation", {
+    generator: "scripts/generate-simulation-input.js",
+  });
   console.log(`Generated simulation input at ${outputPath}`);
 }
 

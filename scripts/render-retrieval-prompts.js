@@ -74,7 +74,9 @@ function main() {
 
   const outputPath = bundle.artifactPaths.rendered_retrieval_prompts;
   fs.writeFileSync(outputPath, `${JSON.stringify(rendered, null, 2)}\n`);
-  updateRunManifest(experimentDir, "generation");
+  updateRunManifest(experimentDir, "generation", {
+    generator: "scripts/render-retrieval-prompts.js",
+  });
   console.log(`Rendered retrieval prompts at ${outputPath}`);
 }
 

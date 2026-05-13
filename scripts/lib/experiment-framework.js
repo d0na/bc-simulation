@@ -108,6 +108,7 @@ function validateExperimentBundle(bundle, repoRoot) {
   const requiredArtifacts = [
     "retrieval_request",
     "rendered_retrieval_prompts",
+    "raw_mcp_retrieval",
     "retrieval_evidence",
     "med_proposal",
     "probability_model_proposal",
@@ -131,6 +132,7 @@ function validateExperimentBundle(bundle, repoRoot) {
   const experimentId = descriptor.experiment_id;
   const retrievalRequest = artifacts.retrieval_request;
   const renderedRetrievalPrompts = artifacts.rendered_retrieval_prompts;
+  const rawMcpRetrieval = artifacts.raw_mcp_retrieval;
   const retrieval = artifacts.retrieval_evidence;
   const medProposal = artifacts.med_proposal;
   const probabilityProposal = artifacts.probability_model_proposal;
@@ -158,6 +160,15 @@ function validateExperimentBundle(bundle, repoRoot) {
     }
     if (!renderedRetrievalPrompts.dune_prompt?.rendered_text) {
       issues.push("rendered-retrieval-prompts.json must include dune_prompt.rendered_text");
+    }
+  }
+
+  if (rawMcpRetrieval) {
+    if (rawMcpRetrieval.experiment_id !== experimentId) {
+      issues.push("raw-mcp-retrieval.json experiment_id does not match experiment.json");
+    }
+    if (!rawMcpRetrieval.contract?.chain || !rawMcpRetrieval.contract?.address) {
+      issues.push("raw-mcp-retrieval.json must include contract.chain and contract.address");
     }
   }
 

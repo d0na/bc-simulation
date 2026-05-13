@@ -2,7 +2,7 @@
   "experiment_id": "dao-vote-costs-v1",
   "run_id": "dao-vote-costs-v1-local-example-001",
   "status": "planned",
-  "code_version": "git:d83210747b966c08c33c83d388ac1621f4cd69a2",
+  "code_version": "git:b23799525849f3050d004ee5e9bac2dfa551a33c",
   "artifact_hashes": {
     "retrieval_request": {
       "path": "experiments/dao-vote-costs-v1/retrieval-request.json",
@@ -11,6 +11,10 @@
     "rendered_retrieval_prompts": {
       "path": "experiments/dao-vote-costs-v1/rendered-retrieval-prompts.json",
       "sha256": "sha256:7025676f275428b16159a287cf58bc030c3535f6e61fe586edeb6ee7d0522be9"
+    },
+    "raw_mcp_retrieval": {
+      "path": "experiments/dao-vote-costs-v1/raw-mcp-retrieval.json",
+      "sha256": "sha256:aee5650bdea0fec66e5c19d705cad9d93a1376a001fa499e4075000f3e3105a8"
     },
     "retrieval_evidence": {
       "path": "experiments/dao-vote-costs-v1/retrieval-evidence.json",
@@ -42,7 +46,7 @@
     }
   },
   "generation": {
-    "generated_at": "2026-05-13T12:06:33.974Z",
+    "generated_at": "2026-05-13T12:15:03.414Z",
     "generator": "scripts/generate-simulation-input.js",
     "source_artifacts": {
       "retrieval_request": {
@@ -51,7 +55,11 @@
       },
       "rendered_retrieval_prompts": {
         "path": "experiments/dao-vote-costs-v1/rendered-retrieval-prompts.json",
-        "sha256": "sha256:placeholder"
+        "sha256": "sha256:7025676f275428b16159a287cf58bc030c3535f6e61fe586edeb6ee7d0522be9"
+      },
+      "raw_mcp_retrieval": {
+        "path": "experiments/dao-vote-costs-v1/raw-mcp-retrieval.json",
+        "sha256": "sha256:aee5650bdea0fec66e5c19d705cad9d93a1376a001fa499e4075000f3e3105a8"
       },
       "med_proposal": {
         "path": "experiments/dao-vote-costs-v1/med-proposal.json",
@@ -80,6 +88,7 @@
     "experiment_descriptor": "experiment.json",
     "retrieval_request": "retrieval-request.json",
     "rendered_retrieval_prompts": "rendered-retrieval-prompts.json",
+    "raw_mcp_retrieval": "raw-mcp-retrieval.json",
     "retrieval_evidence": "retrieval-evidence.json",
     "med_proposal": "med-proposal.json",
     "probability_model_proposal": "probability-model-proposal.json",

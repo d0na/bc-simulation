@@ -71,7 +71,9 @@ function main() {
   const retrievalRequest = buildRetrievalRequest(bundle);
   const outputPath = bundle.artifactPaths.retrieval_request;
   fs.writeFileSync(outputPath, `${JSON.stringify(retrievalRequest, null, 2)}\n`);
-  updateRunManifest(experimentDir, "generation");
+  updateRunManifest(experimentDir, "generation", {
+    generator: "scripts/prepare-retrieval-request.js",
+  });
   console.log(`Prepared retrieval request at ${outputPath}`);
 }
 

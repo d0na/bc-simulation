@@ -8,6 +8,7 @@ The current tooling covers the local orchestration layer around an experiment:
 
 - retrieval request preparation
 - retrieval prompt rendering
+- retrieval evidence normalization
 - experiment validation
 - simulation input generation
 - run manifest enrichment
@@ -29,6 +30,8 @@ An experiment directory should contain at least these files:
 
 - `experiment.json`
 - `retrieval-request.json`
+- `rendered-retrieval-prompts.json`
+- `raw-mcp-retrieval.json`
 - `retrieval-evidence.json`
 - `med-proposal.json`
 - `probability-model-proposal.json`
@@ -71,6 +74,22 @@ Purpose:
 - writes them to `rendered-retrieval-prompts.json`
 
 This artifact is the last local step before using the MCP tools for live retrieval.
+
+### `normalize:retrieval-evidence`
+
+Command:
+
+```bash
+npm run normalize:retrieval-evidence -- experiments/dao-vote-costs-v1
+```
+
+Purpose:
+
+- reads `raw-mcp-retrieval.json`
+- maps raw Etherscan and Dune capture fields into the canonical `retrieval-evidence.json` format
+- updates `run-manifest.json` with refreshed hashes
+
+This is the current bridge between live MCP results and the repository's normalized evidence model.
 
 ### `validate:experiment`
 
@@ -177,16 +196,19 @@ Notes:
 1. Prepare or update the experiment artifacts.
 2. Prepare or refresh the retrieval request.
 3. Render retrieval prompts.
-4. Validate the experiment.
-5. Generate the simulation input from approved artifacts.
-6. Validate again if the simulation payload changed.
-7. Launch the experiment against the backend.
+4. Capture MCP retrieval output into `raw-mcp-retrieval.json`.
+5. Normalize the retrieval evidence.
+6. Validate the experiment.
+7. Generate the simulation input from approved artifacts.
+8. Validate again if the simulation payload changed.
+9. Launch the experiment against the backend.
 
 Example:
 
 ```bash
 npm run prepare:retrieval-request -- experiments/dao-vote-costs-v1
 npm run render:retrieval-prompts -- experiments/dao-vote-costs-v1
+npm run normalize:retrieval-evidence -- experiments/dao-vote-costs-v1
 npm run validate:experiment -- experiments/dao-vote-costs-v1
 npm run generate:simulation-input -- experiments/dao-vote-costs-v1
 npm run validate:experiment -- experiments/dao-vote-costs-v1
