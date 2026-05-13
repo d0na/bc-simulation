@@ -111,7 +111,7 @@ Inside an experiment directory, each file has a different role.
   This is script-prepared first, then reviewed and optionally edited by the user. It describes what should be retrieved from Etherscan and Dune.
 
 - `11-med-aggregation-rules.json`
-  Deterministic rules that define how low-level evidence becomes MEDs.
+  AI-proposed rules, then reviewed and optionally edited by the user, that define how low-level evidence becomes MEDs.
 
 - `12-probability-model-rules.json`
   Deterministic rules for probability model generation.

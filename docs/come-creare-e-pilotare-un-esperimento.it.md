@@ -111,7 +111,7 @@ Ogni file dentro la cartella esperimento ha un ruolo diverso.
   Viene prima preparato da script, poi rivisto ed eventualmente modificato dall'utente. Descrive cosa deve essere recuperato da Etherscan e Dune.
 
 - `11-med-aggregation-rules.json`
-  Regole deterministiche che definiscono come l'evidenza low-level diventa MED.
+  Regole proposte dall'AI, poi riviste ed eventualmente modificate dall'utente, che definiscono come l'evidenza low-level diventa MED.
 
 - `12-probability-model-rules.json`
   Regole deterministiche per generare i modelli probabilistici.

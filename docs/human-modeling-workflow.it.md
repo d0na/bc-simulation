@@ -38,15 +38,15 @@ Questi sono i file normalmente scritti direttamente dall'utente e vanno trattati
 - `experiment.json`
 - `00-overview/00-objective.md`
 - `00-overview/01-status-and-notes.md`
+
+### File proposti dall'AI o preparati da script e poi rivisti dall'umano
+
+Questi vengono inizializzati dall'AI o dagli script, ma richiedono comunque review umana e possono essere modificati manualmente dopo:
+
+- `10-human-input/10-retrieval-request.json`
 - `10-human-input/11-med-aggregation-rules.json`
 - `10-human-input/12-probability-model-rules.json`
 - `10-human-input/13-simulation-blueprint.json`
-
-### File preparati da script e poi rivisti dall'umano
-
-Questi vengono inizializzati o aggiornati dagli script, ma richiedono comunque review umana e possono essere modificati manualmente dopo:
-
-- `10-human-input/10-retrieval-request.json`
 - `60-human-review/60-review-decision.json`
 
 ### File generati o derivati
@@ -121,7 +121,7 @@ File da definire:
 Note:
 
 - `10-retrieval-request.json` viene prima preparato da script, poi rivisto ed eventualmente modificato dall'umano
-- `11`, `12` e `13` sono file di modellazione diretta
+- `11`, `12` e `13` vengono prima proposti dall'AI, poi rivisti ed eventualmente modificati dall'umano
 
 ## Step 3: Preparare La Retrieval Request
 
@@ -466,10 +466,13 @@ Il tooling possiede:
 I file a responsabilita' mista sono:
 
 - `10-human-input/10-retrieval-request.json`
+- `10-human-input/11-med-aggregation-rules.json`
+- `10-human-input/12-probability-model-rules.json`
+- `10-human-input/13-simulation-blueprint.json`
 - `60-human-review/60-review-decision.json`
 
 Non sono puramente generati e non sono nemmeno puramente scritti da zero.
-Vengono preparati dagli script e poi finalizzati dall'umano.
+Vengono proposti dall'AI o preparati dagli script e poi finalizzati dall'umano.
 
 ## Regola Mentale Consigliata
 
