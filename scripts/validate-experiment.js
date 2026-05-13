@@ -6,6 +6,7 @@ const {
   resolveExperimentDir,
   validateExperimentBundle,
 } = require("./lib/experiment-framework");
+const { updateRunManifest } = require("./update-run-manifest");
 
 function main() {
   const inputPath = process.argv[2];
@@ -27,6 +28,7 @@ function main() {
     process.exit(1);
   }
 
+  updateRunManifest(experimentDir, "validation");
   console.log(`Validation passed for ${experimentDir}`);
 }
 

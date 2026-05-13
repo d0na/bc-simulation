@@ -3,8 +3,11 @@
 const fs = require("fs");
 const path = require("path");
 const {
+  fileSha256,
+  getGitHead,
   loadExperimentBundle,
   readJson,
+  relativeToRepo,
   resolveExperimentDir,
   validateExperimentBundle,
 } = require("./lib/experiment-framework");
@@ -64,9 +67,18 @@ async function main() {
 
   const runManifestPath = bundle.artifactPaths.run_manifest;
   const runManifest = readJson(runManifestPath);
+  const repoRoot = path.resolve(__dirname, "..");
   const nextManifest = {
     ...runManifest,
     status: response.ok ? "launched" : "launch_failed",
+    code_version: getGitHead(repoRoot) ? `git:${getGitHead(repoRoot)}` : runManifest.code_version,
+    artifact_hashes: {
+      ...(runManifest.artifact_hashes || {}),
+      simulation_input: {
+        path: relativeToRepo(repoRoot, simulationInputPath),
+        sha256: fileSha256(simulationInputPath),
+      },
+    },
     launch: {
       endpoint,
       launched_at: new Date().toISOString(),

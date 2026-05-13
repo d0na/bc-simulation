@@ -4,10 +4,10 @@ const fs = require("fs");
 const path = require("path");
 const {
   loadExperimentBundle,
-  readJson,
   resolveExperimentDir,
   validateExperimentBundle,
 } = require("./lib/experiment-framework");
+const { updateRunManifest } = require("./update-run-manifest");
 
 const SUPPORTED_DISTRIBUTION_TYPES = new Set([
   "UNIFORM",
@@ -183,6 +183,7 @@ function main() {
   const simulationInput = buildSimulationInput(bundle);
   const outputPath = bundle.artifactPaths.simulation_input;
   fs.writeFileSync(outputPath, `${JSON.stringify(simulationInput, null, 2)}\n`);
+  updateRunManifest(experimentDir, "generation");
   console.log(`Generated simulation input at ${outputPath}`);
 }
 

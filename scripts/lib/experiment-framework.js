@@ -1,5 +1,7 @@
 const fs = require("fs");
 const path = require("path");
+const crypto = require("crypto");
+const childProcess = require("child_process");
 
 function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
@@ -11,6 +13,27 @@ function ensureArray(value) {
 
 function exists(filePath) {
   return fs.existsSync(filePath);
+}
+
+function fileSha256(filePath) {
+  const buffer = fs.readFileSync(filePath);
+  return `sha256:${crypto.createHash("sha256").update(buffer).digest("hex")}`;
+}
+
+function relativeToRepo(repoRoot, absolutePath) {
+  return path.relative(repoRoot, absolutePath) || ".";
+}
+
+function getGitHead(repoRoot) {
+  try {
+    const result = childProcess.execSync("git rev-parse HEAD", {
+      cwd: repoRoot,
+      stdio: ["ignore", "pipe", "ignore"],
+    });
+    return result.toString("utf8").trim();
+  } catch (_) {
+    return null;
+  }
 }
 
 function resolveExperimentDir(inputPath) {
@@ -228,6 +251,9 @@ function validateExperimentBundle(bundle, repoRoot) {
     if (!runManifest.inputs?.simulation_input) {
       issues.push("run-manifest.json must reference the simulation input");
     }
+    if (!runManifest.inputs?.simulation_blueprint) {
+      issues.push("run-manifest.json must reference the simulation blueprint");
+    }
   }
 
   if (validationReport) {
@@ -240,8 +266,11 @@ function validateExperimentBundle(bundle, repoRoot) {
 }
 
 module.exports = {
+  fileSha256,
+  getGitHead,
   loadExperimentBundle,
   readJson,
+  relativeToRepo,
   resolveExperimentDir,
   validateExperimentBundle,
 };

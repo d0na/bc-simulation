@@ -87,6 +87,12 @@ Generate `simulation-input.json` from the approved proposals plus the simulation
 npm run generate:simulation-input -- experiments/dao-vote-costs-v1
 ```
 
+Refresh the run manifest hashes and metadata explicitly:
+
+```bash
+npm run update:run-manifest -- experiments/dao-vote-costs-v1 generation
+```
+
 Launch an approved experiment against the existing backend:
 
 ```bash
@@ -100,6 +106,7 @@ npm run launch:experiment -- experiments/dao-vote-costs-v1 http://localhost:8099
 ```
 
 The validator is intentionally lightweight and dependency-free. It checks artifact presence and cross-file consistency, but it is not yet a full JSON Schema engine.
+It also updates the run manifest with a validation timestamp when validation succeeds.
 
 ## Example
 
