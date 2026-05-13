@@ -1,14 +1,90 @@
 #!/usr/bin/env node
 
 const fs = require("fs");
-const path = require("path");
 const {
   fileSha256,
   loadExperimentBundle,
   resolveExperimentDir,
-  validateExperimentBundle,
 } = require("./lib/experiment-framework");
 const { updateRunManifest } = require("./update-run-manifest");
+
+function ensureArray(value) {
+  return Array.isArray(value) ? value : [];
+}
+
+function parseArgs(argv) {
+  const args = argv.slice(2);
+  const inputPath = args.find((arg) => !arg.startsWith("--"));
+  const updateManifest = args.includes("--update-manifest");
+
+  return {
+    inputPath,
+    updateManifest,
+  };
+}
+
+function validatePrerequisites(bundle) {
+  const issues = [];
+  const descriptor = bundle.descriptor;
+  const retrievalEvidence = bundle.artifacts.retrieval_evidence;
+  const medProposal = bundle.artifacts.med_proposal;
+  const probabilityProposal = bundle.artifacts.probability_model_proposal;
+
+  for (const key of ["retrieval_evidence", "med_proposal", "probability_model_proposal", "review_decision"]) {
+    if (!bundle.artifactPaths[key]) {
+      issues.push(`Descriptor does not define artifact path for '${key}'`);
+    }
+  }
+
+  if (!retrievalEvidence) {
+    issues.push("Missing artifact file 'retrieval_evidence'");
+  } else if (retrievalEvidence.experiment_id !== descriptor.experiment_id) {
+    issues.push("retrieval-evidence.json experiment_id does not match experiment.json");
+  }
+
+  const medIds = new Set();
+  if (!medProposal) {
+    issues.push("Missing artifact file 'med_proposal'");
+  } else {
+    if (medProposal.experiment_id !== descriptor.experiment_id) {
+      issues.push("med-proposal.json experiment_id does not match experiment.json");
+    }
+    if (medProposal.status !== "proposed") {
+      issues.push("med-proposal.json status must be 'proposed'");
+    }
+    for (const med of ensureArray(medProposal.meds)) {
+      if (!med.med_id) {
+        issues.push("Every MED must define med_id");
+      } else {
+        medIds.add(med.med_id);
+      }
+      if (!ensureArray(med.evidence_refs).length) {
+        issues.push(`MED '${med.med_id || "<missing>"}' must contain at least one evidence reference`);
+      }
+    }
+  }
+
+  if (!probabilityProposal) {
+    issues.push("Missing artifact file 'probability_model_proposal'");
+  } else {
+    if (probabilityProposal.experiment_id !== descriptor.experiment_id) {
+      issues.push("probability-model-proposal.json experiment_id does not match experiment.json");
+    }
+    if (probabilityProposal.status !== "proposed") {
+      issues.push("probability-model-proposal.json status must be 'proposed'");
+    }
+    for (const model of ensureArray(probabilityProposal.models)) {
+      if (!medIds.has(model.target_med)) {
+        issues.push(`Probability model '${model.model_id}' targets unknown MED '${model.target_med}'`);
+      }
+      if (!ensureArray(model.evidence_refs).length) {
+        issues.push(`Probability model '${model.model_id}' must contain at least one evidence reference`);
+      }
+    }
+  }
+
+  return issues;
+}
 
 function buildApprovedArtifactHashes(bundle) {
   return {
@@ -45,18 +121,15 @@ function buildReviewDecision(bundle) {
 }
 
 function main() {
-  const inputPath = process.argv[2];
+  const { inputPath, updateManifest } = parseArgs(process.argv);
   if (!inputPath) {
-    console.error("Usage: node scripts/prepare-review-decision.js <experiment-directory>");
+    console.error("Usage: node scripts/prepare-review-decision.js <experiment-directory> [--update-manifest]");
     process.exit(1);
   }
 
-  const repoRoot = path.resolve(__dirname, "..");
   const experimentDir = resolveExperimentDir(inputPath);
   const bundle = loadExperimentBundle(experimentDir);
-  const issues = validateExperimentBundle(bundle, repoRoot).filter(
-    (issue) => !issue.includes("review-decision.json")
-  );
+  const issues = validatePrerequisites(bundle);
 
   if (issues.length > 0) {
     console.error("Refusing to prepare review decision because prerequisite validation failed:");
@@ -69,9 +142,11 @@ function main() {
   const reviewDecision = buildReviewDecision(bundle);
   const outputPath = bundle.artifactPaths.review_decision;
   fs.writeFileSync(outputPath, `${JSON.stringify(reviewDecision, null, 2)}\n`);
-  updateRunManifest(experimentDir, "generation", {
-    generator: "scripts/prepare-review-decision.js",
-  });
+  if (updateManifest) {
+    updateRunManifest(experimentDir, "generation", {
+      generator: "scripts/prepare-review-decision.js",
+    });
+  }
   console.log(`Prepared review decision at ${outputPath}`);
 }
 

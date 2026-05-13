@@ -84,6 +84,13 @@ Purpose:
 
 This file is intended to become the stable handoff between the repository workflow and the live MCP retrieval stage.
 It is script-prepared first, but it should still be treated as a human-reviewed input file.
+This command validates only the descriptor, templates, and normalized retrieval evidence it needs. It does not update the run manifest by default, so stale downstream execution artifacts cannot block or be rewritten by this preparation step.
+
+To also refresh the run manifest intentionally:
+
+```bash
+npm run prepare:retrieval-request -- experiments/dao-vote-costs-v1 --update-manifest
+```
 
 ### `render:retrieval-prompts`
 
@@ -182,6 +189,13 @@ Purpose:
 
 Use this after regenerating MED or probability proposals and before a human reviewer signs off again.
 This file is script-prepared first and then completed by the human reviewer.
+This command validates only the evidence and proposal artifacts that are part of the review decision. It does not update the run manifest by default.
+
+To also refresh the run manifest intentionally:
+
+```bash
+npm run prepare:review-decision -- experiments/dao-vote-costs-v1 --update-manifest
+```
 
 ### `check:review-consistency`
 
@@ -270,7 +284,7 @@ Purpose:
 - computes SHA-256 hashes for tracked experiment artifacts
 - stores generation metadata or validation metadata in `70-execution/71-run-manifest.json`
 
-This command is also invoked automatically by the generator and validator.
+This command is also invoked automatically by the generator and validator. Preparation commands such as `prepare:retrieval-request` and `prepare:review-decision` only invoke it when passed `--update-manifest`.
 
 ### `launch:experiment`
 
