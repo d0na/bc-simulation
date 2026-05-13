@@ -25,6 +25,8 @@
     "normalize:retrieval-evidence": "node scripts/normalize-retrieval-evidence.js",
     "generate:med-proposal": "node scripts/generate-med-proposal.js",
     "generate:probability-model-proposal": "node scripts/generate-probability-model-proposal.js",
+    "prepare:review-decision": "node scripts/prepare-review-decision.js",
+    "check:review-consistency": "node scripts/check-review-consistency.js",
     "validate:experiment": "node scripts/validate-experiment.js",
     "generate:simulation-input": "node scripts/generate-simulation-input.js",
     "update:run-manifest": "node scripts/update-run-manifest.js",

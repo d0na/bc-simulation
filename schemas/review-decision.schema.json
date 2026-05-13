@@ -20,6 +20,7 @@
     "status": {
       "type": "string",
       "enum": [
+        "pending_review",
         "rejected",
         "approved",
         "approved_with_edits"
@@ -33,6 +34,21 @@
         "med_proposal",
         "probability_model_proposal"
       ],
+      "properties": {
+        "retrieval_evidence": {
+          "type": "string"
+        },
+        "med_proposal": {
+          "type": "string"
+        },
+        "probability_model_proposal": {
+          "type": "string"
+        }
+      }
+    },
+    "approved_artifact_hashes": {
+      "type": "object",
+      "additionalProperties": false,
       "properties": {
         "retrieval_evidence": {
           "type": "string"

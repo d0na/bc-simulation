@@ -11,6 +11,7 @@ The current tooling covers the local orchestration layer around an experiment:
 - retrieval evidence normalization
 - MED proposal generation
 - probability model proposal generation
+- review preparation and consistency checks
 - experiment validation
 - simulation input generation
 - run manifest enrichment
@@ -128,6 +129,37 @@ Purpose:
 - writes a deterministic `probability-model-proposal.json`
 - updates `run-manifest.json` with refreshed hashes
 
+### `prepare:review-decision`
+
+Command:
+
+```bash
+npm run prepare:review-decision -- experiments/dao-vote-costs-v1
+```
+
+Purpose:
+
+- refreshes `review-decision.json`
+- records the hashes of the proposal artifacts currently under review
+- preserves existing review notes and edits when possible
+
+Use this after regenerating MED or probability proposals and before a human reviewer signs off again.
+
+### `check:review-consistency`
+
+Command:
+
+```bash
+npm run check:review-consistency -- experiments/dao-vote-costs-v1
+```
+
+Purpose:
+
+- compares the hashes recorded in `review-decision.json` against the current proposal artifacts
+- fails when the review no longer matches the generated artifacts
+
+This prevents a stale approval from being reused after the upstream proposals change.
+
 ### `validate:experiment`
 
 Command:
@@ -237,10 +269,12 @@ Notes:
 5. Normalize the retrieval evidence.
 6. Generate the MED proposal.
 7. Generate the probability model proposal.
-8. Validate the experiment.
-9. Generate the simulation input from approved artifacts.
-10. Validate again if the simulation payload changed.
-11. Launch the experiment against the backend.
+8. Prepare or refresh the review decision.
+9. Run the review consistency check.
+10. Validate the experiment.
+11. Generate the simulation input from approved artifacts.
+12. Validate again if the simulation payload changed.
+13. Launch the experiment against the backend.
 
 Example:
 
@@ -250,6 +284,8 @@ npm run render:retrieval-prompts -- experiments/dao-vote-costs-v1
 npm run normalize:retrieval-evidence -- experiments/dao-vote-costs-v1
 npm run generate:med-proposal -- experiments/dao-vote-costs-v1
 npm run generate:probability-model-proposal -- experiments/dao-vote-costs-v1
+npm run prepare:review-decision -- experiments/dao-vote-costs-v1
+npm run check:review-consistency -- experiments/dao-vote-costs-v1
 npm run validate:experiment -- experiments/dao-vote-costs-v1
 npm run generate:simulation-input -- experiments/dao-vote-costs-v1
 npm run validate:experiment -- experiments/dao-vote-costs-v1

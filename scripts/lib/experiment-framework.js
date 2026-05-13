@@ -250,13 +250,31 @@ function validateExperimentBundle(bundle, repoRoot) {
     if (reviewDecision.experiment_id !== experimentId) {
       issues.push("review-decision.json experiment_id does not match experiment.json");
     }
-    if (!["approved", "approved_with_edits"].includes(reviewDecision.status)) {
-      issues.push("review-decision.json status must be 'approved' or 'approved_with_edits'");
+    if (!["pending_review", "rejected", "approved", "approved_with_edits"].includes(reviewDecision.status)) {
+      issues.push("review-decision.json status must be pending_review, rejected, approved, or approved_with_edits");
     }
     for (const [key, relativePath] of Object.entries(reviewDecision.approved_artifacts || {})) {
       const targetPath = path.resolve(experimentDir, relativePath);
       if (!exists(targetPath)) {
         issues.push(`review-decision.json references missing approved artifact '${key}': ${relativePath}`);
+      }
+    }
+    if (["approved", "approved_with_edits"].includes(reviewDecision.status)) {
+      const hashChecks = [
+        ["retrieval_evidence", artifactPaths.retrieval_evidence],
+        ["med_proposal", artifactPaths.med_proposal],
+        ["probability_model_proposal", artifactPaths.probability_model_proposal],
+      ];
+      for (const [key, absolutePath] of hashChecks) {
+        const expectedHash = reviewDecision.approved_artifact_hashes?.[key];
+        if (!expectedHash) {
+          issues.push(`review-decision.json is missing approved_artifact_hashes.${key}`);
+          continue;
+        }
+        const actualHash = fileSha256(absolutePath);
+        if (expectedHash !== actualHash) {
+          issues.push(`review-decision.json hash drift for ${key}: expected ${expectedHash} but found ${actualHash}`);
+        }
       }
     }
   }
