@@ -2,7 +2,7 @@
   "experiment_id": "dao-vote-costs-v1",
   "run_id": "dao-vote-costs-v1-local-example-001",
   "status": "planned",
-  "code_version": "git:b23799525849f3050d004ee5e9bac2dfa551a33c",
+  "code_version": "git:93f87148e67ddb4a1e06993f5eeff4b459490513",
   "artifact_hashes": {
     "retrieval_request": {
       "path": "experiments/dao-vote-costs-v1/retrieval-request.json",
@@ -20,9 +20,17 @@
       "path": "experiments/dao-vote-costs-v1/retrieval-evidence.json",
       "sha256": "sha256:7b735c785062482d041998fa1ebe97a85f23b2d48f8cf31de9a25ea8e2cf6182"
     },
+    "med_aggregation_rules": {
+      "path": "experiments/dao-vote-costs-v1/med-aggregation-rules.json",
+      "sha256": "sha256:05d5146544dbcfcf3084c35129de2cfa0d63fd637237cd7fe8e8f64f55abcb1c"
+    },
     "med_proposal": {
       "path": "experiments/dao-vote-costs-v1/med-proposal.json",
-      "sha256": "sha256:0cca9f90a08e9c6cb7e90d049d584405828bd7680de842b2cac8f57121b86c9b"
+      "sha256": "sha256:7ee3be3e15864fa9b2647b85eafa9f3b0ac4cdb9534c9a5aec0d35954c6d6438"
+    },
+    "probability_model_rules": {
+      "path": "experiments/dao-vote-costs-v1/probability-model-rules.json",
+      "sha256": "sha256:a8a7282fc424906c47640a4e8530b643327f94e79ea43d70379707ed971ac6cb"
     },
     "probability_model_proposal": {
       "path": "experiments/dao-vote-costs-v1/probability-model-proposal.json",
@@ -46,8 +54,8 @@
     }
   },
   "generation": {
-    "generated_at": "2026-05-13T12:15:03.414Z",
-    "generator": "scripts/generate-simulation-input.js",
+    "generated_at": "2026-05-13T12:17:21.727Z",
+    "generator": "scripts/generate-med-proposal.js",
     "source_artifacts": {
       "retrieval_request": {
         "path": "experiments/dao-vote-costs-v1/retrieval-request.json",
@@ -61,9 +69,13 @@
         "path": "experiments/dao-vote-costs-v1/raw-mcp-retrieval.json",
         "sha256": "sha256:aee5650bdea0fec66e5c19d705cad9d93a1376a001fa499e4075000f3e3105a8"
       },
+      "med_aggregation_rules": {
+        "path": "experiments/dao-vote-costs-v1/med-aggregation-rules.json",
+        "sha256": "sha256:05d5146544dbcfcf3084c35129de2cfa0d63fd637237cd7fe8e8f64f55abcb1c"
+      },
       "med_proposal": {
         "path": "experiments/dao-vote-costs-v1/med-proposal.json",
-        "sha256": "sha256:0cca9f90a08e9c6cb7e90d049d584405828bd7680de842b2cac8f57121b86c9b"
+        "sha256": "sha256:7ee3be3e15864fa9b2647b85eafa9f3b0ac4cdb9534c9a5aec0d35954c6d6438"
       },
       "probability_model_proposal": {
         "path": "experiments/dao-vote-costs-v1/probability-model-proposal.json",
@@ -90,7 +102,9 @@
     "rendered_retrieval_prompts": "rendered-retrieval-prompts.json",
     "raw_mcp_retrieval": "raw-mcp-retrieval.json",
     "retrieval_evidence": "retrieval-evidence.json",
+    "med_aggregation_rules": "med-aggregation-rules.json",
     "med_proposal": "med-proposal.json",
+    "probability_model_rules": "probability-model-rules.json",
     "probability_model_proposal": "probability-model-proposal.json",
     "review_decision": "review-decision.json",
     "simulation_blueprint": "simulation-blueprint.json",
@@ -101,7 +115,7 @@
   },
   "notes": "This file is a placeholder manifest that a future launcher should populate automatically.",
   "validation": {
-    "validated_at": "2026-05-13T12:09:11.708Z",
+    "validated_at": "2026-05-13T12:18:32.764Z",
     "validator": "scripts/validate-experiment.js",
     "result": "pass"
   }

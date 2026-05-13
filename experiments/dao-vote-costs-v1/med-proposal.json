@@ -16,11 +16,14 @@
       "cost_model": {
         "representative_gas": 210000
       },
-      "rationale": "Aggregate the creation of a governance proposal as one simulation-relevant macro event.",
+      "rationale": "Aggregate governance proposal creation into one simulation-relevant macro event.",
       "evidence_refs": [
         "etherscan.functions.propose",
         "etherscan.events.ProposalCreated",
         "dune.metrics.daily_proposals"
+      ],
+      "observed_metrics": [
+        "daily_proposals"
       ]
     },
     {
@@ -37,11 +40,14 @@
       "cost_model": {
         "representative_gas": 95000
       },
-      "rationale": "Aggregate user voting activity as the recurring participation event in the governance workflow.",
+      "rationale": "Aggregate recurring user voting activity into one governance participation MED.",
       "evidence_refs": [
         "etherscan.functions.castVote",
         "etherscan.events.VoteCast",
         "dune.metrics.daily_votes"
+      ],
+      "observed_metrics": [
+        "daily_votes"
       ]
     }
   ]

@@ -54,7 +54,9 @@
         "rendered_retrieval_prompts",
         "raw_mcp_retrieval",
         "retrieval_evidence",
+        "med_aggregation_rules",
         "med_proposal",
+        "probability_model_rules",
         "probability_model_proposal",
         "review_decision",
         "simulation_blueprint",
@@ -75,7 +77,13 @@
         "retrieval_evidence": {
           "type": "string"
         },
+        "med_aggregation_rules": {
+          "type": "string"
+        },
         "med_proposal": {
+          "type": "string"
+        },
+        "probability_model_rules": {
           "type": "string"
         },
         "probability_model_proposal": {

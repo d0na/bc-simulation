@@ -9,6 +9,8 @@ The current tooling covers the local orchestration layer around an experiment:
 - retrieval request preparation
 - retrieval prompt rendering
 - retrieval evidence normalization
+- MED proposal generation
+- probability model proposal generation
 - experiment validation
 - simulation input generation
 - run manifest enrichment
@@ -33,7 +35,9 @@ An experiment directory should contain at least these files:
 - `rendered-retrieval-prompts.json`
 - `raw-mcp-retrieval.json`
 - `retrieval-evidence.json`
+- `med-aggregation-rules.json`
 - `med-proposal.json`
+- `probability-model-rules.json`
 - `probability-model-proposal.json`
 - `review-decision.json`
 - `simulation-blueprint.json`
@@ -90,6 +94,39 @@ Purpose:
 - updates `run-manifest.json` with refreshed hashes
 
 This is the current bridge between live MCP results and the repository's normalized evidence model.
+
+### `generate:med-proposal`
+
+Command:
+
+```bash
+npm run generate:med-proposal -- experiments/dao-vote-costs-v1
+```
+
+Purpose:
+
+- reads `retrieval-evidence.json`
+- applies `med-aggregation-rules.json`
+- writes a deterministic `med-proposal.json`
+- updates `run-manifest.json` with refreshed hashes
+
+This is the first repository-local automation step for the agent abstraction layer.
+
+### `generate:probability-model-proposal`
+
+Command:
+
+```bash
+npm run generate:probability-model-proposal -- experiments/dao-vote-costs-v1
+```
+
+Purpose:
+
+- reads `retrieval-evidence.json`
+- reads `med-proposal.json`
+- applies `probability-model-rules.json`
+- writes a deterministic `probability-model-proposal.json`
+- updates `run-manifest.json` with refreshed hashes
 
 ### `validate:experiment`
 
@@ -198,10 +235,12 @@ Notes:
 3. Render retrieval prompts.
 4. Capture MCP retrieval output into `raw-mcp-retrieval.json`.
 5. Normalize the retrieval evidence.
-6. Validate the experiment.
-7. Generate the simulation input from approved artifacts.
-8. Validate again if the simulation payload changed.
-9. Launch the experiment against the backend.
+6. Generate the MED proposal.
+7. Generate the probability model proposal.
+8. Validate the experiment.
+9. Generate the simulation input from approved artifacts.
+10. Validate again if the simulation payload changed.
+11. Launch the experiment against the backend.
 
 Example:
 
@@ -209,6 +248,8 @@ Example:
 npm run prepare:retrieval-request -- experiments/dao-vote-costs-v1
 npm run render:retrieval-prompts -- experiments/dao-vote-costs-v1
 npm run normalize:retrieval-evidence -- experiments/dao-vote-costs-v1
+npm run generate:med-proposal -- experiments/dao-vote-costs-v1
+npm run generate:probability-model-proposal -- experiments/dao-vote-costs-v1
 npm run validate:experiment -- experiments/dao-vote-costs-v1
 npm run generate:simulation-input -- experiments/dao-vote-costs-v1
 npm run validate:experiment -- experiments/dao-vote-costs-v1

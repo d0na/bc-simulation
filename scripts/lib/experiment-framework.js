@@ -110,7 +110,9 @@ function validateExperimentBundle(bundle, repoRoot) {
     "rendered_retrieval_prompts",
     "raw_mcp_retrieval",
     "retrieval_evidence",
+    "med_aggregation_rules",
     "med_proposal",
+    "probability_model_rules",
     "probability_model_proposal",
     "review_decision",
     "simulation_blueprint",
@@ -134,7 +136,9 @@ function validateExperimentBundle(bundle, repoRoot) {
   const renderedRetrievalPrompts = artifacts.rendered_retrieval_prompts;
   const rawMcpRetrieval = artifacts.raw_mcp_retrieval;
   const retrieval = artifacts.retrieval_evidence;
+  const medAggregationRules = artifacts.med_aggregation_rules;
   const medProposal = artifacts.med_proposal;
+  const probabilityModelRules = artifacts.probability_model_rules;
   const probabilityProposal = artifacts.probability_model_proposal;
   const reviewDecision = artifacts.review_decision;
   const simulationBlueprint = artifacts.simulation_blueprint;
@@ -184,6 +188,24 @@ function validateExperimentBundle(bundle, repoRoot) {
     }
     if (!ensureArray(retrieval.dune?.metrics).length) {
       issues.push("retrieval-evidence.json must include at least one Dune metric");
+    }
+  }
+
+  if (medAggregationRules) {
+    if (medAggregationRules.experiment_id !== experimentId) {
+      issues.push("med-aggregation-rules.json experiment_id does not match experiment.json");
+    }
+    if (!ensureArray(medAggregationRules.rules).length) {
+      issues.push("med-aggregation-rules.json must define at least one rule");
+    }
+  }
+
+  if (probabilityModelRules) {
+    if (probabilityModelRules.experiment_id !== experimentId) {
+      issues.push("probability-model-rules.json experiment_id does not match experiment.json");
+    }
+    if (!ensureArray(probabilityModelRules.rules).length) {
+      issues.push("probability-model-rules.json must define at least one rule");
     }
   }
 
