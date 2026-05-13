@@ -68,6 +68,31 @@ Responsibility note:
 
 ## Tooling Overview
 
+### `generate:input-layer`
+
+Command:
+
+```bash
+npm run generate:input-layer -- experiments/dao-vote-costs-v1
+```
+
+Purpose:
+
+- calls the Claude API to generate AI drafts of:
+  - `10-human-input/11-med-aggregation-rules.json`
+  - `10-human-input/12-probability-model-rules.json`
+  - `10-human-input/13-simulation-blueprint.json`
+- uses `experiment.json` and `00-overview/00-objective.md` as primary inputs
+- uses `40-normalized-evidence/40-retrieval-evidence.json` as additional context if it is already available
+
+Requires:
+
+- `ANTHROPIC_API_KEY` environment variable
+
+The produced files are AI drafts.
+They must be reviewed and finalized by a human before being used by the pipeline.
+Running this command again overwrites the existing files.
+
 ### `prepare:retrieval-request`
 
 Command:
@@ -315,23 +340,26 @@ Notes:
 ## Recommended Local Workflow
 
 1. Prepare or update the experiment artifacts.
-2. Prepare or refresh the retrieval request.
-3. Render retrieval prompts.
-4. Capture MCP outputs into the server-specific capture files.
-5. Assemble `30-mcp-raw/39-raw-mcp-retrieval.json`.
-6. Normalize the retrieval evidence.
-7. Generate the MED proposal.
-8. Generate the probability model proposal.
-9. Prepare or refresh the review decision.
-10. Run the review consistency check.
-11. Validate the experiment.
-12. Generate the simulation input from approved artifacts.
-13. Validate again if the simulation payload changed.
-14. Launch the experiment against the backend.
+2. Generate AI drafts for the input layer (11, 12, 13).
+3. Review and finalize the input layer files.
+4. Prepare or refresh the retrieval request.
+5. Render retrieval prompts.
+6. Capture MCP outputs into the server-specific capture files.
+7. Assemble `30-mcp-raw/39-raw-mcp-retrieval.json`.
+8. Normalize the retrieval evidence.
+9. Generate the MED proposal.
+10. Generate the probability model proposal.
+11. Prepare or refresh the review decision.
+12. Run the review consistency check.
+13. Validate the experiment.
+14. Generate the simulation input from approved artifacts.
+15. Validate again if the simulation payload changed.
+16. Launch the experiment against the backend.
 
 Example:
 
 ```bash
+npm run generate:input-layer -- experiments/dao-vote-costs-v1
 npm run prepare:retrieval-request -- experiments/dao-vote-costs-v1
 npm run render:retrieval-prompts -- experiments/dao-vote-costs-v1
 npm run assemble:raw-mcp-retrieval -- experiments/dao-vote-costs-v1
@@ -360,8 +388,6 @@ Without that review gate, the generated simulation input should not be treated a
 ## Current Limitations
 
 - MCP retrieval is still manual from the perspective of the repository tooling.
-- MED proposal generation is not yet automated inside the repo.
-- Probability proposal generation is not yet automated inside the repo.
 - JSON Schema files exist, but the validator is still custom and lightweight.
 - The backend still uses timestamp-based output naming.
 

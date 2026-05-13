@@ -20,6 +20,7 @@
     "test:api": "cd apps/api && ./mvnw test",
     "test:mcp": "cd mcp-server && ./mvnw test",
     "install:web": "cd apps/web && npm install",
+    "generate:input-layer": "node scripts/generate-input-layer.js",
     "prepare:retrieval-request": "node scripts/prepare-retrieval-request.js",
     "render:retrieval-prompts": "node scripts/render-retrieval-prompts.js",
     "assemble:raw-mcp-retrieval": "node scripts/assemble-raw-mcp-retrieval.js",
@@ -32,6 +33,9 @@
     "generate:simulation-input": "node scripts/generate-simulation-input.js",
     "update:run-manifest": "node scripts/update-run-manifest.js",
     "launch:experiment": "node scripts/launch-experiment.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.36.3"
   },
   "devDependencies": {
     "npm-run-all": "^4.1.5"

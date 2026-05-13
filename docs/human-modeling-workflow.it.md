@@ -102,28 +102,49 @@ Domande da chiarire:
 
 Qui non devi ancora lanciare nulla.
 
-## Step 2: Definire Il Layer Di Input Umano
+## Step 2: Generare I Draft AI Per Il Layer Di Input
 
-Tu definisci:
+Lancia:
 
-- quale evidenza recuperare
-- come raggruppare l'evidenza in MED
-- come proporre i modelli probabilistici
-- come mappare le astrazioni approvate verso gli eventi di simulazione del backend
+```bash
+npm run generate:input-layer -- experiments/mio-nuovo-esperimento
+```
 
-File da definire:
+File prodotti:
 
-- `10-human-input/10-retrieval-request.json`
 - `10-human-input/11-med-aggregation-rules.json`
 - `10-human-input/12-probability-model-rules.json`
 - `10-human-input/13-simulation-blueprint.json`
 
-Note:
+Input usati dallo script:
 
-- `10-retrieval-request.json` viene prima preparato da script, poi rivisto ed eventualmente modificato dall'umano
-- `11`, `12` e `13` vengono prima proposti dall'AI, poi rivisti ed eventualmente modificati dall'umano
+- `experiment.json` e `00-overview/00-objective.md` (sempre)
+- `40-normalized-evidence/40-retrieval-evidence.json` (se gia' disponibile, per proposal piu' contestualizzate)
 
-## Step 3: Preparare La Retrieval Request
+Richiede la variabile d'ambiente `ANTHROPIC_API_KEY`.
+
+I file prodotti sono draft.
+Vanno rivisti e approvati dall'umano nel passo successivo prima di essere usati dalla pipeline.
+
+## Step 3: Rivedere Il Layer Di Input Umano
+
+Rivedi i draft generati dall'AI e finalizza:
+
+- `10-human-input/11-med-aggregation-rules.json`
+- `10-human-input/12-probability-model-rules.json`
+- `10-human-input/13-simulation-blueprint.json`
+
+Domande da porsi:
+
+- le regole di aggregazione catturano il comportamento che vuoi modellare?
+- le regole probabilistiche riflettono le aspettative sul fenomeno?
+- il blueprint mappa correttamente verso il backend?
+
+Modifica dove necessario prima di procedere.
+
+Nota: `10-retrieval-request.json` viene preparato dallo script nel passo successivo.
+
+## Step 4: Preparare La Retrieval Request
 
 Lancia:
 
@@ -151,7 +172,7 @@ Poi rivedi:
 
 Se questo file e' sbagliato, l'evidenza downstream sara' sbagliata.
 
-## Step 4: Renderizzare I Prompt MCP
+## Step 5: Renderizzare I Prompt MCP
 
 Lancia:
 
@@ -168,7 +189,7 @@ Questo file e' la base versionata dei prompt da usare verso i MCP.
 Qui non hai ancora evidenza.
 Hai solo la richiesta preparata che guidera' la raccolta dati.
 
-## Step 5: Catturare Gli Output Raw Dei MCP
+## Step 6: Catturare Gli Output Raw Dei MCP
 
 Ora raccogli i dati dai server MCP e li salvi in:
 
@@ -186,7 +207,7 @@ Responsabilita' umana in questa fase:
 Questa e' ancora una fase pre-modellazione.
 Stai raccogliendo evidenza, non stai ancora approvando astrazioni.
 
-## Step 6: Assemblare Il Bundle Raw Unificato
+## Step 7: Assemblare Il Bundle Raw Unificato
 
 Lancia:
 
@@ -200,7 +221,7 @@ File prodotto:
 
 Questo congela lo stato raw MCP in un unico artifact di repo.
 
-## Step 7: Normalizzare L'Evidenza
+## Step 8: Normalizzare L'Evidenza
 
 Lancia:
 
@@ -227,7 +248,7 @@ Se l'evidenza e' sbagliata:
 
 Normalmente non devi patchare a mano l'evidenza normalizzata.
 
-## Step 8: Generare La Proposal MED
+## Step 9: Generare La Proposal MED
 
 Lancia:
 
@@ -256,7 +277,7 @@ Se la MED proposal e' debole:
 - modifica `10-human-input/11-med-aggregation-rules.json`
 - rigenera
 
-## Step 9: Generare La Proposal Probabilistica
+## Step 10: Generare La Proposal Probabilistica
 
 Lancia:
 
@@ -281,7 +302,7 @@ Se la proposal e' debole:
 - modifica `10-human-input/12-probability-model-rules.json`
 - rigenera
 
-## Step 10: Preparare Il Record Di Review
+## Step 11: Preparare Il Record Di Review
 
 Lancia:
 
@@ -309,7 +330,7 @@ Ciclo di vita di questo file:
 
 Qui il modeler umano trasforma proposal generate in assunzioni approvate.
 
-## Step 11: Eseguire La Review Umana Di Modellazione
+## Step 12: Eseguire La Review Umana Di Modellazione
 
 Leggi insieme:
 
@@ -334,7 +355,7 @@ Edit umani tipici:
 
 Questo e' il passo di modellazione piu' importante dell'intera pipeline.
 
-## Step 12: Verificare La Coerenza Della Review
+## Step 13: Verificare La Coerenza Della Review
 
 Lancia:
 
@@ -353,7 +374,7 @@ Se fallisce:
 - o rifai la preparazione review e la review stessa
 - oppure ripristini la versione di proposal effettivamente approvata
 
-## Step 13: Validare L'Esperimento
+## Step 14: Validare L'Esperimento
 
 Lancia:
 
@@ -369,7 +390,7 @@ Questo controlla che l'esperimento sia abbastanza coerente da poter procedere.
 
 Non sostituisce il giudizio di modellazione.
 
-## Step 14: Generare Il Payload Finale Di Simulazione
+## Step 15: Generare Il Payload Finale Di Simulazione
 
 Lancia:
 
@@ -395,7 +416,7 @@ Se il payload finale sembra sbagliato, i file upstream da rivedere normalmente s
 - `10-human-input/12-probability-model-rules.json`
 - `60-human-review/60-review-decision.json`
 
-## Step 15: Validare Di Nuovo
+## Step 16: Validare Di Nuovo
 
 Lancia:
 
@@ -408,7 +429,7 @@ Perche' validare di nuovo:
 - ora esiste il payload finale di esecuzione
 - gli errori di blueprint diventano rischi operativi in questo punto
 
-## Step 16: Lanciare L'Esperimento
+## Step 17: Lanciare L'Esperimento
 
 Lancia:
 
@@ -426,7 +447,7 @@ Aggiorna:
 
 Devi lanciare solo dopo che il gate di review e' soddisfatto.
 
-## Step 17: Ispezionare Il Run Manifest
+## Step 18: Ispezionare Il Run Manifest
 
 Leggi:
 
@@ -490,6 +511,7 @@ Non usare i file generati come superficie di editing di lungo periodo.
 ## Sequenza Minima Di Comandi
 
 ```bash
+npm run generate:input-layer -- experiments/mio-nuovo-esperimento
 npm run prepare:retrieval-request -- experiments/mio-nuovo-esperimento
 npm run render:retrieval-prompts -- experiments/mio-nuovo-esperimento
 npm run assemble:raw-mcp-retrieval -- experiments/mio-nuovo-esperimento

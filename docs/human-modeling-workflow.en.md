@@ -102,28 +102,49 @@ Questions to answer:
 
 You should not launch anything yet.
 
-## Step 2: Define The Human Input Layer
+## Step 2: Generate AI Drafts For The Input Layer
 
-You define:
+Run:
 
-- what evidence should be retrieved
-- how evidence should be grouped into MEDs
-- how probability models should be proposed
-- how approved abstractions will map into backend simulation events
+```bash
+npm run generate:input-layer -- experiments/my-new-experiment
+```
 
-Files to define:
+Produced files:
 
-- `10-human-input/10-retrieval-request.json`
 - `10-human-input/11-med-aggregation-rules.json`
 - `10-human-input/12-probability-model-rules.json`
 - `10-human-input/13-simulation-blueprint.json`
 
-Notes:
+Inputs used by the script:
 
-- `10-retrieval-request.json` is script-prepared first, then reviewed and possibly edited by the human
-- `11`, `12`, and `13` are AI-proposed first, then reviewed and possibly edited by the human
+- `experiment.json` and `00-overview/00-objective.md` (always)
+- `40-normalized-evidence/40-retrieval-evidence.json` (if already available, for more grounded proposals)
 
-## Step 3: Prepare The Retrieval Request
+Requires `ANTHROPIC_API_KEY` to be set.
+
+The produced files are drafts.
+They must be reviewed and approved by the human in the next step before being used by the pipeline.
+
+## Step 3: Review The Human Input Layer
+
+Review the AI-generated drafts and finalize:
+
+- `10-human-input/11-med-aggregation-rules.json`
+- `10-human-input/12-probability-model-rules.json`
+- `10-human-input/13-simulation-blueprint.json`
+
+Questions to ask:
+
+- do the aggregation rules capture the behavior you want to model?
+- do the probability rules reflect your expectations about the phenomenon?
+- does the blueprint map correctly to the backend?
+
+Edit where necessary before continuing.
+
+Note: `10-retrieval-request.json` is prepared by the script in the next step.
+
+## Step 4: Prepare The Retrieval Request
 
 Run:
 
@@ -151,7 +172,7 @@ You then review:
 
 If this file is wrong, downstream evidence will be wrong.
 
-## Step 4: Render MCP Prompt Payloads
+## Step 5: Render MCP Prompt Payloads
 
 Run:
 
@@ -168,7 +189,7 @@ You use this as the repository-backed prompt source for live MCP usage.
 At this stage you do not yet have evidence.
 You only have the prepared request that will drive evidence collection.
 
-## Step 5: Capture Raw MCP Outputs
+## Step 6: Capture Raw MCP Outputs
 
 You now collect data from the MCP servers and store the results in:
 
@@ -186,7 +207,7 @@ Human responsibility at this stage:
 This is still a pre-modeling stage.
 You are collecting evidence, not yet approving abstractions.
 
-## Step 6: Assemble The Unified Raw Bundle
+## Step 7: Assemble The Unified Raw Bundle
 
 Run:
 
@@ -200,7 +221,7 @@ Produced file:
 
 This freezes the raw MCP state into one repository artifact.
 
-## Step 7: Normalize Evidence
+## Step 8: Normalize Evidence
 
 Run:
 
@@ -227,7 +248,7 @@ If the evidence is wrong:
 
 Do not normally patch normalized evidence by hand.
 
-## Step 8: Generate The MED Proposal
+## Step 9: Generate The MED Proposal
 
 Run:
 
@@ -256,7 +277,7 @@ If the MED proposal is weak:
 - edit `10-human-input/11-med-aggregation-rules.json`
 - regenerate
 
-## Step 9: Generate The Probability Proposal
+## Step 10: Generate The Probability Proposal
 
 Run:
 
@@ -281,7 +302,7 @@ If the proposal is weak:
 - edit `10-human-input/12-probability-model-rules.json`
 - regenerate
 
-## Step 10: Prepare The Review Record
+## Step 11: Prepare The Review Record
 
 Run:
 
@@ -309,7 +330,7 @@ Lifecycle of this file:
 
 This is where the human modeler turns generated proposals into approved assumptions.
 
-## Step 11: Perform The Human Modeling Review
+## Step 12: Perform The Human Modeling Review
 
 Read together:
 
@@ -334,7 +355,7 @@ Typical human edits:
 
 This is the most important modeling step in the whole pipeline.
 
-## Step 12: Check Review Consistency
+## Step 13: Check Review Consistency
 
 Run:
 
@@ -353,7 +374,7 @@ If it fails:
 - either re-run review preparation and review again
 - or restore the proposal version that was actually approved
 
-## Step 13: Validate The Experiment
+## Step 14: Validate The Experiment
 
 Run:
 
@@ -369,7 +390,7 @@ This checks that the experiment is internally coherent enough to proceed.
 
 It is not a substitute for modeling judgment.
 
-## Step 14: Generate The Final Simulation Payload
+## Step 15: Generate The Final Simulation Payload
 
 Run:
 
@@ -395,7 +416,7 @@ If the output payload looks wrong, the normal upstream files to revisit are:
 - `10-human-input/12-probability-model-rules.json`
 - `60-human-review/60-review-decision.json`
 
-## Step 15: Validate Again
+## Step 16: Validate Again
 
 Run:
 
@@ -408,7 +429,7 @@ Why validate again:
 - now the final execution payload exists
 - blueprint mistakes become operational risks at this point
 
-## Step 16: Launch The Experiment
+## Step 17: Launch The Experiment
 
 Run:
 
@@ -426,7 +447,7 @@ Updates:
 
 You should launch only after the review gate is satisfied.
 
-## Step 17: Inspect The Run Manifest
+## Step 18: Inspect The Run Manifest
 
 Read:
 
@@ -490,6 +511,7 @@ Do not use generated artifacts as the main long-term editing surface.
 ## Minimal Command Sequence
 
 ```bash
+npm run generate:input-layer -- experiments/my-new-experiment
 npm run prepare:retrieval-request -- experiments/my-new-experiment
 npm run render:retrieval-prompts -- experiments/my-new-experiment
 npm run assemble:raw-mcp-retrieval -- experiments/my-new-experiment
