@@ -2,7 +2,7 @@
   "experiment_id": "dao-vote-costs-v1",
   "run_id": "dao-vote-costs-v1-local-example-001",
   "status": "planned",
-  "code_version": "git:2ae26a98c7bcbb94b2ff5bfa07f0fe3fb5e177a5",
+  "code_version": "git:d1e51a767f95c87b2d5b4277ce9e39cef12f4176",
   "artifact_hashes": {
     "retrieval_request": {
       "path": "experiments/dao-vote-costs-v1/retrieval-request.json",
@@ -11,6 +11,18 @@
     "rendered_retrieval_prompts": {
       "path": "experiments/dao-vote-costs-v1/rendered-retrieval-prompts.json",
       "sha256": "sha256:7025676f275428b16159a287cf58bc030c3535f6e61fe586edeb6ee7d0522be9"
+    },
+    "etherscan_mcp_capture": {
+      "path": "experiments/dao-vote-costs-v1/etherscan-mcp-capture.json",
+      "sha256": "sha256:79afd9d504d5c842f5e7638255744d123c1ee8a528a21b2b6cd5c26fed867840"
+    },
+    "dune_mcp_capture": {
+      "path": "experiments/dao-vote-costs-v1/dune-mcp-capture.json",
+      "sha256": "sha256:20e98194c182421877df40aad2d900be05ae2ac8152429a6e9023200dce0ad81"
+    },
+    "simulation_mcp_capture": {
+      "path": "experiments/dao-vote-costs-v1/simulation-mcp-capture.json",
+      "sha256": "sha256:eb54f0082a94065ab3e9b12d2938f128dc7111321dc4b11aaf500396bcb46c04"
     },
     "raw_mcp_retrieval": {
       "path": "experiments/dao-vote-costs-v1/raw-mcp-retrieval.json",
@@ -54,8 +66,8 @@
     }
   },
   "generation": {
-    "generated_at": "2026-05-13T12:22:15.479Z",
-    "generator": "scripts/prepare-review-decision.js",
+    "generated_at": "2026-05-13T12:26:20.547Z",
+    "generator": "scripts/assemble-raw-mcp-retrieval.js",
     "source_artifacts": {
       "retrieval_request": {
         "path": "experiments/dao-vote-costs-v1/retrieval-request.json",
@@ -64,6 +76,18 @@
       "rendered_retrieval_prompts": {
         "path": "experiments/dao-vote-costs-v1/rendered-retrieval-prompts.json",
         "sha256": "sha256:7025676f275428b16159a287cf58bc030c3535f6e61fe586edeb6ee7d0522be9"
+      },
+      "etherscan_mcp_capture": {
+        "path": "experiments/dao-vote-costs-v1/etherscan-mcp-capture.json",
+        "sha256": "sha256:79afd9d504d5c842f5e7638255744d123c1ee8a528a21b2b6cd5c26fed867840"
+      },
+      "dune_mcp_capture": {
+        "path": "experiments/dao-vote-costs-v1/dune-mcp-capture.json",
+        "sha256": "sha256:20e98194c182421877df40aad2d900be05ae2ac8152429a6e9023200dce0ad81"
+      },
+      "simulation_mcp_capture": {
+        "path": "experiments/dao-vote-costs-v1/simulation-mcp-capture.json",
+        "sha256": "sha256:eb54f0082a94065ab3e9b12d2938f128dc7111321dc4b11aaf500396bcb46c04"
       },
       "raw_mcp_retrieval": {
         "path": "experiments/dao-vote-costs-v1/raw-mcp-retrieval.json",
@@ -104,6 +128,9 @@
     "experiment_descriptor": "experiment.json",
     "retrieval_request": "retrieval-request.json",
     "rendered_retrieval_prompts": "rendered-retrieval-prompts.json",
+    "etherscan_mcp_capture": "etherscan-mcp-capture.json",
+    "dune_mcp_capture": "dune-mcp-capture.json",
+    "simulation_mcp_capture": "simulation-mcp-capture.json",
     "raw_mcp_retrieval": "raw-mcp-retrieval.json",
     "retrieval_evidence": "retrieval-evidence.json",
     "med_aggregation_rules": "med-aggregation-rules.json",
@@ -119,7 +146,7 @@
   },
   "notes": "This file is a placeholder manifest that a future launcher should populate automatically.",
   "validation": {
-    "validated_at": "2026-05-13T12:22:34.660Z",
+    "validated_at": "2026-05-13T12:26:55.187Z",
     "validator": "scripts/validate-experiment.js",
     "result": "pass"
   }
