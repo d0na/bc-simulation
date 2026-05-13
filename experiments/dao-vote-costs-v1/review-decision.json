@@ -1,0 +1,19 @@
+{
+  "experiment_id": "dao-vote-costs-v1",
+  "reviewer": "human",
+  "status": "approved_with_edits",
+  "approved_artifacts": {
+    "retrieval_evidence": "retrieval-evidence.json",
+    "med_proposal": "med-proposal.json",
+    "probability_model_proposal": "probability-model-proposal.json"
+  },
+  "edits": [
+    {
+      "target": "meds[voting_interaction].cost_model.representative_gas",
+      "old": 95000,
+      "new": 100000,
+      "reason": "Adjusted to the benchmark used for the existing DAO simulation examples."
+    }
+  ],
+  "notes": "The MED mapping is accepted. Voting cost and probability parameters require conservative calibration."
+}

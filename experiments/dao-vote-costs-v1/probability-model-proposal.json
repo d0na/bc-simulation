@@ -1,0 +1,40 @@
+{
+  "experiment_id": "dao-vote-costs-v1",
+  "status": "proposed",
+  "models": [
+    {
+      "model_id": "proposal_creation_uniform",
+      "target_med": "proposal_lifecycle",
+      "distribution_type": "UNIFORM",
+      "parameters": {
+        "value": 0.0008
+      },
+      "evidence_refs": [
+        "dune.metrics.daily_proposals"
+      ],
+      "confidence": "medium",
+      "notes": "A uniform rate is used as a minimal baseline because proposal creation appears low and stable."
+    },
+    {
+      "model_id": "vote_activity_burst_window",
+      "target_med": "voting_interaction",
+      "distribution_type": "BURST_WINDOW",
+      "parameters": {
+        "window_size_hours": 48,
+        "baseline_rate": 0.02,
+        "burst_rate": 0.2
+      },
+      "heuristic_parameters": [
+        "window_size_hours",
+        "baseline_rate",
+        "burst_rate"
+      ],
+      "evidence_refs": [
+        "dune.metrics.daily_votes",
+        "dune.metrics.daily_proposals"
+      ],
+      "confidence": "low",
+      "notes": "The burst shape is evidence-driven, but the exact window and rates remain heuristic until human review."
+    }
+  ]
+}

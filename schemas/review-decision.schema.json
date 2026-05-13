@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sesame.local/schemas/review-decision.schema.json",
+  "title": "Review Decision",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "experiment_id",
+    "reviewer",
+    "status",
+    "approved_artifacts"
+  ],
+  "properties": {
+    "experiment_id": {
+      "type": "string"
+    },
+    "reviewer": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "rejected",
+        "approved",
+        "approved_with_edits"
+      ]
+    },
+    "approved_artifacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "retrieval_evidence",
+        "med_proposal",
+        "probability_model_proposal"
+      ],
+      "properties": {
+        "retrieval_evidence": {
+          "type": "string"
+        },
+        "med_proposal": {
+          "type": "string"
+        },
+        "probability_model_proposal": {
+          "type": "string"
+        }
+      }
+    },
+    "edits": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "target",
+          "reason"
+        ],
+        "properties": {
+          "target": {
+            "type": "string"
+          },
+          "old": {},
+          "new": {},
+          "reason": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "notes": {
+      "type": "string"
+    }
+  }
+}

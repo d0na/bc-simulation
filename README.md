@@ -18,10 +18,25 @@ The default frontend dev server is Vite on `5173`.
 - `apps/web`: React frontend
 - `apps/api`: Spring Boot backend
 - `mcp-server`: MCP server
+- `prompts`: versioned MCP prompt templates for reproducible experiments
+- `schemas`: JSON Schemas for experiment artifacts
+- `experiments`: structured experiment descriptors and example artifacts
 - `legacy/api`: archived pre-current backend material
 - `artifacts/final-results`: curated output files and reference assets kept in the repository
+- `artifacts/runs`: placeholder location for reproducible experiment run outputs
 
 The repository root is intentionally named `sesame`. The active application folders now live under `apps/`, while legacy material remains outside that area until it is retired.
+
+## Reproducible Experiment Framework
+
+The repository now includes an initial scaffold for a reproducible MCP-assisted experiment workflow:
+
+- versioned prompt templates in `prompts/`
+- strict JSON Schemas in `schemas/`
+- a full example experiment in `experiments/dao-vote-costs-v1/`
+- a human-review gate before simulation launch
+
+See [experiments/README.md](/Users/francesco/workspace/git/research/sesame/experiments/README.md) for the workflow and artifact model.
 
 ## Usage
 

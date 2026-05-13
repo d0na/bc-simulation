@@ -1,0 +1,48 @@
+{
+  "experiment_id": "dao-vote-costs-v1",
+  "status": "proposed",
+  "meds": [
+    {
+      "med_id": "proposal_lifecycle",
+      "label": "Proposal lifecycle",
+      "maps_to": {
+        "functions": [
+          "propose"
+        ],
+        "events": [
+          "ProposalCreated"
+        ]
+      },
+      "cost_model": {
+        "representative_gas": 210000
+      },
+      "rationale": "Aggregate the creation of a governance proposal as one simulation-relevant macro event.",
+      "evidence_refs": [
+        "etherscan.functions.propose",
+        "etherscan.events.ProposalCreated",
+        "dune.metrics.daily_proposals"
+      ]
+    },
+    {
+      "med_id": "voting_interaction",
+      "label": "Voting interaction",
+      "maps_to": {
+        "functions": [
+          "castVote"
+        ],
+        "events": [
+          "VoteCast"
+        ]
+      },
+      "cost_model": {
+        "representative_gas": 95000
+      },
+      "rationale": "Aggregate user voting activity as the recurring participation event in the governance workflow.",
+      "evidence_refs": [
+        "etherscan.functions.castVote",
+        "etherscan.events.VoteCast",
+        "dune.metrics.daily_votes"
+      ]
+    }
+  ]
+}

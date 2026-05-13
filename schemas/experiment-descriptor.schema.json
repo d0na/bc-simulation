@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sesame.local/schemas/experiment-descriptor.schema.json",
+  "title": "Experiment Descriptor",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "experiment_id",
+    "version",
+    "objective",
+    "templates",
+    "artifacts",
+    "status"
+  ],
+  "properties": {
+    "experiment_id": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "objective": {
+      "type": "string"
+    },
+    "templates": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "etherscan",
+        "dune",
+        "med_proposal",
+        "probability_model_proposal"
+      ],
+      "properties": {
+        "etherscan": {
+          "type": "string"
+        },
+        "dune": {
+          "type": "string"
+        },
+        "med_proposal": {
+          "type": "string"
+        },
+        "probability_model_proposal": {
+          "type": "string"
+        }
+      }
+    },
+    "artifacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "retrieval_evidence",
+        "med_proposal",
+        "probability_model_proposal",
+        "review_decision",
+        "simulation_input",
+        "run_manifest",
+        "validation_report"
+      ],
+      "properties": {
+        "retrieval_evidence": {
+          "type": "string"
+        },
+        "med_proposal": {
+          "type": "string"
+        },
+        "probability_model_proposal": {
+          "type": "string"
+        },
+        "review_decision": {
+          "type": "string"
+        },
+        "simulation_input": {
+          "type": "string"
+        },
+        "run_manifest": {
+          "type": "string"
+        },
+        "validation_report": {
+          "type": "string"
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "retrieved",
+        "abstracted",
+        "reviewed",
+        "approved",
+        "simulated",
+        "validated"
+      ]
+    }
+  }
+}

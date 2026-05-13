@@ -1,0 +1,21 @@
+{
+  "experiment_id": "dao-vote-costs-v1",
+  "version": "1.0.0",
+  "objective": "Estimate governance workflow costs and adoption trends for a DAO voting process.",
+  "templates": {
+    "etherscan": "prompts/etherscan/retrieve-contract-evidence.v1.md",
+    "dune": "prompts/dune/retrieve-adoption-trends.v1.md",
+    "med_proposal": "prompts/agent/propose-meds.v1.md",
+    "probability_model_proposal": "prompts/agent/propose-probability-models.v1.md"
+  },
+  "artifacts": {
+    "retrieval_evidence": "retrieval-evidence.json",
+    "med_proposal": "med-proposal.json",
+    "probability_model_proposal": "probability-model-proposal.json",
+    "review_decision": "review-decision.json",
+    "simulation_input": "simulation-input.json",
+    "run_manifest": "run-manifest.json",
+    "validation_report": "validation-report.json"
+  },
+  "status": "reviewed"
+}

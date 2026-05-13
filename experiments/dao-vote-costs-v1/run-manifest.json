@@ -1,0 +1,18 @@
+{
+  "experiment_id": "dao-vote-costs-v1",
+  "run_id": "dao-vote-costs-v1-local-example-001",
+  "status": "planned",
+  "code_version": "git:unresolved",
+  "inputs": {
+    "experiment_descriptor": "experiment.json",
+    "retrieval_evidence": "retrieval-evidence.json",
+    "med_proposal": "med-proposal.json",
+    "probability_model_proposal": "probability-model-proposal.json",
+    "review_decision": "review-decision.json",
+    "simulation_input": "simulation-input.json"
+  },
+  "outputs": {
+    "simulation_tsv": "artifacts/runs/dao-vote-costs-v1/output.tsv"
+  },
+  "notes": "This file is a placeholder manifest that a future launcher should populate automatically."
+}

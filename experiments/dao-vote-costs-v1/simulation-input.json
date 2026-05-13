@@ -1,0 +1,49 @@
+{
+  "name": "dao-vote-costs-v1",
+  "description": "Human-reviewed governance simulation input derived from MCP evidence and MED proposals.",
+  "entities": [
+    "user",
+    "proposal",
+    "vote"
+  ],
+  "events": [
+    {
+      "eventName": "createProposal",
+      "description": "Derived from MED proposal_lifecycle",
+      "instanceOf": "proposal",
+      "dependencies": [
+        {
+          "dependOn": "user",
+          "maxProbabilityMatches": null,
+          "probabilityDistribution": {
+            "type": "UNIFORM",
+            "value": 0.0008
+          }
+        }
+      ],
+      "gasCost": 210000
+    },
+    {
+      "eventName": "vote",
+      "description": "Derived from MED voting_interaction",
+      "instanceOf": "vote",
+      "dependencies": [
+        {
+          "dependOn": "proposal",
+          "maxProbabilityMatches": "#user",
+          "probabilityDistribution": {
+            "type": "BURST_WINDOW",
+            "windowSizeHours": 48,
+            "baselineRate": 0.02,
+            "burstRate": 0.2
+          }
+        }
+      ],
+      "gasCost": 100000
+    }
+  ],
+  "numAggr": 3600,
+  "maxTime": 1209600,
+  "numRuns": 5,
+  "approvalRef": "review-decision.json"
+}

@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sesame.local/schemas/med-proposal.schema.json",
+  "title": "MED Proposal",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "experiment_id",
+    "status",
+    "meds"
+  ],
+  "properties": {
+    "experiment_id": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "proposed"
+      ]
+    },
+    "meds": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "med_id",
+          "label",
+          "maps_to",
+          "cost_model",
+          "rationale",
+          "evidence_refs"
+        ],
+        "properties": {
+          "med_id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "maps_to": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "functions",
+              "events"
+            ],
+            "properties": {
+              "functions": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "events": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "cost_model": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "representative_gas"
+            ],
+            "properties": {
+              "representative_gas": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "notes": {
+                "type": "string"
+              }
+            }
+          },
+          "rationale": {
+            "type": "string"
+          },
+          "evidence_refs": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

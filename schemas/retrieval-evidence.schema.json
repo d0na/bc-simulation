@@ -1,0 +1,156 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sesame.local/schemas/retrieval-evidence.schema.json",
+  "title": "Retrieval Evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "experiment_id",
+    "contract",
+    "etherscan",
+    "dune"
+  ],
+  "properties": {
+    "experiment_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "chain",
+        "address",
+        "label"
+      ],
+      "properties": {
+        "chain": {
+          "type": "string"
+        },
+        "address": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        }
+      }
+    },
+    "etherscan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "functions",
+        "events"
+      ],
+      "properties": {
+        "functions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/contractOperation"
+          }
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/contractOperation"
+          }
+        }
+      }
+    },
+    "dune": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "metrics"
+      ],
+      "properties": {
+        "metrics": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/metric"
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "contractOperation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "kind",
+        "provenance"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "function",
+            "event"
+          ]
+        },
+        "gas_estimate": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "notes": {
+          "type": "string"
+        },
+        "provenance": {
+          "$ref": "#/$defs/provenance"
+        }
+      }
+    },
+    "metric": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "granularity",
+        "trend_hint",
+        "provenance"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "granularity": {
+          "type": "string"
+        },
+        "trend_hint": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        },
+        "provenance": {
+          "$ref": "#/$defs/provenance"
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_type",
+        "source_ref"
+      ],
+      "properties": {
+        "source_type": {
+          "type": "string",
+          "enum": [
+            "etherscan",
+            "dune"
+          ]
+        },
+        "source_ref": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
