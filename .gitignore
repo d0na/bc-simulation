@@ -20,3 +20,7 @@ apps/api/src/main/resources/thesis morena barboni def..pdf
 !artifacts/final-results/
 !artifacts/final-results/.gitkeep
 !artifacts/final-results/README.md
+
+# Keep reproducible framework scaffolding versioned, but ignore generated run payloads
+artifacts/runs/*
+!artifacts/runs/.gitkeep

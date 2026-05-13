@@ -66,11 +66,32 @@ This framework adds the missing reproducibility layer around that payload:
 
 ## What Still Needs To Be Developed
 
-- Automated JSON Schema validation for all experiment artifacts.
+- Full JSON Schema validation for all experiment artifacts.
 - A generator that converts approved proposals into `simulation-input.json`.
-- A launcher that submits `simulation-input.json` to the existing `/newsimulation` endpoint.
-- A manifest writer that captures code version, hashes, run location, and validation status.
+- A manifest enricher that captures code version, hashes, run location, and validation status in a stronger way.
 - Optional backend changes to support deterministic output names instead of timestamp-only naming.
+
+## Local Commands
+
+Validate an experiment directory:
+
+```bash
+npm run validate:experiment -- experiments/dao-vote-costs-v1
+```
+
+Launch an approved experiment against the existing backend:
+
+```bash
+npm run launch:experiment -- experiments/dao-vote-costs-v1
+```
+
+Override the backend base URL when needed:
+
+```bash
+npm run launch:experiment -- experiments/dao-vote-costs-v1 http://localhost:8099
+```
+
+The validator is intentionally lightweight and dependency-free. It checks artifact presence and cross-file consistency, but it is not yet a full JSON Schema engine.
 
 ## Example
 
