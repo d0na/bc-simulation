@@ -6,6 +6,8 @@ For a full end-to-end walkthrough, see:
 
 - [How To Create And Run An Experiment](</Users/francesco/workspace/git/research/sesame/docs/how-to-create-and-run-an-experiment.en.md>)
 - [Come Creare E Pilotare Un Esperimento](</Users/francesco/workspace/git/research/sesame/docs/come-creare-e-pilotare-un-esperimento.it.md>)
+- [Human Modeling Workflow](</Users/francesco/workspace/git/research/sesame/docs/human-modeling-workflow.en.md>)
+- [Flusso Umano Di Modellazione](</Users/francesco/workspace/git/research/sesame/docs/human-modeling-workflow.it.md>)
 
 ## Scope
 
