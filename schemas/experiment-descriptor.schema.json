@@ -54,6 +54,7 @@
         "med_proposal",
         "probability_model_proposal",
         "review_decision",
+        "simulation_blueprint",
         "simulation_input",
         "run_manifest",
         "validation_report"
@@ -69,6 +70,9 @@
           "type": "string"
         },
         "review_decision": {
+          "type": "string"
+        },
+        "simulation_blueprint": {
           "type": "string"
         },
         "simulation_input": {

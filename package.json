@@ -21,6 +21,7 @@
     "test:mcp": "cd mcp-server && ./mvnw test",
     "install:web": "cd apps/web && npm install",
     "validate:experiment": "node scripts/validate-experiment.js",
+    "generate:simulation-input": "node scripts/generate-simulation-input.js",
     "launch:experiment": "node scripts/launch-experiment.js"
   },
   "devDependencies": {

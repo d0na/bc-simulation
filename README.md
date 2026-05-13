@@ -35,6 +35,7 @@ The repository now includes an initial scaffold for a reproducible MCP-assisted 
 - strict JSON Schemas in `schemas/`
 - a full example experiment in `experiments/dao-vote-costs-v1/`
 - a human-review gate before simulation launch
+- a simulation blueprint layer to bind MEDs to backend event payloads
 - local validator and launcher scripts in `scripts/`
 
 See [experiments/README.md](/Users/francesco/workspace/git/research/sesame/experiments/README.md) for the workflow and artifact model.

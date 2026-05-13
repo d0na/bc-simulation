@@ -32,10 +32,11 @@
           "dependOn": "proposal",
           "maxProbabilityMatches": "#user",
           "probabilityDistribution": {
-            "type": "BURST_WINDOW",
-            "windowSizeHours": 48,
-            "baselineRate": 0.02,
-            "burstRate": 0.2
+            "type": "NORMAL_SCALED",
+            "mean": 24,
+            "std": 12,
+            "scalingFactorX": 0.1,
+            "scalingFactorY": 0.3
           }
         }
       ],
@@ -44,6 +45,5 @@
   ],
   "numAggr": 3600,
   "maxTime": 1209600,
-  "numRuns": 5,
-  "approvalRef": "review-decision.json"
+  "numRuns": 5
 }

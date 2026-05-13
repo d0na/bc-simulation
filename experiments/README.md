@@ -38,6 +38,7 @@ artifacts/
 - `med-proposal.json`: agent proposal for Macro Event Descriptors derived from the evidence.
 - `probability-model-proposal.json`: agent proposal for trend and probability models.
 - `review-decision.json`: human review outcome, required before simulation.
+- `simulation-blueprint.json`: human-approved binding from MEDs and probability models to backend simulation events.
 - `simulation-input.json`: normalized simulation request derived from approved proposals.
 - `run-manifest.json`: execution metadata for a concrete run.
 - `validation-report.json`: validation outcome for the experiment and its outputs.
@@ -49,7 +50,7 @@ No simulation should be launched from agent output alone.
 The minimum rule is:
 
 - `review-decision.json.status` must be `approved` or `approved_with_edits`
-- `simulation-input.json` must reference the approved review artifact
+- `simulation-blueprint.json` must exist and define the backend-facing event mapping
 - `run-manifest.json` must record the exact approved artifacts used for the run
 
 ## Relationship With Existing Sesame Code
@@ -61,13 +62,14 @@ This framework adds the missing reproducibility layer around that payload:
 - evidence preservation
 - MED abstraction
 - human approval
+- simulation blueprinting
 - run traceability
 - validation reporting
 
 ## What Still Needs To Be Developed
 
 - Full JSON Schema validation for all experiment artifacts.
-- A generator that converts approved proposals into `simulation-input.json`.
+- A stronger generator that can infer more of `simulation-blueprint.json` from agent outputs, with less manual binding.
 - A manifest enricher that captures code version, hashes, run location, and validation status in a stronger way.
 - Optional backend changes to support deterministic output names instead of timestamp-only naming.
 
@@ -77,6 +79,12 @@ Validate an experiment directory:
 
 ```bash
 npm run validate:experiment -- experiments/dao-vote-costs-v1
+```
+
+Generate `simulation-input.json` from the approved proposals plus the simulation blueprint:
+
+```bash
+npm run generate:simulation-input -- experiments/dao-vote-costs-v1
 ```
 
 Launch an approved experiment against the existing backend:

@@ -87,6 +87,7 @@ function validateExperimentBundle(bundle, repoRoot) {
     "med_proposal",
     "probability_model_proposal",
     "review_decision",
+    "simulation_blueprint",
     "simulation_input",
     "run_manifest",
     "validation_report",
@@ -107,6 +108,7 @@ function validateExperimentBundle(bundle, repoRoot) {
   const medProposal = artifacts.med_proposal;
   const probabilityProposal = artifacts.probability_model_proposal;
   const reviewDecision = artifacts.review_decision;
+  const simulationBlueprint = artifacts.simulation_blueprint;
   const simulationInput = artifacts.simulation_input;
   const runManifest = artifacts.run_manifest;
   const validationReport = artifacts.validation_report;
@@ -178,6 +180,18 @@ function validateExperimentBundle(bundle, repoRoot) {
     }
   }
 
+  if (simulationBlueprint) {
+    if (simulationBlueprint.experiment_id !== experimentId) {
+      issues.push("simulation-blueprint.json experiment_id does not match experiment.json");
+    }
+    if (!simulationBlueprint.simulation?.name) {
+      issues.push("simulation-blueprint.json must define simulation.name");
+    }
+    if (!ensureArray(simulationBlueprint.event_templates).length) {
+      issues.push("simulation-blueprint.json must define at least one event template");
+    }
+  }
+
   if (simulationInput) {
     if (simulationInput.name !== experimentId) {
       issues.push("simulation-input.json name should match experiment_id for traceability");
@@ -187,14 +201,6 @@ function validateExperimentBundle(bundle, repoRoot) {
     }
     if (!ensureArray(simulationInput.events).length) {
       issues.push("simulation-input.json must include at least one event");
-    }
-    if (!simulationInput.approvalRef) {
-      issues.push("simulation-input.json must include approvalRef");
-    } else {
-      const approvalPath = path.resolve(experimentDir, simulationInput.approvalRef);
-      if (!exists(approvalPath)) {
-        issues.push(`simulation-input.json approvalRef does not exist: ${simulationInput.approvalRef}`);
-      }
     }
     for (const event of ensureArray(simulationInput.events)) {
       if (!event.eventName) {

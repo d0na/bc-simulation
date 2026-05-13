@@ -33,6 +33,15 @@ async function main() {
 
   const simulationInputPath = bundle.artifactPaths.simulation_input;
   const simulationInput = readJson(simulationInputPath);
+  const payload = {
+    entities: simulationInput.entities,
+    events: simulationInput.events,
+    name: simulationInput.name,
+    description: simulationInput.description,
+    numAggr: simulationInput.numAggr,
+    maxTime: simulationInput.maxTime,
+    numRuns: simulationInput.numRuns,
+  };
   const endpoint = `${baseUrl.replace(/\/$/, "")}/newsimulation`;
 
   console.log(`Launching ${bundle.descriptor.experiment_id} against ${endpoint}`);
@@ -42,7 +51,7 @@ async function main() {
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(simulationInput),
+    body: JSON.stringify(payload),
   });
 
   const responseText = await response.text();

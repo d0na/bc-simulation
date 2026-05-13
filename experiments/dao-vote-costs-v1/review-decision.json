@@ -13,6 +13,12 @@
       "old": 95000,
       "new": 100000,
       "reason": "Adjusted to the benchmark used for the existing DAO simulation examples."
+    },
+    {
+      "target": "models[vote_activity_normal_scaled].parameters.scalingFactorY",
+      "old": 0.35,
+      "new": 0.3,
+      "reason": "Reduced peak intensity to keep the voting burst conservative."
     }
   ],
   "notes": "The MED mapping is accepted. Voting cost and probability parameters require conservative calibration."

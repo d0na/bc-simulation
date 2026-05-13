@@ -13,6 +13,7 @@
     "med_proposal": "med-proposal.json",
     "probability_model_proposal": "probability-model-proposal.json",
     "review_decision": "review-decision.json",
+    "simulation_blueprint": "simulation-blueprint.json",
     "simulation_input": "simulation-input.json",
     "run_manifest": "run-manifest.json",
     "validation_report": "validation-report.json"
