@@ -53,6 +53,7 @@ function updateRunManifest(experimentDir, stage) {
       generator: "scripts/generate-simulation-input.js",
       source_artifacts: {
         retrieval_request: artifactHashes.retrieval_request,
+        rendered_retrieval_prompts: artifactHashes.rendered_retrieval_prompts,
         med_proposal: artifactHashes.med_proposal,
         probability_model_proposal: artifactHashes.probability_model_proposal,
         review_decision: artifactHashes.review_decision,

@@ -1,0 +1,26 @@
+{
+  "experiment_id": "dao-vote-costs-v1",
+  "etherscan_prompt": {
+    "template": "prompts/etherscan/retrieve-contract-evidence.v1.md",
+    "inputs": {
+      "chain": "ethereum",
+      "contract_address": "0x1234...abcd",
+      "contract_label": "ExampleGovernor"
+    },
+    "rendered_text": "Retrieve contract-level evidence for the ethereum contract 0x1234...abcd labeled ExampleGovernor. Return simulation-relevant functions, emitted events, and any available gas or cost signals as structured JSON."
+  },
+  "dune_prompt": {
+    "template": "prompts/dune/retrieve-adoption-trends.v1.md",
+    "inputs": {
+      "chain": "ethereum",
+      "contract_address": "0x1234...abcd",
+      "analysis_window": "last_180_days",
+      "target_metrics": [
+        "daily_proposals",
+        "daily_votes",
+        "active_voters"
+      ]
+    },
+    "rendered_text": "Retrieve Dune-compatible adoption trends for the ethereum contract 0x1234...abcd over the last_180_days window. Focus on daily_proposals, daily_votes, active_voters, and return structured JSON with provenance and compact trend hints."
+  }
+}

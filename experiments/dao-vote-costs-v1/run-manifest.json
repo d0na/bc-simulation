@@ -2,11 +2,15 @@
   "experiment_id": "dao-vote-costs-v1",
   "run_id": "dao-vote-costs-v1-local-example-001",
   "status": "planned",
-  "code_version": "git:e5ef01e11f3a9897c1dbbd5cdebe0f43f5726c42",
+  "code_version": "git:d83210747b966c08c33c83d388ac1621f4cd69a2",
   "artifact_hashes": {
     "retrieval_request": {
       "path": "experiments/dao-vote-costs-v1/retrieval-request.json",
       "sha256": "sha256:b63daafb3ee78ff9cf3bbc2b17534f731f43f05a17a553ccbcbd797c36181102"
+    },
+    "rendered_retrieval_prompts": {
+      "path": "experiments/dao-vote-costs-v1/rendered-retrieval-prompts.json",
+      "sha256": "sha256:7025676f275428b16159a287cf58bc030c3535f6e61fe586edeb6ee7d0522be9"
     },
     "retrieval_evidence": {
       "path": "experiments/dao-vote-costs-v1/retrieval-evidence.json",
@@ -45,6 +49,10 @@
         "path": "experiments/dao-vote-costs-v1/retrieval-request.json",
         "sha256": "sha256:b63daafb3ee78ff9cf3bbc2b17534f731f43f05a17a553ccbcbd797c36181102"
       },
+      "rendered_retrieval_prompts": {
+        "path": "experiments/dao-vote-costs-v1/rendered-retrieval-prompts.json",
+        "sha256": "sha256:placeholder"
+      },
       "med_proposal": {
         "path": "experiments/dao-vote-costs-v1/med-proposal.json",
         "sha256": "sha256:0cca9f90a08e9c6cb7e90d049d584405828bd7680de842b2cac8f57121b86c9b"
@@ -71,6 +79,7 @@
   "inputs": {
     "experiment_descriptor": "experiment.json",
     "retrieval_request": "retrieval-request.json",
+    "rendered_retrieval_prompts": "rendered-retrieval-prompts.json",
     "retrieval_evidence": "retrieval-evidence.json",
     "med_proposal": "med-proposal.json",
     "probability_model_proposal": "probability-model-proposal.json",
@@ -83,7 +92,7 @@
   },
   "notes": "This file is a placeholder manifest that a future launcher should populate automatically.",
   "validation": {
-    "validated_at": "2026-05-13T12:06:51.441Z",
+    "validated_at": "2026-05-13T12:09:11.708Z",
     "validator": "scripts/validate-experiment.js",
     "result": "pass"
   }

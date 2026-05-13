@@ -7,6 +7,7 @@ This document explains how to use the local tooling that supports the reproducib
 The current tooling covers the local orchestration layer around an experiment:
 
 - retrieval request preparation
+- retrieval prompt rendering
 - experiment validation
 - simulation input generation
 - run manifest enrichment
@@ -54,6 +55,22 @@ Purpose:
 - materializes the contract target and requested metrics in one auditable file
 
 This file is intended to become the stable handoff between the repository workflow and the live MCP retrieval stage.
+
+### `render:retrieval-prompts`
+
+Command:
+
+```bash
+npm run render:retrieval-prompts -- experiments/dao-vote-costs-v1
+```
+
+Purpose:
+
+- reads `retrieval-request.json`
+- materializes concrete Etherscan and Dune prompt payloads
+- writes them to `rendered-retrieval-prompts.json`
+
+This artifact is the last local step before using the MCP tools for live retrieval.
 
 ### `validate:experiment`
 
@@ -159,15 +176,17 @@ Notes:
 
 1. Prepare or update the experiment artifacts.
 2. Prepare or refresh the retrieval request.
-3. Validate the experiment.
-4. Generate the simulation input from approved artifacts.
-5. Validate again if the simulation payload changed.
-6. Launch the experiment against the backend.
+3. Render retrieval prompts.
+4. Validate the experiment.
+5. Generate the simulation input from approved artifacts.
+6. Validate again if the simulation payload changed.
+7. Launch the experiment against the backend.
 
 Example:
 
 ```bash
 npm run prepare:retrieval-request -- experiments/dao-vote-costs-v1
+npm run render:retrieval-prompts -- experiments/dao-vote-costs-v1
 npm run validate:experiment -- experiments/dao-vote-costs-v1
 npm run generate:simulation-input -- experiments/dao-vote-costs-v1
 npm run validate:experiment -- experiments/dao-vote-costs-v1

@@ -51,6 +51,7 @@
       "additionalProperties": false,
       "required": [
         "retrieval_request",
+        "rendered_retrieval_prompts",
         "retrieval_evidence",
         "med_proposal",
         "probability_model_proposal",
@@ -62,6 +63,9 @@
       ],
       "properties": {
         "retrieval_request": {
+          "type": "string"
+        },
+        "rendered_retrieval_prompts": {
           "type": "string"
         },
         "retrieval_evidence": {

@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sesame.local/schemas/rendered-retrieval-prompts.schema.json",
+  "title": "Rendered Retrieval Prompts",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "experiment_id",
+    "etherscan_prompt",
+    "dune_prompt"
+  ],
+  "properties": {
+    "experiment_id": {
+      "type": "string"
+    },
+    "etherscan_prompt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "template",
+        "inputs",
+        "rendered_text"
+      ],
+      "properties": {
+        "template": {
+          "type": "string"
+        },
+        "inputs": {
+          "type": "object"
+        },
+        "rendered_text": {
+          "type": "string"
+        }
+      }
+    },
+    "dune_prompt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "template",
+        "inputs",
+        "rendered_text"
+      ],
+      "properties": {
+        "template": {
+          "type": "string"
+        },
+        "inputs": {
+          "type": "object"
+        },
+        "rendered_text": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
