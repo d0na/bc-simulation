@@ -1,0 +1,16 @@
+{
+  "experiment_id": "nft-BAYC-real",
+  "etherscan": {
+    "functions": [],
+    "events": [],
+    "transactions": [],
+    "gas_signals": [],
+    "unknown_calls": []
+  },
+  "dune": {
+    "metrics": []
+  },
+  "simulation_mcp": {
+    "notes": []
+  }
+}

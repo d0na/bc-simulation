@@ -1,0 +1,27 @@
+{
+  "experiment_id": "nft-BAYC-real",
+  "status": "pending_evidence",
+  "contract_operation_report": {
+    "functions": [],
+    "events": [],
+    "write_operations": [],
+    "read_only_operations": [],
+    "gas_cost_statistics": [],
+    "transaction_counts": [],
+    "unknown_or_undecoded_calls": [],
+    "provenance_notes": []
+  },
+  "trend_analysis_report": {
+    "tracked_metrics": [],
+    "call_frequency_over_time": [],
+    "peaks": [],
+    "decay_phases": [],
+    "stable_usage_phases": [],
+    "anomalies": [],
+    "candidate_distribution_models": [],
+    "missing_data": []
+  },
+  "unresolved_points": [
+    "Populate this report after MCP evidence has been captured."
+  ]
+}

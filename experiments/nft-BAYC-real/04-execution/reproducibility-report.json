@@ -1,0 +1,32 @@
+{
+  "experiment_id": "nft-BAYC-real",
+  "status": "in_progress",
+  "input_files_used": [
+    "01-definition/topic.json",
+    "01-definition/retrieval-plan.json"
+  ],
+  "mcp_sources_used": [
+    "Etherscan MCP",
+    "Dune MCP"
+  ],
+  "prompt_templates_used": [
+    "prompts/etherscan/retrieve-contract-evidence.v1.md",
+    "prompts/dune/retrieve-adoption-trends.v1.md"
+  ],
+  "intermediate_artifacts_generated": [
+    "02-evidence/mcp-evidence.json",
+    "02-evidence/analysis-report.json",
+    "03-modeling/med-proposal.json"
+  ],
+  "human_review_files": [
+    "03-modeling/human-review.json"
+  ],
+  "sesame_payload_path": "04-execution/sesame-payload.json",
+  "random_seeds": [],
+  "unresolved_assumptions": [
+    "MCP evidence not populated yet."
+  ],
+  "reproducibility_limitations": [
+    "The workflow is reproducible only after MCP evidence is captured and human review is completed."
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "experiment_id": "nft-BAYC-real",
+  "topic": {
+    "smart_contract_name": "Bored Ape Yacht Club",
+    "smart_contract_address": null,
+    "network": "ethereum",
+    "time_window": "last_180_days"
+  },
+  "goal": "Create a reproducible MCP-to-SESAME workflow for a static ERC-721 NFT collection and derive human-reviewable MED abstractions before generating a SESAME-compatible payload.",
+  "questions": [
+    "Which BAYC on-chain operations produce meaningful user-visible costs?",
+    "Which usage and market trends are most relevant for SESAME simulation assumptions?",
+    "How should low-level NFT actions be grouped into MEDs?"
+  ],
+  "constraints": [
+    "Do not invent missing on-chain evidence.",
+    "Mark incomplete or uncertain data explicitly.",
+    "Require human review before generating the final SESAME payload."
+  ]
+}

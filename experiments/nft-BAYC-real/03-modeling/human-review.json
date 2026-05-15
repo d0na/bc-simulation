@@ -1,0 +1,18 @@
+{
+  "experiment_id": "nft-BAYC-real",
+  "status": "pending_review",
+  "approved": false,
+  "editable_fields": [
+    "MED grouping",
+    "gas values",
+    "distribution choices",
+    "simulation duration",
+    "number of runs",
+    "random seeds",
+    "entities",
+    "event dependencies",
+    "aggregation level"
+  ],
+  "review_notes": [],
+  "required_before_payload_generation": true
+}

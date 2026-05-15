@@ -1,0 +1,32 @@
+{
+  "experiment_id": "nft-BAYC-real",
+  "target": {
+    "chain": "ethereum",
+    "contract_address": "0xBC4CA0EDA7647A8AB7C2061C2E118A18A936f13D",
+    "contract_label": "BoredApeYachtClub"
+  },
+  "etherscan": {
+    "purpose": "Collect contract-side evidence relevant for SESAME simulation.",
+    "required_outputs": [
+      "abi_or_interface_metadata",
+      "simulation_relevant_functions",
+      "simulation_relevant_events",
+      "available_gas_or_cost_signals",
+      "token_transfer_and_approval_events",
+      "unknown_or_undecoded_calls_if_visible"
+    ],
+    "rendered_prompt": "Retrieve contract-level evidence for the ethereum contract 0xBC4CA0EDA7647A8AB7C2061C2E118A18A936f13D labeled BoredApeYachtClub. Return simulation-relevant functions, emitted events, gas or cost signals, token transfer and approval events, and any unknown or undecoded calls as structured JSON with provenance."
+  },
+  "dune": {
+    "purpose": "Collect usage and adoption trends relevant for SESAME simulation.",
+    "analysis_window": "last_180_days",
+    "target_metrics": [
+      "daily_transfer_count",
+      "daily_sale_count",
+      "daily_unique_traders",
+      "daily_active_holders",
+      "daily_operator_approvals"
+    ],
+    "rendered_prompt": "Retrieve Dune-compatible adoption trends for the ethereum contract 0xBC4CA0EDA7647A8AB7C2061C2E118A18A936f13D over the last_180_days window. Focus on daily_transfer_count, daily_sale_count, daily_unique_traders, daily_active_holders, and daily_operator_approvals, and return structured JSON with provenance, compact trend hints, and explicit missing-data markers."
+  }
+}
