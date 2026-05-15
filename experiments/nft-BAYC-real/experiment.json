@@ -26,5 +26,5 @@
     "run_manifest": "70-execution/71-run-manifest.json",
     "validation_report": "70-execution/72-validation-report.json"
   },
-  "status": "reviewed"
+  "status": "draft"
 }
