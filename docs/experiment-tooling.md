@@ -154,6 +154,24 @@ Purpose:
 
 This step makes the raw ingestion contract explicit for Etherscan, Dune, and the simulation MCP server.
 
+### `prepare:raw-captures`
+
+Command:
+
+```bash
+npm run prepare:raw-captures -- experiments/dao-vote-costs-v1
+```
+
+Purpose:
+
+- reads `10-human-input/10-retrieval-request.json`
+- scaffolds `30-mcp-raw/30-etherscan-mcp-capture.json`
+- scaffolds `30-mcp-raw/31-dune-mcp-capture.json`
+- scaffolds `30-mcp-raw/32-simulation-mcp-capture.json`
+
+This command does not fetch MCP data by itself.
+It prepares the capture files that a human or agent will populate with live MCP results.
+
 ### `normalize:retrieval-evidence`
 
 Command:

@@ -23,6 +23,7 @@
     "generate:input-layer": "node scripts/generate-input-layer.js",
     "prepare:retrieval-request": "node scripts/prepare-retrieval-request.js",
     "render:retrieval-prompts": "node scripts/render-retrieval-prompts.js",
+    "prepare:raw-captures": "node scripts/prepare-raw-captures.js",
     "assemble:raw-mcp-retrieval": "node scripts/assemble-raw-mcp-retrieval.js",
     "normalize:retrieval-evidence": "node scripts/normalize-retrieval-evidence.js",
     "generate:med-proposal": "node scripts/generate-med-proposal.js",

@@ -224,6 +224,12 @@ Populate the server-specific capture files:
 - `30-mcp-raw/31-dune-mcp-capture.json`
 - optionally `30-mcp-raw/32-simulation-mcp-capture.json`
 
+You can scaffold them first with:
+
+```bash
+npm run prepare:raw-captures -- experiments/my-new-experiment
+```
+
 This step is currently manual from the repository point of view.
 
 The intended pattern is:

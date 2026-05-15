@@ -1,0 +1,45 @@
+{
+  "experiment_id": "nft-BAYC-real",
+  "contract": {
+    "chain": "ethereum",
+    "address": "0xBC4CA0EDA7647A8AB7C2061C2E118A18A936f13D",
+    "label": "BoredApeYachtClub"
+  },
+  "metrics": [
+    {
+      "metric_name": "daily_transfer_count",
+      "granularity": "day",
+      "trend_hint": "replace_me_trend_hint",
+      "notes": "Populate this metric with a compact interpretation of the observed trend.",
+      "source_ref": "replace-me"
+    },
+    {
+      "metric_name": "daily_sale_count",
+      "granularity": "day",
+      "trend_hint": "replace_me_trend_hint",
+      "notes": "Populate this metric with a compact interpretation of the observed trend.",
+      "source_ref": "replace-me"
+    },
+    {
+      "metric_name": "daily_unique_traders",
+      "granularity": "day",
+      "trend_hint": "replace_me_trend_hint",
+      "notes": "Populate this metric with a compact interpretation of the observed trend.",
+      "source_ref": "replace-me"
+    },
+    {
+      "metric_name": "daily_active_holders",
+      "granularity": "day",
+      "trend_hint": "replace_me_trend_hint",
+      "notes": "Populate this metric with a compact interpretation of the observed trend.",
+      "source_ref": "replace-me"
+    },
+    {
+      "metric_name": "daily_operator_approvals",
+      "granularity": "day",
+      "trend_hint": "replace_me_trend_hint",
+      "notes": "Populate this metric with a compact interpretation of the observed trend.",
+      "source_ref": "replace-me"
+    }
+  ]
+}
