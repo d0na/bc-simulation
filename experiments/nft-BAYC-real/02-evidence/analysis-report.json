@@ -19,9 +19,14 @@
     "stable_usage_phases": [],
     "anomalies": [],
     "candidate_distribution_models": [],
-    "missing_data": []
+    "missing_data": [
+      "No Etherscan functions captured yet.",
+      "No Dune metrics captured yet."
+    ]
   },
   "unresolved_points": [
-    "Populate this report after MCP evidence has been captured."
+    "Gas-cost statistics are still incomplete or missing.",
+    "Transaction counts are still incomplete or missing.",
+    "Usage trend metrics are still incomplete or missing."
   ]
 }

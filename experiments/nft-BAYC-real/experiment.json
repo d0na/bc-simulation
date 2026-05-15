@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "workflow_type": "mcp_to_sesame_minimal",
   "case_study": "static_erc721_collection",
-  "status": "retrieval_planned",
+  "status": "evidence_collection_ready",
   "artifacts": {
     "topic": "01-definition/topic.json",
     "retrieval_plan": "01-definition/retrieval-plan.json",

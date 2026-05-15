@@ -20,6 +20,7 @@
     "test:api": "cd apps/api && ./mvnw test",
     "test:mcp": "cd mcp-server && ./mvnw test",
     "install:web": "cd apps/web && npm install",
+    "workflow:mcp-to-sesame": "node scripts/mcp-to-sesame-workflow.js",
     "generate:input-layer": "node scripts/generate-input-layer.js",
     "prepare:retrieval-request": "node scripts/prepare-retrieval-request.js",
     "render:retrieval-prompts": "node scripts/render-retrieval-prompts.js",
