@@ -106,6 +106,7 @@ function validateExperimentBundle(bundle, repoRoot) {
   }
 
   const requiredArtifacts = [
+    "discovery_brief",
     "retrieval_request",
     "rendered_retrieval_prompts",
     "etherscan_mcp_capture",
@@ -136,6 +137,7 @@ function validateExperimentBundle(bundle, repoRoot) {
 
   const experimentId = descriptor.experiment_id;
   const retrievalRequest = artifacts.retrieval_request;
+  const discoveryBrief = artifacts.discovery_brief;
   const renderedRetrievalPrompts = artifacts.rendered_retrieval_prompts;
   const etherscanCapture = artifacts.etherscan_mcp_capture;
   const duneCapture = artifacts.dune_mcp_capture;
@@ -151,6 +153,18 @@ function validateExperimentBundle(bundle, repoRoot) {
   const simulationInput = artifacts.simulation_input;
   const runManifest = artifacts.run_manifest;
   const validationReport = artifacts.validation_report;
+
+  if (discoveryBrief) {
+    if (!discoveryBrief.target_name) {
+      issues.push("discovery-brief.json must include target_name");
+    }
+    if (!discoveryBrief.target_type) {
+      issues.push("discovery-brief.json must include target_type");
+    }
+    if (!discoveryBrief.goal) {
+      issues.push("discovery-brief.json must include goal");
+    }
+  }
 
   if (retrievalRequest) {
     if (retrievalRequest.experiment_id !== experimentId) {

@@ -36,8 +36,7 @@ Prima del flusso step-by-step, distingui tre categorie di file.
 Questi sono i file normalmente scritti direttamente dall'utente e vanno trattati come source of truth:
 
 - `experiment.json`
-- `00-overview/00-objective.md`
-- `00-overview/01-status-and-notes.md`
+- `10-human-input/05-discovery-brief.json`
 
 ### File proposti dall'AI o preparati da script e poi rivisti dall'umano
 
@@ -91,8 +90,7 @@ Tu definisci:
 File da creare o rivedere:
 
 - `experiment.json`
-- `00-overview/00-objective.md`
-- `00-overview/01-status-and-notes.md`
+- `10-human-input/05-discovery-brief.json`
 
 Domande da chiarire:
 
@@ -102,7 +100,7 @@ Domande da chiarire:
 
 Qui non devi ancora lanciare nulla.
 
-## Step 2: Generare I Draft AI Per Il Layer Di Input
+## Step 2: Generare I Draft Del Layer Di Input
 
 Lancia:
 
@@ -118,17 +116,25 @@ File prodotti:
 
 Input usati dallo script:
 
-- `experiment.json` e `00-overview/00-objective.md` (sempre)
+- `experiment.json` e `10-human-input/05-discovery-brief.json` (sempre)
 - `40-normalized-evidence/40-retrieval-evidence.json` (se gia' disponibile, per proposal piu' contestualizzate)
 
-Richiede la variabile d'ambiente `ANTHROPIC_API_KEY`.
+Comportamento di default:
 
-I file prodotti sono draft.
+- usa un generatore locale deterministico
+- non richiede nessun SDK AI o API key
+
+Comportamento AI opzionale:
+
+- imposta `SESAME_INPUT_LAYER_PROVIDER=anthropic`
+- imposta `ANTHROPIC_API_KEY`
+
+I file prodotti restano draft.
 Vanno rivisti e approvati dall'umano nel passo successivo prima di essere usati dalla pipeline.
 
 ## Step 3: Rivedere Il Layer Di Input Umano
 
-Rivedi i draft generati dall'AI e finalizza:
+Rivedi i draft generati e finalizza:
 
 - `10-human-input/11-med-aggregation-rules.json`
 - `10-human-input/12-probability-model-rules.json`

@@ -1,0 +1,25 @@
+{
+  "target_name": "DAO governance contract",
+  "target_type": "governance_contract",
+  "goal": "Estimate governance workflow costs and adoption trends for a DAO voting process.",
+  "questions": [
+    "Which on-chain governance actions should become MEDs?",
+    "Which usage metrics best support proposal creation and vote activity models?"
+  ],
+  "known_constraints": [
+    "Focus on directly observable contract functions and events.",
+    "Prefer simple, auditable probability models."
+  ],
+  "analysis_window": "last_180_days",
+  "preferred_metrics": [
+    "daily_proposals",
+    "daily_votes",
+    "active_voters"
+  ],
+  "known_target": {
+    "chain": "ethereum",
+    "contract_address": null,
+    "contract_label": "dao-governance-target"
+  },
+  "notes_for_ai": "Prioritize proposal creation and voting behavior when generating retrieval scope and draft abstraction files."
+}

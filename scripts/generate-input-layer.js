@@ -2,13 +2,13 @@
 
 const fs = require("fs");
 const path = require("path");
-const Anthropic = require("@anthropic-ai/sdk");
 const {
   loadExperimentBundle,
   resolveExperimentDir,
 } = require("./lib/experiment-framework");
 
 const DEFAULT_MODEL = "claude-sonnet-4-6";
+const DEFAULT_PROVIDER = process.env.SESAME_INPUT_LAYER_PROVIDER || "local";
 
 const SYSTEM_PROMPT = `You are generating draft input layer files for a blockchain simulation experiment.
 
@@ -159,21 +159,21 @@ function validatePrerequisites(bundle) {
   return issues;
 }
 
-function loadObjectiveText(experimentDir) {
-  const objectivePath = path.join(experimentDir, "00-overview", "00-objective.md");
-  if (fs.existsSync(objectivePath)) {
-    return fs.readFileSync(objectivePath, "utf8").trim();
-  }
-  return null;
+function loadDiscoveryBrief(bundle) {
+  const brief = bundle.artifacts.discovery_brief;
+  return brief && typeof brief === "object" ? brief : {};
 }
 
-function buildUserMessage(bundle, objectiveText) {
+function buildUserMessage(bundle, discoveryBrief) {
   const descriptor = bundle.descriptor;
   const evidence = bundle.artifacts.retrieval_evidence;
 
   const parts = [];
   parts.push(`Experiment ID: ${descriptor.experiment_id}`);
-  parts.push(`\nObjective:\n${objectiveText || descriptor.objective}`);
+  parts.push(`\nObjective:\n${discoveryBrief.goal || descriptor.objective}`);
+  if (discoveryBrief.target_name || discoveryBrief.target_type) {
+    parts.push(`\nDiscovery Brief:\n${JSON.stringify(discoveryBrief, null, 2)}`);
+  }
 
   if (evidence?.contract) {
     const { chain, address, label } = evidence.contract;
@@ -190,16 +190,237 @@ function buildUserMessage(bundle, objectiveText) {
   return parts.join("\n");
 }
 
+function toSnakeCase(value) {
+  return String(value || "")
+    .replace(/([a-z0-9])([A-Z])/g, "$1_$2")
+    .replace(/[^a-zA-Z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "")
+    .replace(/_+/g, "_")
+    .toLowerCase();
+}
+
+function toTitleCase(value) {
+  return String(value || "")
+    .split(/[_\s-]+/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+function inferTrendDistribution(metric) {
+  const hint = String(metric?.trend_hint || "").toLowerCase();
+  if (hint.includes("burst") || hint.includes("window") || hint.includes("proposal")) {
+    return {
+      distribution_type: "NORMAL_SCALED",
+      parameters: {
+        mean: 24,
+        std: 12,
+        scalingFactorX: 0.1,
+        scalingFactorY: 0.35,
+      },
+      heuristic_parameters: ["mean", "std", "scalingFactorX", "scalingFactorY"],
+      confidence: "low",
+      notes: "Windowed concentration inferred from trend hints; parameters remain heuristic until reviewed.",
+    };
+  }
+  if (hint.includes("random") || hint.includes("sporadic")) {
+    return {
+      distribution_type: "POISSON",
+      parameters: { lambda: 1 },
+      heuristic_parameters: ["lambda"],
+      confidence: "low",
+      notes: "Poisson draft used as a neutral random-arrival baseline.",
+    };
+  }
+  return {
+    distribution_type: "UNIFORM",
+    parameters: { value: 0.001 },
+    heuristic_parameters: ["value"],
+    confidence: hint ? "medium" : "low",
+    notes: "Uniform draft used as a conservative baseline for low or stable activity.",
+  };
+}
+
+function inferEntities(medRules) {
+  const entities = new Set(["user"]);
+  for (const rule of medRules) {
+    if (rule.med_id.includes("proposal")) entities.add("proposal");
+    else if (rule.med_id.includes("vote")) entities.add("vote");
+    else if (rule.med_id.includes("mint")) entities.add("token");
+    else if (rule.med_id.includes("sale")) entities.add("sale");
+    else if (rule.med_id.includes("transfer")) entities.add("transfer");
+    else if (rule.med_id.includes("auction")) entities.add("auction");
+    else entities.add("activity");
+  }
+  return Array.from(entities);
+}
+
+function defaultInstanceOf(medId) {
+  if (medId.includes("proposal")) return "proposal";
+  if (medId.includes("vote")) return "vote";
+  if (medId.includes("mint")) return "token";
+  if (medId.includes("sale")) return "sale";
+  if (medId.includes("transfer")) return "transfer";
+  if (medId.includes("auction")) return "auction";
+  return "activity";
+}
+
+function defaultDependOn(index, medId, medRules) {
+  if (index === 0) return "user";
+  const prior = medRules[index - 1];
+  if (medId.includes("vote") && medRules.some((rule) => rule.med_id.includes("proposal"))) {
+    return "proposal";
+  }
+  if (medId.includes("sale") && medRules.some((rule) => rule.med_id.includes("mint"))) {
+    return "token";
+  }
+  return defaultInstanceOf(prior.med_id);
+}
+
+function buildLocalDraft(bundle, discoveryBrief) {
+  const descriptor = bundle.descriptor;
+  const evidence = bundle.artifacts.retrieval_evidence || {};
+  const functions = Array.isArray(evidence.etherscan?.functions) ? evidence.etherscan.functions : [];
+  const events = Array.isArray(evidence.etherscan?.events) ? evidence.etherscan.events : [];
+  const metrics = Array.isArray(evidence.dune?.metrics) ? evidence.dune.metrics : [];
+
+  const medRules = [];
+
+  if (functions.length > 0 || events.length > 0) {
+    const items = Math.max(functions.length, events.length, 1);
+    for (let index = 0; index < items; index += 1) {
+      const fn = functions[index] || null;
+      const ev = events[index] || null;
+      const metric = metrics[index] || metrics[0] || null;
+      const baseName = fn?.name || ev?.name || `activity_${index + 1}`;
+      const medId = toSnakeCase(baseName);
+      medRules.push({
+        med_id: medId,
+        label: toTitleCase(medId),
+        function_names: fn?.name ? [fn.name] : [],
+        event_names: ev?.name ? [ev.name] : [],
+        metric_names: metric?.name ? [metric.name] : [],
+        gas_strategy: "max_function_gas",
+        rationale_template: `Draft MED for ${baseName} derived from available retrieval evidence and experiment objective.`,
+      });
+    }
+  } else {
+    const objectiveSeed = toSnakeCase(descriptor.experiment_id || discoveryBrief.goal || descriptor.objective || "core_activity");
+    medRules.push({
+      med_id: `${objectiveSeed}_activity`,
+      label: toTitleCase(`${objectiveSeed}_activity`),
+      function_names: [],
+      event_names: [],
+      metric_names: metrics[0]?.name ? [metrics[0].name] : [],
+      gas_strategy: "max_function_gas",
+      rationale_template: "Conservative draft MED generated from the experiment objective without grounded contract evidence.",
+    });
+  }
+
+  const probabilityRules = medRules.map((rule, index) => {
+    const metric = metrics.find((item) => rule.metric_names.includes(item.name)) || metrics[index] || metrics[0] || null;
+    const distribution = inferTrendDistribution(metric);
+    const suffix = toSnakeCase(distribution.distribution_type.toLowerCase());
+    return {
+      model_id: `${rule.med_id}_${suffix}`,
+      target_med: rule.med_id,
+      distribution_type: distribution.distribution_type,
+      parameters: distribution.parameters,
+      heuristic_parameters: distribution.heuristic_parameters,
+      metric_names: rule.metric_names.length ? rule.metric_names : metrics.map((item) => item.name).slice(0, 1),
+      confidence: distribution.confidence,
+      notes: distribution.notes,
+    };
+  });
+
+  const entities = inferEntities(medRules);
+  const eventTemplates = medRules.map((rule, index) => {
+    const model = probabilityRules[index];
+    const instanceOf = defaultInstanceOf(rule.med_id);
+    return {
+      med_id: rule.med_id,
+      event_name: rule.med_id,
+      description: `Draft event generated from MED ${rule.med_id}`,
+      instance_of: instanceOf,
+      dependencies: [
+        {
+          model_id: model.model_id,
+          depend_on: defaultDependOn(index, rule.med_id, medRules),
+          max_probability_matches: index === 0 ? null : "#user",
+        },
+      ],
+    };
+  });
+
+  return {
+    med_aggregation_rules: {
+      rules: medRules,
+    },
+    probability_model_rules: {
+      rules: probabilityRules,
+    },
+    simulation_blueprint: {
+      simulation: {
+        name: descriptor.experiment_id,
+        description: `Draft simulation blueprint for ${descriptor.experiment_id}, generated from objective and available evidence.`,
+        entities,
+        numAggr: 3600,
+        maxTime: 1209600,
+        numRuns: 5,
+      },
+      event_templates: eventTemplates,
+    },
+  };
+}
+
+function writeDraftFiles(bundle, draft) {
+  const experimentId = bundle.descriptor.experiment_id;
+  const rulesFile = { experiment_id: experimentId, ...draft.med_aggregation_rules };
+  const probFile = { experiment_id: experimentId, ...draft.probability_model_rules };
+  const blueprintFile = { experiment_id: experimentId, ...draft.simulation_blueprint };
+
+  fs.writeFileSync(bundle.artifactPaths.med_aggregation_rules, `${JSON.stringify(rulesFile, null, 2)}\n`);
+  fs.writeFileSync(bundle.artifactPaths.probability_model_rules, `${JSON.stringify(probFile, null, 2)}\n`);
+  fs.writeFileSync(bundle.artifactPaths.simulation_blueprint, `${JSON.stringify(blueprintFile, null, 2)}\n`);
+
+  console.log(`Generated: ${bundle.artifactPaths.med_aggregation_rules}`);
+  console.log(`Generated: ${bundle.artifactPaths.probability_model_rules}`);
+  console.log(`Generated: ${bundle.artifactPaths.simulation_blueprint}`);
+  console.log("Review and edit these files before continuing with the pipeline.");
+}
+
+async function generateWithAnthropic(bundle, discoveryBrief, apiKey) {
+  let Anthropic;
+  try {
+    Anthropic = require("@anthropic-ai/sdk");
+  } catch (_) {
+    throw new Error("Anthropic provider requested but '@anthropic-ai/sdk' is not installed");
+  }
+
+  const client = new Anthropic({ apiKey });
+  const userMessage = buildUserMessage(bundle, discoveryBrief);
+
+  const response = await client.messages.create({
+    model: DEFAULT_MODEL,
+    max_tokens: 4096,
+    system: SYSTEM_PROMPT,
+    tools: [TOOL_SCHEMA],
+    tool_choice: { type: "tool", name: "write_input_layer" },
+    messages: [{ role: "user", content: userMessage }],
+  });
+
+  const toolUse = response.content.find((block) => block.type === "tool_use");
+  if (!toolUse) {
+    throw new Error("No tool_use block in API response");
+  }
+
+  return toolUse.input;
+}
+
 async function main() {
   const inputPath = process.argv[2];
   if (!inputPath) {
     console.error("Usage: node scripts/generate-input-layer.js <experiment-directory>");
-    process.exit(1);
-  }
-
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    console.error("ANTHROPIC_API_KEY environment variable is required");
     process.exit(1);
   }
 
@@ -215,9 +436,9 @@ async function main() {
     process.exit(1);
   }
 
-  const objectiveText = loadObjectiveText(experimentDir);
-  const userMessage = buildUserMessage(bundle, objectiveText);
-  const client = new Anthropic({ apiKey });
+  const discoveryBrief = loadDiscoveryBrief(bundle);
+  const provider = DEFAULT_PROVIDER;
+  const anthropicApiKey = process.env.ANTHROPIC_API_KEY;
 
   console.log("Generating input layer drafts...");
   if (bundle.artifacts.retrieval_evidence) {
@@ -226,36 +447,19 @@ async function main() {
     console.log("No retrieval evidence found — generating from objective only.");
   }
 
-  const response = await client.messages.create({
-    model: DEFAULT_MODEL,
-    max_tokens: 4096,
-    system: SYSTEM_PROMPT,
-    tools: [TOOL_SCHEMA],
-    tool_choice: { type: "tool", name: "write_input_layer" },
-    messages: [{ role: "user", content: userMessage }],
-  });
-
-  const toolUse = response.content.find((b) => b.type === "tool_use");
-  if (!toolUse) {
-    console.error("No tool_use block in API response");
-    process.exit(1);
+  let draft;
+  if (provider === "anthropic") {
+    if (!anthropicApiKey) {
+      throw new Error("SESAME_INPUT_LAYER_PROVIDER=anthropic requires ANTHROPIC_API_KEY");
+    }
+    console.log(`Using AI provider: anthropic (${DEFAULT_MODEL})`);
+    draft = await generateWithAnthropic(bundle, discoveryBrief, anthropicApiKey);
+  } else {
+    console.log("Using local deterministic draft generator.");
+    draft = buildLocalDraft(bundle, discoveryBrief);
   }
 
-  const { med_aggregation_rules, probability_model_rules, simulation_blueprint } = toolUse.input;
-  const experimentId = bundle.descriptor.experiment_id;
-
-  const rulesFile = { experiment_id: experimentId, ...med_aggregation_rules };
-  const probFile = { experiment_id: experimentId, ...probability_model_rules };
-  const blueprintFile = { experiment_id: experimentId, ...simulation_blueprint };
-
-  fs.writeFileSync(bundle.artifactPaths.med_aggregation_rules, `${JSON.stringify(rulesFile, null, 2)}\n`);
-  fs.writeFileSync(bundle.artifactPaths.probability_model_rules, `${JSON.stringify(probFile, null, 2)}\n`);
-  fs.writeFileSync(bundle.artifactPaths.simulation_blueprint, `${JSON.stringify(blueprintFile, null, 2)}\n`);
-
-  console.log(`Generated: ${bundle.artifactPaths.med_aggregation_rules}`);
-  console.log(`Generated: ${bundle.artifactPaths.probability_model_rules}`);
-  console.log(`Generated: ${bundle.artifactPaths.simulation_blueprint}`);
-  console.log("Review and edit these files before continuing with the pipeline.");
+  writeDraftFiles(bundle, draft);
 }
 
 if (require.main === module) {

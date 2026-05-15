@@ -10,8 +10,7 @@ This experiment is organized by phase so that humans can distinguish:
 
 ## Phase Layout
 
-- `00-overview/`: human-readable objective and operating notes
-- `10-human-input/`: human-reviewed inputs, AI-proposed MED rules, and blueprint
+- `10-human-input/`: one concise discovery brief plus reviewable inputs, draft MED rules, and blueprint
 - `20-rendered-prompts/`: rendered prompt payloads prepared for live MCP usage
 - `30-mcp-raw/`: raw MCP captures and their assembled raw bundle
 - `40-normalized-evidence/`: canonical normalized evidence

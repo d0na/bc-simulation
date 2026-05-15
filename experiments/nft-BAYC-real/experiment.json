@@ -9,6 +9,7 @@
     "probability_model_proposal": "prompts/agent/propose-probability-models.v1.md"
   },
   "artifacts": {
+    "discovery_brief": "10-human-input/05-discovery-brief.json",
     "retrieval_request": "10-human-input/10-retrieval-request.json",
     "rendered_retrieval_prompts": "20-rendered-prompts/20-rendered-retrieval-prompts.json",
     "etherscan_mcp_capture": "30-mcp-raw/30-etherscan-mcp-capture.json",

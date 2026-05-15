@@ -1,0 +1,28 @@
+{
+  "target_name": "Bored Ape Yacht Club",
+  "target_type": "erc721_collection",
+  "goal": "Estimate NFT workflow costs and adoption trends for long-term sustainability analysis using BAYC as the case study.",
+  "questions": [
+    "Which BAYC on-chain actions should become MEDs for simulation?",
+    "Which NFT usage and market metrics are most useful for adoption and cost modeling?"
+  ],
+  "known_constraints": [
+    "Focus on Ethereum mainnet.",
+    "Prioritize directly observable contract behavior and auditable trend metrics.",
+    "Treat the initial retrieval as discovery, not as final modeling."
+  ],
+  "analysis_window": "last_180_days",
+  "preferred_metrics": [
+    "daily_transfer_count",
+    "daily_sale_count",
+    "daily_unique_traders",
+    "daily_active_holders",
+    "daily_operator_approvals"
+  ],
+  "known_target": {
+    "chain": "ethereum",
+    "contract_address": null,
+    "contract_label": "BoredApeYachtClub"
+  },
+  "notes_for_ai": "Use the brief to discover the correct BAYC contract scope, identify the simulation-relevant ERC-721 actions, and draft retrieval targets that support later MED generation."
+}

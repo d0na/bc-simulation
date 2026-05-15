@@ -83,8 +83,7 @@ Poi aggiorna tutti i riferimenti:
 I file minimi da controllare subito sono:
 
 - `experiment.json`
-- `00-overview/00-objective.md`
-- `00-overview/01-status-and-notes.md`
+- `10-human-input/05-discovery-brief.json`
 - `10-human-input/10-retrieval-request.json` dopo aver eseguito lo step di preparazione
 - `10-human-input/11-med-aggregation-rules.json`
 - `10-human-input/12-probability-model-rules.json`
@@ -94,24 +93,19 @@ I file minimi da controllare subito sono:
 
 Ogni file dentro la cartella esperimento ha un ruolo diverso.
 
-### `00-overview/`
-
-- `00-objective.md`
-  Dichiarazione human-readable dell'obiettivo dell'esperimento.
-
-- `01-status-and-notes.md`
-  Note operative human-readable, ordine del workflow e promemoria sul gate di review.
-
 ### `10-human-input/`
 
 - `experiment.json`
   E' il descrittore principale. Definisce l'identita' dell'esperimento e i path degli artifact.
 
+- `05-discovery-brief.json`
+  E' il brief umano iniziale unico, usato per guidare la generazione della retrieval request e dei draft di input layer.
+
 - `10-retrieval-request.json`
   Viene prima preparato da script, poi rivisto ed eventualmente modificato dall'utente. Descrive cosa deve essere recuperato da Etherscan e Dune.
 
 - `11-med-aggregation-rules.json`
-  Regole proposte dall'AI, poi riviste ed eventualmente modificate dall'utente, che definiscono come l'evidenza low-level diventa MED.
+  Regole generate come draft, poi riviste ed eventualmente modificate dall'utente, che definiscono come l'evidenza low-level diventa MED.
 
 - `12-probability-model-rules.json`
   Regole deterministiche per generare i modelli probabilistici.

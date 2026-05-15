@@ -8,7 +8,7 @@ Recommended workflow:
 
 1. copy `experiments/example-template` into a new experiment directory
 2. rename `experiment_id` and adjust the objective
-3. fill the human-authored overview and input files
+3. fill `10-human-input/05-discovery-brief.json`
 4. run the preparation scripts
 5. populate MCP captures
 6. generate downstream artifacts
@@ -17,6 +17,7 @@ Recommended workflow:
 Use this template when you want:
 
 - a clean structure with no misleading domain-specific example data
+- a single concise human input brief instead of scattered descriptive notes
 - explicit placeholders instead of partially realistic mock values
 - a stable directory layout aligned with the current tooling
 

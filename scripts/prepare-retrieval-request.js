@@ -43,59 +43,126 @@ function validatePrerequisites(bundle, repoRoot) {
   if (!bundle.artifactPaths.retrieval_request) {
     issues.push("Descriptor does not define artifact path for 'retrieval_request'");
   }
-  if (!bundle.artifactPaths.retrieval_evidence) {
-    issues.push("Descriptor does not define artifact path for 'retrieval_evidence'");
-  }
-
-  const retrievalEvidence = bundle.artifacts.retrieval_evidence;
-  if (!retrievalEvidence) {
-    issues.push("Missing artifact file 'retrieval_evidence'");
-  } else {
-    if (retrievalEvidence.experiment_id !== descriptor.experiment_id) {
-      issues.push("retrieval-evidence.json experiment_id does not match experiment.json");
-    }
-    if (!retrievalEvidence.contract?.chain || !retrievalEvidence.contract?.address) {
-      issues.push("retrieval-evidence.json must include contract.chain and contract.address");
-    }
-  }
 
   return issues;
+}
+
+function loadDiscoveryBrief(bundle) {
+  const brief = bundle.artifacts.discovery_brief;
+  return brief && typeof brief === "object" ? brief : {};
+}
+
+function inferDomainText(bundle) {
+  const discoveryBrief = loadDiscoveryBrief(bundle);
+  return [
+    bundle.descriptor.experiment_id || "",
+    bundle.descriptor.objective || "",
+    discoveryBrief.target_name || "",
+    discoveryBrief.target_type || "",
+    discoveryBrief.goal || "",
+    ...(Array.isArray(discoveryBrief.questions) ? discoveryBrief.questions : []),
+    ...(Array.isArray(discoveryBrief.known_constraints) ? discoveryBrief.known_constraints : []),
+    discoveryBrief.notes_for_ai || "",
+  ]
+    .join("\n")
+    .toLowerCase();
+}
+
+function inferTargetFromText(text) {
+  if (text.includes("bayc") || text.includes("bored ape yacht club")) {
+    return {
+      chain: "ethereum",
+      contract_address: "0xBC4CA0EDA7647A8AB7C2061C2E118A18A936f13D",
+      contract_label: "BoredApeYachtClub",
+    };
+  }
+
+  if (text.includes("erc-721") || text.includes("erc721") || text.includes("nft")) {
+    return {
+      chain: "ethereum",
+      contract_address: "replace-me",
+      contract_label: "replace-me-nft-collection",
+    };
+  }
+
+  return {
+    chain: "replace-me",
+    contract_address: "replace-me",
+    contract_label: "replace-me",
+  };
+}
+
+function inferDuneMetrics(text) {
+  if (text.includes("bayc") || text.includes("nft") || text.includes("erc-721") || text.includes("erc721")) {
+    return [
+      "daily_transfer_count",
+      "daily_sale_count",
+      "daily_unique_traders",
+      "daily_active_holders",
+      "daily_operator_approvals",
+    ];
+  }
+
+  if (text.includes("governance") || text.includes("vote") || text.includes("proposal")) {
+    return [
+      "daily_proposals",
+      "daily_votes",
+      "active_voters",
+    ];
+  }
+
+  return [
+    "daily_active_users",
+    "daily_transaction_count",
+  ];
+}
+
+function inferEtherscanOutputs(text) {
+  const outputs = [
+    "abi_or_interface_metadata",
+    "simulation_relevant_functions",
+    "simulation_relevant_events",
+    "available_gas_or_cost_signals",
+  ];
+
+  if (text.includes("nft") || text.includes("erc-721") || text.includes("erc721")) {
+    outputs.push("token_transfer_and_approval_events");
+  }
+
+  return outputs;
 }
 
 function buildRetrievalRequest(bundle) {
   const descriptor = bundle.descriptor;
   const retrievalEvidence = bundle.artifacts.retrieval_evidence;
-
-  if (!retrievalEvidence?.contract?.chain || !retrievalEvidence?.contract?.address) {
-    throw new Error("retrieval-evidence.json must include contract chain and address to prepare a retrieval request.");
-  }
+  const discoveryBrief = loadDiscoveryBrief(bundle);
+  const text = inferDomainText(bundle);
+  const inferredTarget = inferTargetFromText(text);
+  const target = {
+    chain: retrievalEvidence?.contract?.chain || discoveryBrief.known_target?.chain || inferredTarget.chain,
+    contract_address: retrievalEvidence?.contract?.address || discoveryBrief.known_target?.contract_address || inferredTarget.contract_address,
+    contract_label: retrievalEvidence?.contract?.label || discoveryBrief.known_target?.contract_label || inferredTarget.contract_label || descriptor.experiment_id,
+  };
+  const targetMetrics =
+    Array.isArray(discoveryBrief.preferred_metrics) && discoveryBrief.preferred_metrics.length > 0
+      ? discoveryBrief.preferred_metrics
+      : inferDuneMetrics(text);
+  const analysisWindow = discoveryBrief.analysis_window || "last_180_days";
 
   return {
     experiment_id: descriptor.experiment_id,
     objective: descriptor.objective,
-    target: {
-      chain: retrievalEvidence.contract.chain,
-      contract_address: retrievalEvidence.contract.address,
-      contract_label: retrievalEvidence.contract.label || descriptor.experiment_id,
-    },
+    target,
+    discovery_goal: discoveryBrief.goal || descriptor.objective,
     etherscan_request: {
       template: descriptor.templates.etherscan,
-      required_outputs: [
-        "abi_or_interface_metadata",
-        "simulation_relevant_functions",
-        "simulation_relevant_events",
-        "available_gas_or_cost_signals"
-      ]
+      required_outputs: inferEtherscanOutputs(text),
     },
     dune_request: {
       template: descriptor.templates.dune,
-      analysis_window: "last_180_days",
-      target_metrics: [
-        "daily_proposals",
-        "daily_votes",
-        "active_voters"
-      ]
-    }
+      analysis_window: analysisWindow,
+      target_metrics: targetMetrics,
+    },
   };
 }
 

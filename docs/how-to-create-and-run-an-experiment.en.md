@@ -83,8 +83,7 @@ Then rename and adjust all references:
 At minimum, inspect these files first:
 
 - `experiment.json`
-- `00-overview/00-objective.md`
-- `00-overview/01-status-and-notes.md`
+- `10-human-input/05-discovery-brief.json`
 - `10-human-input/10-retrieval-request.json` after running its preparation step
 - `10-human-input/11-med-aggregation-rules.json`
 - `10-human-input/12-probability-model-rules.json`
@@ -94,24 +93,19 @@ At minimum, inspect these files first:
 
 Inside an experiment directory, each file has a different role.
 
-### `00-overview/`
-
-- `00-objective.md`
-  Human-readable statement of the experiment objective.
-
-- `01-status-and-notes.md`
-  Human-readable operating notes, workflow order, and review gate reminders.
-
 ### `10-human-input/`
 
 - `experiment.json`
   This is the top-level descriptor. It defines the experiment identity and the artifact paths.
 
+- `05-discovery-brief.json`
+  This is the single concise human input brief used to drive retrieval-request generation and draft input-layer generation.
+
 - `10-retrieval-request.json`
   This is script-prepared first, then reviewed and optionally edited by the user. It describes what should be retrieved from Etherscan and Dune.
 
 - `11-med-aggregation-rules.json`
-  AI-proposed rules, then reviewed and optionally edited by the user, that define how low-level evidence becomes MEDs.
+  Draft-generated rules, then reviewed and optionally edited by the user, that define how low-level evidence becomes MEDs.
 
 - `12-probability-model-rules.json`
   Deterministic rules for probability model generation.

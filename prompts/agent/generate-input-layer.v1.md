@@ -14,7 +14,8 @@ The produced files are drafts and must be reviewed by a human before being used 
 # Required Inputs
 
 - `experiment_id`
-- `objective` (from `experiment.json` or `00-overview/00-objective.md`)
+- `objective` (from `experiment.json`)
+- `discovery_brief` (from `10-human-input/05-discovery-brief.json`)
 
 # Optional Inputs
 

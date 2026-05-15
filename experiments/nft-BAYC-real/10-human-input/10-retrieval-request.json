@@ -1,0 +1,31 @@
+{
+  "experiment_id": "nft-BAYC-real",
+  "objective": "Estimate NFT workflow costs and adoption trends for long term sustainability costs.",
+  "target": {
+    "chain": "ethereum",
+    "contract_address": "0xBC4CA0EDA7647A8AB7C2061C2E118A18A936f13D",
+    "contract_label": "BoredApeYachtClub"
+  },
+  "discovery_goal": "Estimate NFT workflow costs and adoption trends for long-term sustainability analysis using BAYC as the case study.",
+  "etherscan_request": {
+    "template": "prompts/etherscan/retrieve-contract-evidence.v1.md",
+    "required_outputs": [
+      "abi_or_interface_metadata",
+      "simulation_relevant_functions",
+      "simulation_relevant_events",
+      "available_gas_or_cost_signals",
+      "token_transfer_and_approval_events"
+    ]
+  },
+  "dune_request": {
+    "template": "prompts/dune/retrieve-adoption-trends.v1.md",
+    "analysis_window": "last_180_days",
+    "target_metrics": [
+      "daily_transfer_count",
+      "daily_sale_count",
+      "daily_unique_traders",
+      "daily_active_holders",
+      "daily_operator_approvals"
+    ]
+  }
+}

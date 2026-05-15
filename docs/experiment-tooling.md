@@ -40,8 +40,7 @@ It does not yet automate live MCP retrieval or agent-authored MED generation.
 An experiment directory should contain at least these phase-separated files:
 
 - `experiment.json`
-- `00-overview/00-objective.md`
-- `00-overview/01-status-and-notes.md`
+- `10-human-input/05-discovery-brief.json`
 - `10-human-input/10-retrieval-request.json`
 - `10-human-input/11-med-aggregation-rules.json`
 - `10-human-input/12-probability-model-rules.json`
@@ -61,7 +60,7 @@ An experiment directory should contain at least these phase-separated files:
 
 Responsibility note:
 
-- human-authored files: `experiment.json`, `00-overview/*`
+- human-authored files: `experiment.json`, `10-human-input/05-discovery-brief.json`
 - AI/script-prepared then human-reviewed files: `10-human-input/10-retrieval-request.json`, `10-human-input/11-*`, `10-human-input/12-*`, `10-human-input/13-*`, `60-human-review/60-review-decision.json`
 - raw capture files: `30-mcp-raw/30-*`, `30-mcp-raw/31-*`, `30-mcp-raw/32-*`
 - fully generated files: `20-rendered-prompts/*`, `30-mcp-raw/39-*`, `40-normalized-evidence/*`, `50-generated-proposals/*`, `70-execution/*`
@@ -78,18 +77,24 @@ npm run generate:input-layer -- experiments/dao-vote-costs-v1
 
 Purpose:
 
-- calls the Claude API to generate AI drafts of:
+- generates draft files for:
   - `10-human-input/11-med-aggregation-rules.json`
   - `10-human-input/12-probability-model-rules.json`
   - `10-human-input/13-simulation-blueprint.json`
-- uses `experiment.json` and `00-overview/00-objective.md` as primary inputs
+- uses `experiment.json` and `10-human-input/05-discovery-brief.json` as primary inputs
 - uses `40-normalized-evidence/40-retrieval-evidence.json` as additional context if it is already available
 
-Requires:
+Default behavior:
 
-- `ANTHROPIC_API_KEY` environment variable
+- uses a local deterministic draft generator
+- does not require any AI SDK or API key
 
-The produced files are AI drafts.
+Optional AI provider:
+
+- set `SESAME_INPUT_LAYER_PROVIDER=anthropic`
+- set `ANTHROPIC_API_KEY`
+
+The produced files are draft inputs.
 They must be reviewed and finalized by a human before being used by the pipeline.
 Running this command again overwrites the existing files.
 

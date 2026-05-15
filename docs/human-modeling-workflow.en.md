@@ -36,8 +36,7 @@ Before looking at the step-by-step flow, distinguish three categories of files.
 These are the files that are normally authored directly by the user and should be treated as source of truth:
 
 - `experiment.json`
-- `00-overview/00-objective.md`
-- `00-overview/01-status-and-notes.md`
+- `10-human-input/05-discovery-brief.json`
 
 ### AI-proposed or script-prepared, then human-reviewed files
 
@@ -91,8 +90,7 @@ You define:
 Files to create or review:
 
 - `experiment.json`
-- `00-overview/00-objective.md`
-- `00-overview/01-status-and-notes.md`
+- `10-human-input/05-discovery-brief.json`
 
 Questions to answer:
 
@@ -102,7 +100,7 @@ Questions to answer:
 
 You should not launch anything yet.
 
-## Step 2: Generate AI Drafts For The Input Layer
+## Step 2: Generate Drafts For The Input Layer
 
 Run:
 
@@ -118,17 +116,25 @@ Produced files:
 
 Inputs used by the script:
 
-- `experiment.json` and `00-overview/00-objective.md` (always)
+- `experiment.json` and `10-human-input/05-discovery-brief.json` (always)
 - `40-normalized-evidence/40-retrieval-evidence.json` (if already available, for more grounded proposals)
 
-Requires `ANTHROPIC_API_KEY` to be set.
+Default behavior:
 
-The produced files are drafts.
+- uses a local deterministic draft generator
+- does not require any AI SDK or API key
+
+Optional AI behavior:
+
+- set `SESAME_INPUT_LAYER_PROVIDER=anthropic`
+- set `ANTHROPIC_API_KEY`
+
+The produced files are still drafts.
 They must be reviewed and approved by the human in the next step before being used by the pipeline.
 
 ## Step 3: Review The Human Input Layer
 
-Review the AI-generated drafts and finalize:
+Review the generated drafts and finalize:
 
 - `10-human-input/11-med-aggregation-rules.json`
 - `10-human-input/12-probability-model-rules.json`

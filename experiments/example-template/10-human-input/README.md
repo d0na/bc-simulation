@@ -1,5 +1,6 @@
 Human-owned and reviewable input files.
 
+- `05-discovery-brief.json`: single source of truth for the initial experiment brief
 - `10-retrieval-request.json`: script-prepared or manually edited retrieval scope
 - `11-med-aggregation-rules.json`: draft or human-authored MED grouping rules
 - `12-probability-model-rules.json`: draft or human-authored probability rules
