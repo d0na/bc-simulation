@@ -1,0 +1,22 @@
+{
+  "experiment_id": "replace-me",
+  "target": {
+    "chain": "replace-me",
+    "contract_address": "replace-me",
+    "contract_label": "replace-me"
+  },
+  "etherscan": {
+    "questions": [
+      "Replace with the contract-level evidence you want to retrieve."
+    ]
+  },
+  "dune": {
+    "time_window": {
+      "start_date": "2025-01-01",
+      "end_date": "2025-12-31"
+    },
+    "metrics": [
+      "replace_me_metric"
+    ]
+  }
+}

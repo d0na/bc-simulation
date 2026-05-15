@@ -34,6 +34,7 @@ The repository now includes an initial scaffold for a reproducible MCP-assisted 
 - versioned prompt templates in `prompts/`
 - strict JSON Schemas in `schemas/`
 - a full example experiment in `experiments/dao-vote-costs-v1/`
+- a clean experiment template in `experiments/example-template/`
 - a human-review gate before simulation launch
 - a simulation blueprint layer to bind MEDs to backend event payloads
 - local validator and launcher scripts in `scripts/`

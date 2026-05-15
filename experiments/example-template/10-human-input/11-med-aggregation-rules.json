@@ -1,0 +1,14 @@
+{
+  "experiment_id": "replace-me",
+  "rules": [
+    {
+      "med_id": "replace_me_med",
+      "label": "Replace Me MED",
+      "function_names": [],
+      "event_names": [],
+      "metric_names": [],
+      "gas_strategy": "max_function_gas",
+      "rationale_template": "Replace with the rationale for this MED."
+    }
+  ]
+}

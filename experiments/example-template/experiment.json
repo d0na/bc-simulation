@@ -1,0 +1,30 @@
+{
+  "experiment_id": "replace-me",
+  "version": "1.0.0",
+  "objective": "Replace this with the goal of your experiment.",
+  "templates": {
+    "etherscan": "prompts/etherscan/retrieve-contract-evidence.v1.md",
+    "dune": "prompts/dune/retrieve-adoption-trends.v1.md",
+    "med_proposal": "prompts/agent/propose-meds.v1.md",
+    "probability_model_proposal": "prompts/agent/propose-probability-models.v1.md"
+  },
+  "artifacts": {
+    "retrieval_request": "10-human-input/10-retrieval-request.json",
+    "rendered_retrieval_prompts": "20-rendered-prompts/20-rendered-retrieval-prompts.json",
+    "etherscan_mcp_capture": "30-mcp-raw/30-etherscan-mcp-capture.json",
+    "dune_mcp_capture": "30-mcp-raw/31-dune-mcp-capture.json",
+    "simulation_mcp_capture": "30-mcp-raw/32-simulation-mcp-capture.json",
+    "raw_mcp_retrieval": "30-mcp-raw/39-raw-mcp-retrieval.json",
+    "retrieval_evidence": "40-normalized-evidence/40-retrieval-evidence.json",
+    "med_aggregation_rules": "10-human-input/11-med-aggregation-rules.json",
+    "med_proposal": "50-generated-proposals/50-med-proposal.json",
+    "probability_model_rules": "10-human-input/12-probability-model-rules.json",
+    "probability_model_proposal": "50-generated-proposals/51-probability-model-proposal.json",
+    "review_decision": "60-human-review/60-review-decision.json",
+    "simulation_blueprint": "10-human-input/13-simulation-blueprint.json",
+    "simulation_input": "70-execution/70-simulation-input.json",
+    "run_manifest": "70-execution/71-run-manifest.json",
+    "validation_report": "70-execution/72-validation-report.json"
+  },
+  "status": "draft"
+}
