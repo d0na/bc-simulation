@@ -6,6 +6,7 @@ const http = require("http");
 
 const REPO_ROOT = path.resolve(__dirname, "..", "..");
 const EXPERIMENTS_DIR = path.join(REPO_ROOT, "experiments");
+const PROMPTS_DIR = path.join(__dirname, "..", "prompts");
 const PORT = Number(process.env.ORCHESTRATOR_PORT || 8090);
 const HOST = process.env.ORCHESTRATOR_HOST || "127.0.0.1";
 const DUNE_API_KEY = process.env.DUNE_API_KEY || "";
@@ -29,18 +30,89 @@ function writeJson(filePath, data) {
   fs.writeFileSync(filePath, `${JSON.stringify(data, null, 2)}\n`);
 }
 
+function writeText(filePath, data) {
+  fs.writeFileSync(filePath, `${data.trimEnd()}\n`);
+}
+
 function getExperimentPaths(experimentId) {
   const experimentDir = path.join(EXPERIMENTS_DIR, experimentId);
   return {
     experimentDir,
     briefPath: path.join(experimentDir, "01-brief.json"),
     retrievalPath: path.join(experimentDir, "02-retrieval.json"),
+    etherscanPromptPath: path.join(experimentDir, "02a-etherscan-prompt.md"),
+    dunePromptPath: path.join(experimentDir, "02b-dune-prompt.md"),
     medsPath: path.join(experimentDir, "03-meds.json"),
+    medsPromptPath: path.join(experimentDir, "03a-med-prompt.md"),
     simulationDraftPath: path.join(experimentDir, "04-simulation-draft.json"),
     reviewPath: path.join(experimentDir, "05-review.json"),
     simulationInputPath: path.join(experimentDir, "06-simulation-input.json"),
     launchPath: path.join(experimentDir, "07-launch.json"),
   };
+}
+
+function loadPromptTemplate(fileName) {
+  const templatePath = path.join(PROMPTS_DIR, fileName);
+  return fs.readFileSync(templatePath, "utf8");
+}
+
+function renderPromptTemplate(template, variables) {
+  return Object.entries(variables).reduce((accumulator, [key, value]) => {
+    const replacement =
+      typeof value === "string" ? value : JSON.stringify(value, null, 2);
+    return accumulator.replaceAll(`{{${key}}}`, replacement);
+  }, template);
+}
+
+function briefPromptVariables(experimentId, brief) {
+  const target = brief.target || {};
+  return {
+    experiment_id: experimentId,
+    objective: brief.objective || "",
+    questions_json: brief.questions || [],
+    domain: target.domain || "",
+    chain: target.chain || "",
+    contract_address: target.contract_address || "",
+    contract_label: target.contract_label || "",
+  };
+}
+
+function renderAndWriteEtherscanPrompt(experimentId, brief, providerEvidence) {
+  const { etherscanPromptPath } = getExperimentPaths(experimentId);
+  const template = loadPromptTemplate("etherscan-retrieval.md");
+  const prompt = renderPromptTemplate(template, {
+    ...briefPromptVariables(experimentId, brief),
+    abi_available: providerEvidence.abiAvailable,
+    source_code_available: providerEvidence.sourceCodeAvailable,
+    raw_abi_summary_json: providerEvidence.rawAbiSummary,
+    raw_source_summary_json: providerEvidence.rawSourceSummary,
+  });
+  writeText(etherscanPromptPath, prompt);
+  return { path: "02a-etherscan-prompt.md", content: prompt };
+}
+
+function renderAndWriteDunePrompt(experimentId, brief, providerEvidence) {
+  const { dunePromptPath } = getExperimentPaths(experimentId);
+  const template = loadPromptTemplate("dune-retrieval.md");
+  const prompt = renderPromptTemplate(template, {
+    ...briefPromptVariables(experimentId, brief),
+    decoded_tables_json: providerEvidence.decodedTables,
+    provider_issues_json: providerEvidence.providerIssues,
+  });
+  writeText(dunePromptPath, prompt);
+  return { path: "02b-dune-prompt.md", content: prompt };
+}
+
+function renderAndWriteMedPrompt(experimentId, brief, retrieval) {
+  const { medsPromptPath } = getExperimentPaths(experimentId);
+  const template = loadPromptTemplate("med-generation.md");
+  const prompt = renderPromptTemplate(template, {
+    ...briefPromptVariables(experimentId, brief),
+    etherscan_evidence_json: retrieval.etherscan,
+    dune_evidence_json: retrieval.dune,
+  });
+  writeText(medsPromptPath, prompt);
+  return { path: "03a-med-prompt.md", content: prompt };
 }
 
 function requireString(value, label) {
@@ -229,6 +301,28 @@ async function buildRetrieval(experimentId) {
   const contractLabel = requireString(target.contract_label, "target.contract_label");
   const domain = requireString(target.domain, "target.domain");
 
+  renderAndWriteEtherscanPrompt(experimentId, brief, {
+    abiAvailable: ETHERSCAN_API_KEY !== "",
+    sourceCodeAvailable: ETHERSCAN_API_KEY !== "",
+    rawAbiSummary: {
+      chainId: chainToEtherscanId(chain),
+      module: "contract",
+      action: "getabi",
+      address: contractAddress,
+    },
+    rawSourceSummary: {
+      chainId: chainToEtherscanId(chain),
+      module: "contract",
+      action: "getsourcecode",
+      address: contractAddress,
+    },
+  });
+
+  renderAndWriteDunePrompt(experimentId, brief, {
+    decodedTables: [],
+    providerIssues: [],
+  });
+
   const etherscan = await retrieveEtherscan(contractAddress, chain);
   const dune = await retrieveDune(contractAddress, chain);
 
@@ -243,10 +337,18 @@ async function buildRetrieval(experimentId) {
     etherscan: etherscan.result,
     dune: dune.result,
     issues: [...etherscan.issues, ...dune.issues],
+    prompts: {
+      etherscan: "02a-etherscan-prompt.md",
+      dune: "02b-dune-prompt.md",
+    },
     generatedAt: new Date().toISOString(),
   };
 
   writeJson(retrievalPath, retrieval);
+  renderAndWriteDunePrompt(experimentId, brief, {
+    decodedTables: retrieval.dune.tables,
+    providerIssues: retrieval.issues,
+  });
   return retrieval;
 }
 
@@ -345,6 +447,7 @@ function buildMeds(experimentId) {
 
   const brief = readJson(briefPath);
   const retrieval = readJson(retrievalPath);
+  renderAndWriteMedPrompt(experimentId, brief, retrieval);
   const meds = buildMedEntries(retrieval);
 
   const proposal = {
@@ -366,6 +469,7 @@ function buildMeds(experimentId) {
     generatedFrom: {
       briefFile: "01-brief.json",
       retrievalFile: "02-retrieval.json",
+      medPromptFile: "03a-med-prompt.md",
     },
     generatedAt: new Date().toISOString(),
   };

@@ -8,8 +8,11 @@ Current scope:
 - retrieve contract evidence from Etherscan
 - retrieve decoded table discovery from Dune
 - write `experiments/<experimentId>/02-retrieval.json`
+- render and write `experiments/<experimentId>/02a-etherscan-prompt.md`
+- render and write `experiments/<experimentId>/02b-dune-prompt.md`
 - derive a first deterministic MED proposal
 - write `experiments/<experimentId>/03-meds.json`
+- render and write `experiments/<experimentId>/03a-med-prompt.md`
 - derive a first deterministic simulation draft
 - write `experiments/<experimentId>/04-simulation-draft.json`
 - initialize a human review gate
