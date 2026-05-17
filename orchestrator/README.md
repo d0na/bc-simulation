@@ -14,6 +14,13 @@ Current scope:
 - write `experiments/<experimentId>/04-simulation-draft.json`
 - initialize a human review gate
 - write `experiments/<experimentId>/05-review.json`
+- keep fixed prompt templates in `orchestrator/prompts/`
+
+Prompt templates:
+
+- `prompts/etherscan-retrieval.md`
+- `prompts/dune-retrieval.md`
+- `prompts/med-generation.md`
 
 Required environment variables:
 
