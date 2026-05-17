@@ -18,33 +18,41 @@ The default frontend dev server is Vite on `5173`.
 - `apps/web`: React frontend
 - `apps/api`: Spring Boot backend
 - `mcp-server`: MCP server
-- `prompts`: versioned MCP prompt templates for reproducible experiments
-- `schemas`: JSON Schemas for experiment artifacts
-- `experiments`: structured experiment descriptors and example artifacts
+- `orchestrator`: lean Node workflow for experiment preparation and launch gating
+- `experiments`: active experiment artifacts, currently centered on `example-nft`
 - `legacy/api`: archived pre-current backend material
 - `artifacts/final-results`: curated output files and reference assets kept in the repository
 - `artifacts/runs`: placeholder location for reproducible experiment run outputs
 
 The repository root is intentionally named `sesame`. The active application folders now live under `apps/`, while legacy material remains outside that area until it is retired.
 
-## Reproducible Experiment Framework
+## Experiment Workflow
 
-The repository now includes an initial scaffold for a reproducible MCP-assisted experiment workflow:
+The active experiment workflow is the lean Node orchestrator in [orchestrator](/Users/francesco/workspace/git/PHD/sesame/orchestrator):
 
-- versioned prompt templates in `prompts/`
-- strict JSON Schemas in `schemas/`
-- a full example experiment in `experiments/dao-vote-costs-v1/`
-- a clean experiment template in `experiments/example-template/`
-- a human-review gate before simulation launch
-- a simulation blueprint layer to bind MEDs to backend event payloads
-- local validator and launcher scripts in `scripts/`
+- read `experiments/<experimentId>/01-brief.json`
+- retrieve evidence from Etherscan and Dune
+- generate `02-retrieval.json`, `03-meds.json`, `04-simulation-draft.json`
+- initialize `05-review.json`
+- launch Sesame only after explicit human confirmation
 
-See [experiments/README.md](/Users/francesco/workspace/git/research/sesame/experiments/README.md) for the workflow and artifact model.
-See [docs/experiment-tooling.md](/Users/francesco/workspace/git/research/sesame/docs/experiment-tooling.md) for the operational tooling guide.
-See [docs/human-modeling-workflow.en.md](/Users/francesco/workspace/git/research/sesame/docs/human-modeling-workflow.en.md) for the human decision flow in English.
-See [docs/human-modeling-workflow.it.md](/Users/francesco/workspace/git/research/sesame/docs/human-modeling-workflow.it.md) for the human decision flow in Italian.
-See [docs/how-to-create-and-run-an-experiment.en.md](/Users/francesco/workspace/git/research/sesame/docs/how-to-create-and-run-an-experiment.en.md) for the full English step-by-step guide.
-See [docs/come-creare-e-pilotare-un-esperimento.it.md](/Users/francesco/workspace/git/research/sesame/docs/come-creare-e-pilotare-un-esperimento.it.md) for the full Italian step-by-step guide.
+The current running example is [experiments/example-nft](/Users/francesco/workspace/git/PHD/sesame/experiments/example-nft).
+
+Start the orchestrator from the repository root:
+
+```bash
+npm run dev:orchestrator
+```
+
+Then use the prepare endpoint:
+
+```bash
+curl -X POST http://127.0.0.1:8090/studies/prepare \
+  -H "Content-Type: application/json" \
+  -d '{"experimentId":"example-nft"}'
+```
+
+This repository now treats that orchestrator flow as the only active path for the running example.
 
 ## Usage
 
@@ -87,6 +95,12 @@ This starts:
 - `apps/api`
 - `apps/web`
 - `mcp-server`
+
+If you also want the lean experiment orchestrator:
+
+```bash
+npm run dev:orchestrator
+```
 
 ### Connect the MCP server to Codex
 
