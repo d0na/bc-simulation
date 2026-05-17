@@ -1,0 +1,59 @@
+{
+  "experimentId": "example-nft",
+  "target": {
+    "domain": "nft_collection",
+    "chain": "ethereum",
+    "contractAddress": "0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d",
+    "contractLabel": "Bored Ape Yacht Club"
+  },
+  "etherscan": {
+    "status": "ok",
+    "totalFunctions": 37,
+    "totalEvents": 4,
+    "writeFunctions": [
+      "approve",
+      "emergencySetStartingIndexBlock",
+      "flipSaleState",
+      "mintApe",
+      "renounceOwnership",
+      "reserveApes",
+      "safeTransferFrom",
+      "setApprovalForAll",
+      "setBaseURI",
+      "setProvenanceHash",
+      "setRevealTimestamp",
+      "setStartingIndex",
+      "transferFrom",
+      "transferOwnership",
+      "withdraw"
+    ],
+    "events": [
+      "Approval",
+      "ApprovalForAll",
+      "OwnershipTransferred",
+      "Transfer"
+    ],
+    "sourceCodeAvailable": true,
+    "metadataStatus": "unavailable"
+  },
+  "dune": {
+    "status": "ok",
+    "totalTables": 31,
+    "tables": [
+      "boredape_ethereum.boredapeyachtclub_evt_transfer",
+      "boredape_ethereum.boredapeyachtclub_call_ownerof",
+      "boredape_ethereum.boredapeyachtclub_call_mintape",
+      "boredape_ethereum.boredapeyachtclub_call_balanceof",
+      "boredape_ethereum.boredapeyachtclub_call_supportsinterface",
+      "boredape_ethereum.boredapeyachtclub_call_tokenuri",
+      "boredape_ethereum.boredapeyachtclub_call_setbaseuri",
+      "boredape_ethereum.boredapeyachtclub_call_renounceownership",
+      "boredape_ethereum.boredapeyachtclub_evt_approvalforall",
+      "boredape_ethereum.boredapeyachtclub_call_totalsupply"
+    ]
+  },
+  "issues": [
+    "Etherscan metadata remains unavailable or requires MCP session handling."
+  ],
+  "generatedAt": "2026-05-17T14:29:03.729Z"
+}

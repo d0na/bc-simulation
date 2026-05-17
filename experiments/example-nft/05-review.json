@@ -1,0 +1,27 @@
+come {
+  "experimentId": "example-nft",
+  "decision": "pending",
+  "notes": "",
+  "approvedMeds": [
+    "nft_primary_mint",
+    "nft_secondary_transfer",
+    "nft_holder_state"
+  ],
+  "simulationChanges": [],
+  "approvedModules": [
+    "primary_mint_flow",
+    "secondary_transfer_flow",
+    "holder_state_snapshot"
+  ],
+  "readyForLaunch": false,
+  "checklist": [
+    "Confirm that retrieval evidence is sufficient for the study goal.",
+    "Trim or edit MEDs if the scope is still too wide.",
+    "Review placeholder parameters before any launch step."
+  ],
+  "generatedFrom": {
+    "medsFile": "03-meds.json",
+    "simulationDraftFile": "04-simulation-draft.json"
+  },
+  "generatedAt": "2026-05-17T14:29:03.735Z"
+}

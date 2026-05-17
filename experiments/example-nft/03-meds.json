@@ -1,0 +1,87 @@
+{
+  "experimentId": "example-nft",
+  "objective": "Studiare il lifecycle minimo di una collection NFT per capire quali azioni on-chain devono diventare MED e come trasformarle in un primo payload di simulazione.",
+  "target": {
+    "domain": "nft_collection",
+    "chain": "ethereum",
+    "contractAddress": "0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d",
+    "contractLabel": "Bored Ape Yacht Club"
+  },
+  "proposalStyle": "deterministic-minimal",
+  "meds": [
+    {
+      "medId": "nft_primary_mint",
+      "label": "Primary Mint",
+      "intent": "Model how new NFTs enter circulation during the primary sale.",
+      "contractSignals": {
+        "writeFunctions": [
+          "mintApe"
+        ],
+        "events": [
+          "Transfer"
+        ]
+      },
+      "dataSignals": [
+        "boredape_ethereum.boredapeyachtclub_evt_transfer",
+        "boredape_ethereum.boredapeyachtclub_call_mintape"
+      ],
+      "rationale": "Mint is the first creation event and sets the initial user acquisition path."
+    },
+    {
+      "medId": "nft_secondary_transfer",
+      "label": "Secondary Transfer",
+      "intent": "Model holder-to-holder movement and transfer intensity after mint.",
+      "contractSignals": {
+        "writeFunctions": [
+          "approve",
+          "safeTransferFrom",
+          "setApprovalForAll",
+          "transferFrom"
+        ],
+        "events": [
+          "Approval",
+          "ApprovalForAll",
+          "Transfer"
+        ]
+      },
+      "dataSignals": [
+        "boredape_ethereum.boredapeyachtclub_evt_transfer",
+        "boredape_ethereum.boredapeyachtclub_evt_approvalforall"
+      ],
+      "rationale": "Transfers and approvals are the minimum on-chain signals for ownership circulation."
+    },
+    {
+      "medId": "nft_holder_state",
+      "label": "Holder State",
+      "intent": "Track the standing state of holders, supply, and token ownership concentration.",
+      "contractSignals": {
+        "writeFunctions": [],
+        "events": []
+      },
+      "dataSignals": [
+        "boredape_ethereum.boredapeyachtclub_call_ownerof",
+        "boredape_ethereum.boredapeyachtclub_call_balanceof",
+        "boredape_ethereum.boredapeyachtclub_call_totalsupply"
+      ],
+      "rationale": "A simple state layer helps convert transfers into holder distributions and concentration metrics."
+    }
+  ],
+  "recommendedScope": {
+    "keepCountBetween": [
+      2,
+      3
+    ],
+    "currentCount": 3,
+    "recommendation": "Current MED split is still lean enough for the running example."
+  },
+  "reviewStatus": "pending_human_review",
+  "openQuestions": [
+    "Address metadata and labels are still missing from Etherscan and may require a separate MCP step.",
+    "Human review should decide whether to keep the scope minimal with 2-3 MEDs or split marketplace behavior later."
+  ],
+  "generatedFrom": {
+    "briefFile": "01-brief.json",
+    "retrievalFile": "02-retrieval.json"
+  },
+  "generatedAt": "2026-05-17T14:29:03.733Z"
+}

@@ -1,0 +1,140 @@
+{
+  "experimentId": "example-nft",
+  "target": {
+    "domain": "nft_collection",
+    "chain": "ethereum",
+    "contractAddress": "0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d",
+    "contractLabel": "Bored Ape Yacht Club"
+  },
+  "draftStyle": "deterministic-minimal",
+  "simulation": {
+    "label": "Bored Ape Yacht Club minimal simulation draft",
+    "scope": "prototype",
+    "goals": [
+      "Estimate the minimum mint dynamics needed to initialize the collection state.",
+      "Estimate how frequently tokens circulate between holders after mint.",
+      "Observe how ownership concentration evolves over time.",
+      "Quali sono le operazioni principali del contratto che contano davvero per la simulazione?",
+      "Quali trend temporali servono da Dune per modellare adozione e attivita' degli utenti?"
+    ],
+    "entities": [
+      "collection",
+      "holder",
+      "token"
+    ],
+    "modules": [
+      {
+        "moduleId": "primary_mint_flow",
+        "sourceMedId": "nft_primary_mint",
+        "behavior": "creation",
+        "description": "Generate newly minted NFTs and assign them to entrant holders.",
+        "entities": [
+          "collection",
+          "entrant_holder",
+          "token"
+        ],
+        "eventTypes": [
+          "mint"
+        ],
+        "parameters": {
+          "arrivalRate": "to_calibrate",
+          "maxSupply": "to_calibrate",
+          "mintWindow": "to_calibrate"
+        }
+      },
+      {
+        "moduleId": "secondary_transfer_flow",
+        "sourceMedId": "nft_secondary_transfer",
+        "behavior": "circulation",
+        "description": "Move tokens between holders after mint and track transfer activity.",
+        "entities": [
+          "holder",
+          "token"
+        ],
+        "eventTypes": [
+          "transfer",
+          "approval"
+        ],
+        "parameters": {
+          "transferRate": "to_calibrate",
+          "approvalRate": "optional",
+          "activeHolderShare": "to_calibrate"
+        }
+      },
+      {
+        "moduleId": "holder_state_snapshot",
+        "sourceMedId": "nft_holder_state",
+        "behavior": "state",
+        "description": "Keep the standing ownership distribution and supply-related state.",
+        "entities": [
+          "holder",
+          "token",
+          "collection"
+        ],
+        "eventTypes": [
+          "state_update"
+        ],
+        "parameters": {
+          "concentrationBuckets": "to_define",
+          "snapshotFrequency": "daily"
+        }
+      }
+    ],
+    "observables": [
+      "minted_tokens_over_time",
+      "transfer_count_over_time",
+      "holder_count_over_time",
+      "ownership_concentration"
+    ],
+    "assumptions": [
+      "Marketplace-specific sale mechanics are not modeled yet.",
+      "Primary mint and secondary transfer are treated as the minimum useful lifecycle.",
+      "Calibration values remain placeholders until human review or extra Dune queries."
+    ],
+    "calibrationInputs": {
+      "duneTables": [
+        "boredape_ethereum.boredapeyachtclub_evt_transfer",
+        "boredape_ethereum.boredapeyachtclub_call_ownerof",
+        "boredape_ethereum.boredapeyachtclub_call_mintape",
+        "boredape_ethereum.boredapeyachtclub_call_balanceof",
+        "boredape_ethereum.boredapeyachtclub_call_supportsinterface",
+        "boredape_ethereum.boredapeyachtclub_call_tokenuri",
+        "boredape_ethereum.boredapeyachtclub_call_setbaseuri",
+        "boredape_ethereum.boredapeyachtclub_call_renounceownership",
+        "boredape_ethereum.boredapeyachtclub_evt_approvalforall",
+        "boredape_ethereum.boredapeyachtclub_call_totalsupply"
+      ],
+      "writeFunctions": [
+        "approve",
+        "emergencySetStartingIndexBlock",
+        "flipSaleState",
+        "mintApe",
+        "renounceOwnership",
+        "reserveApes",
+        "safeTransferFrom",
+        "setApprovalForAll",
+        "setBaseURI",
+        "setProvenanceHash",
+        "setRevealTimestamp",
+        "setStartingIndex",
+        "transferFrom",
+        "transferOwnership",
+        "withdraw"
+      ],
+      "events": [
+        "Approval",
+        "ApprovalForAll",
+        "OwnershipTransferred",
+        "Transfer"
+      ]
+    }
+  },
+  "reviewStatus": "pending_human_review",
+  "nextAction": "Confirm, trim, or edit modules before wiring this draft to Sesame simulation launch.",
+  "generatedFrom": {
+    "briefFile": "01-brief.json",
+    "retrievalFile": "02-retrieval.json",
+    "medsFile": "03-meds.json"
+  },
+  "generatedAt": "2026-05-17T14:29:03.734Z"
+}

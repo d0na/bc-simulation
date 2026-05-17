@@ -11,6 +11,7 @@
   "scripts": {
     "dev": "run-p dev:api dev:web",
     "dev:all": "run-p dev:api dev:web dev:mcp",
+    "dev:orchestrator": "cd orchestrator && npm run start",
     "dev:api": "cd apps/api && ./mvnw spring-boot:run",
     "dev:web": "cd apps/web && npm run dev",
     "dev:mcp": "cd mcp-server && ./mvnw spring-boot:run",

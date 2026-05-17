@@ -13,6 +13,9 @@ public class AiAgentProperties {
 
     private ToolNames toolNames = new ToolNames();
     private Defaults defaults = new Defaults();
+    @NotBlank
+    private String experimentsRoot = "../experiments";
+    private String etherscanApiKey = "";
 
     public ToolNames getToolNames() {
         return toolNames;
@@ -30,10 +33,34 @@ public class AiAgentProperties {
         this.defaults = defaults;
     }
 
+    public String getExperimentsRoot() {
+        return experimentsRoot;
+    }
+
+    public void setExperimentsRoot(String experimentsRoot) {
+        this.experimentsRoot = experimentsRoot;
+    }
+
+    public String getEtherscanApiKey() {
+        return etherscanApiKey;
+    }
+
+    public void setEtherscanApiKey(String etherscanApiKey) {
+        this.etherscanApiKey = etherscanApiKey;
+    }
+
     public static class ToolNames {
 
         @NotBlank
         private String simulationLaunch = "runSimulation";
+        @NotBlank
+        private String etherscanAbi = "getContractAbi";
+        @NotBlank
+        private String etherscanSourceCode = "getContractSourceCode";
+        @NotBlank
+        private String etherscanAddressMetadata = "getAddressMetadata";
+        @NotBlank
+        private String duneSearchTablesByContract = "searchTablesByContractAddress";
 
         public String getSimulationLaunch() {
             return simulationLaunch;
@@ -41,6 +68,38 @@ public class AiAgentProperties {
 
         public void setSimulationLaunch(String simulationLaunch) {
             this.simulationLaunch = simulationLaunch;
+        }
+
+        public String getEtherscanAbi() {
+            return etherscanAbi;
+        }
+
+        public void setEtherscanAbi(String etherscanAbi) {
+            this.etherscanAbi = etherscanAbi;
+        }
+
+        public String getEtherscanSourceCode() {
+            return etherscanSourceCode;
+        }
+
+        public void setEtherscanSourceCode(String etherscanSourceCode) {
+            this.etherscanSourceCode = etherscanSourceCode;
+        }
+
+        public String getEtherscanAddressMetadata() {
+            return etherscanAddressMetadata;
+        }
+
+        public void setEtherscanAddressMetadata(String etherscanAddressMetadata) {
+            this.etherscanAddressMetadata = etherscanAddressMetadata;
+        }
+
+        public String getDuneSearchTablesByContract() {
+            return duneSearchTablesByContract;
+        }
+
+        public void setDuneSearchTablesByContract(String duneSearchTablesByContract) {
+            this.duneSearchTablesByContract = duneSearchTablesByContract;
         }
     }
 

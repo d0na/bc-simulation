@@ -1,0 +1,10 @@
+{
+  "name": "sesame-orchestrator",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Minimal Node orchestrator for Sesame retrieval workflows",
+  "scripts": {
+    "start": "node src/server.js",
+    "check": "node --check src/server.js"
+  }
+}
