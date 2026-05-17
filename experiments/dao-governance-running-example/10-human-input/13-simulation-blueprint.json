@@ -1,0 +1,28 @@
+{
+  "experiment_id": "replace-me",
+  "simulation": {
+    "name": "replace-me",
+    "description": "Replace with a draft simulation description.",
+    "entities": [
+      "user"
+    ],
+    "numAggr": 3600,
+    "maxTime": 1209600,
+    "numRuns": 5
+  },
+  "event_templates": [
+    {
+      "med_id": "replace_me_med",
+      "event_name": "replace_me_event",
+      "description": "Replace with the event mapping description.",
+      "instance_of": "activity",
+      "dependencies": [
+        {
+          "model_id": "replace_me_model",
+          "depend_on": "user",
+          "max_probability_matches": null
+        }
+      ]
+    }
+  ]
+}

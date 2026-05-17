@@ -1,0 +1,10 @@
+{
+  "experiment_id": "replace-me",
+  "contract": {
+    "chain": "replace-me",
+    "address": "replace-me",
+    "label": "replace-me"
+  },
+  "functions": [],
+  "events": []
+}

@@ -1,0 +1,11 @@
+{
+  "experiment_id": "example-nft",
+  "version": "0.1.0",
+  "workflow_type": "lean_running_example",
+  "status": "draft",
+  "current_step": "brief_definition",
+  "objective": "Capire come astrarre il comportamento di un contratto NFT in pochi MED e preparare una prima simulazione rivedibile da un umano.",
+  "artifacts": {
+    "brief": "01-brief.json"
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "entities": ["k", "p", "l"],
+  "events": [
+    {
+      "eventName": "mk",
+      "instanceOf": "k",
+      "dependencies": [
+        {
+          "dependOn": null,
+          "probabilityDistribution": {
+            "type": "BASS",
+            "p": 0.02,
+            "q": 0.22,
+            "scalingFactor": 0.002
+          }
+        }
+      ],
+      "gasCost": 320000
+    },
+    {
+      "eventName": "ls",
+      "instanceOf": "l",
+      "dependencies": [
+        {
+          "dependOn": "k",
+          "maxProbabilityMatches": "1",
+          "probabilityDistribution": {
+            "type": "FIXED",
+            "fixedTime": 1800
+          }
+        }
+      ],
+      "gasCost": 155000
+    },
+    {
+      "eventName": "tr",
+      "dependencies": [
+        {
+          "dependOn": "l",
+          "maxProbabilityMatches": "1",
+          "probabilityDistribution": {
+            "type": "FIXED",
+            "fixedTime": 1800
+          }
+        }
+      ],
+      "gasCost": 185000
+    },
+    {
+      "eventName": "gp",
+      "instanceOf": "p",
+      "dependencies": [
+        {
+          "dependOn": "k",
+          "maxProbabilityMatches": "1",
+          "probabilityDistribution": {
+            "type": "FIXED",
+            "fixedTime": 5400
+          }
+        }
+      ],
+      "gasCost": 430000
+    },
+    {
+      "eventName": "br",
+      "instanceOf": "k",
+      "dependencies": [
+        {
+          "dependOn": "p",
+          "maxProbabilityMatches": "1",
+          "probabilityDistribution": {
+            "type": "FIXED",
+            "fixedTime": 1800
+          }
+        }
+      ],
+      "gasCost": 220000
+    }
+  ],
+  "name": "CKmed",
+  "numAggr": 1800,
+  "maxTime": 28800,
+  "numRuns": 2
+}

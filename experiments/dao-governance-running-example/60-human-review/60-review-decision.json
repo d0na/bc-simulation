@@ -1,0 +1,12 @@
+{
+  "experiment_id": "replace-me",
+  "status": "pending_review",
+  "approved_artifacts": {
+    "retrieval_evidence": "40-normalized-evidence/40-retrieval-evidence.json",
+    "med_proposal": "50-generated-proposals/50-med-proposal.json",
+    "probability_model_proposal": "50-generated-proposals/51-probability-model-proposal.json"
+  },
+  "approved_artifact_hashes": {},
+  "edits": [],
+  "notes": "Replace with reviewer notes."
+}

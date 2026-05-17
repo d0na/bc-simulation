@@ -1,0 +1,21 @@
+{
+  "experiment_id": "replace-me",
+  "rules": [
+    {
+      "model_id": "replace_me_model",
+      "target_med": "replace_me_med",
+      "distribution_type": "UNIFORM",
+      "parameters": {
+        "value": 0.001
+      },
+      "heuristic_parameters": [
+        "value"
+      ],
+      "metric_names": [
+        "replace_me_metric"
+      ],
+      "confidence": "low",
+      "notes": "Replace with the justification for the proposed probability model."
+    }
+  ]
+}

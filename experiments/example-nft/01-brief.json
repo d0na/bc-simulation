@@ -1,0 +1,25 @@
+{
+  "experiment_id": "example-nft",
+  "target": {
+    "domain": "nft_collection",
+    "chain": "ethereum",
+    "contract_address": "0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d",
+    "contract_label": "Bored Ape Yacht Club"
+  },
+  "objective": "Studiare il lifecycle minimo di una collection NFT per capire quali azioni on-chain devono diventare MED e come trasformarle in un primo payload di simulazione.",
+  "questions": [
+    "Quali sono le operazioni principali del contratto che contano davvero per la simulazione?",
+    "Quali trend temporali servono da Dune per modellare adozione e attivita' degli utenti?",
+    "Quale suddivisione minima in MED e' abbastanza semplice ma ancora utile?"
+  ],
+  "constraints": [
+    "Tenere pochi step e pochi file.",
+    "Usare prompt di retrieval standardizzati e riutilizzabili.",
+    "Lasciare una review umana esplicita prima di confermare la simulazione."
+  ],
+  "notes": [
+    "Target fissato per il running example: BAYC su Ethereum.",
+    "Verifica iniziale completata: Etherscan ABI disponibile, Dune decoded tables disponibili, Etherscan address metadata non disponibile con il piano API attuale.",
+    "Questo file e' il solo input richiesto per partire."
+  ]
+}
