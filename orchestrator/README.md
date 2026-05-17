@@ -1,6 +1,6 @@
 # `orchestrator`
 
-Minimal Node orchestrator for the lean `example-nft` workflow.
+Minimal Node orchestrator for lean experiment preparation and launch gating.
 
 Current scope:
 
@@ -51,10 +51,10 @@ Run the full prepare flow:
 ```bash
 curl -X POST http://127.0.0.1:8090/studies/prepare \
   -H "Content-Type: application/json" \
-  -d '{"experimentId":"example-nft"}'
+  -d '{"experimentId":"<experiment-id>"}'
 ```
 
-Before launch, edit `experiments/example-nft/05-review.json` and set:
+Before launch, edit `experiments/<experiment-id>/05-review.json` and set:
 
 - `decision` to `confirm`
 - `readyForLaunch` to `true`
@@ -64,7 +64,7 @@ Generate only retrieval:
 ```bash
 curl -X POST http://127.0.0.1:8090/studies/retrieve \
   -H "Content-Type: application/json" \
-  -d '{"experimentId":"example-nft"}'
+  -d '{"experimentId":"<experiment-id>"}'
 ```
 
 Generate MED proposal:
@@ -72,7 +72,7 @@ Generate MED proposal:
 ```bash
 curl -X POST http://127.0.0.1:8090/studies/meds \
   -H "Content-Type: application/json" \
-  -d '{"experimentId":"example-nft"}'
+  -d '{"experimentId":"<experiment-id>"}'
 ```
 
 Generate simulation draft:
@@ -80,7 +80,7 @@ Generate simulation draft:
 ```bash
 curl -X POST http://127.0.0.1:8090/studies/simulation-draft \
   -H "Content-Type: application/json" \
-  -d '{"experimentId":"example-nft"}'
+  -d '{"experimentId":"<experiment-id>"}'
 ```
 
 Generate only review template:
@@ -88,7 +88,7 @@ Generate only review template:
 ```bash
 curl -X POST http://127.0.0.1:8090/studies/review-template \
   -H "Content-Type: application/json" \
-  -d '{"experimentId":"example-nft"}'
+  -d '{"experimentId":"<experiment-id>"}'
 ```
 
 Launch after confirmed review:
@@ -96,5 +96,5 @@ Launch after confirmed review:
 ```bash
 curl -X POST http://127.0.0.1:8090/studies/launch \
   -H "Content-Type: application/json" \
-  -d '{"experimentId":"example-nft"}'
+  -d '{"experimentId":"<experiment-id>"}'
 ```
